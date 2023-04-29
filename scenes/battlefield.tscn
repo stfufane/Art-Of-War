@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3 uid="uid://dcwtowpudpdv2"]
+
+[ext_resource type="PackedScene" uid="uid://ccscfsp22jrsp" path="res://scenes/card_placeholder.tscn" id="1_0btqk"]
+[ext_resource type="Script" path="res://scenes/battlefield.gd" id="1_snmx6"]
+
+[node name="Battlefield" type="Node2D"]
+script = ExtResource("1_snmx6")
+
+[node name="GridContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 576.0
+offset_bottom = 384.0
+
+[node name="CardPlaceholder2" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+position = Vector2(192, 0)
+location = Vector2(1, -1)
+
+[node name="CardPlaceholder" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+location = Vector2(0, -1)
+
+[node name="CardPlaceholder3" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+position = Vector2(384, 0)
+location = Vector2(2, -1)
+
+[node name="CardPlaceholder4" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+position = Vector2(0, 192)
+location = Vector2(0, -2)
+
+[node name="CardPlaceholder5" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+position = Vector2(192, 192)
+location = Vector2(1, -2)
+
+[node name="CardPlaceholder6" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+position = Vector2(384, 192)
+location = Vector2(2, -2)

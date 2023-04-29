@@ -1,13 +1,11 @@
+class_name Card
 extends Node2D
 
 @export var type : CardType.UnitTypes
 
 @onready var card_type: CardType = Model.CardTypes[type]
 
-# Called when the node enters the scene tree for the first time.
+# TODO: add all the other information from the card type.
 func _ready():
 	$Container/CardName.text = card_type.name
-	pass # Replace with function body.
 
-func _process(_delta):
-	pass

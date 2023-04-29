@@ -5,11 +5,16 @@
 [node name="Card" type="Node2D"]
 script = ExtResource("1_ffpka")
 
-[node name="Container" type="PanelContainer" parent="."]
+[node name="Container" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
 offset_right = 256.0
 offset_bottom = 256.0
 
 [node name="CardName" type="Label" parent="Container"]
 layout_mode = 2
+offset_top = 116.0
+offset_right = 256.0
+offset_bottom = 139.0
 horizontal_alignment = 1
 vertical_alignment = 1
