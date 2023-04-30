@@ -2,19 +2,49 @@
 
 [ext_resource type="Script" path="res://scenes/card.gd" id="1_ffpka"]
 
-[node name="Card" type="Node2D"]
-script = ExtResource("1_ffpka")
-
-[node name="Container" type="Control" parent="."]
+[node name="Card" type="Control"]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 256.0
-offset_bottom = 256.0
+offset_right = 192.0
+offset_bottom = 192.0
+size_flags_horizontal = 2
+size_flags_vertical = 3
+script = ExtResource("1_ffpka")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 176.0
+offset_bottom = 184.0
+color = Color(0.262745, 0.121569, 0.0509804, 1)
+
+[node name="Container" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
 
 [node name="CardName" type="Label" parent="Container"]
 layout_mode = 2
-offset_top = 116.0
-offset_right = 256.0
-offset_bottom = 139.0
+offset_top = 72.0
+offset_right = 192.0
+offset_bottom = 117.0
+theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="NbUnits" type="Label" parent="Container"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 128.0
+offset_right = 128.0
+offset_bottom = 152.0
+theme_override_font_sizes/font_size = 36
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="gui_input" from="Container" to="." method="_on_gui_input"]

@@ -1,0 +1,83 @@
+[gd_scene load_steps=6 format=3 uid="uid://egg2h0v6wt6h"]
+
+[ext_resource type="PackedScene" uid="uid://dcwtowpudpdv2" path="res://scenes/battlefield.tscn" id="1_alo7s"]
+[ext_resource type="PackedScene" uid="uid://6tknyk37omdy" path="res://scenes/player_hand.tscn" id="2_hswl1"]
+[ext_resource type="PackedScene" uid="uid://vm1jd1gw330s" path="res://scenes/reserve.tscn" id="3_0ka5f"]
+[ext_resource type="PackedScene" uid="uid://ccscfsp22jrsp" path="res://scenes/card_placeholder.tscn" id="4_p2nh1"]
+[ext_resource type="PackedScene" uid="uid://dwehldueqyfq5" path="res://scenes/kingdom.tscn" id="5_luije"]
+
+[node name="Board" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Battlefield" parent="." instance=ExtResource("1_alo7s")]
+layout_mode = 1
+offset_left = -136.0
+offset_right = -136.0
+size_flags_horizontal = 0
+
+[node name="PlayerHand" parent="." instance=ExtResource("2_hswl1")]
+layout_mode = 0
+offset_left = 96.0
+offset_top = 544.0
+offset_right = 1248.0
+offset_bottom = 736.0
+scale = Vector2(0.5, 0.5)
+
+[node name="Hand_Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 664.0
+offset_right = 402.0
+offset_bottom = 690.0
+text = "Hand"
+
+[node name="Reserve" parent="." instance=ExtResource("3_0ka5f")]
+layout_mode = 0
+offset_left = 712.0
+offset_top = 544.0
+offset_right = 1672.0
+offset_bottom = 736.0
+scale = Vector2(0.5, 0.5)
+
+[node name="Reserve_Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 936.0
+offset_top = 664.0
+offset_right = 998.0
+offset_bottom = 690.0
+text = "Reserve"
+
+[node name="Deck" parent="." instance=ExtResource("4_p2nh1")]
+offset_left = 80.0
+offset_top = 320.0
+offset_right = 80.0
+offset_bottom = 320.0
+label_text = "Deck"
+
+[node name="Graveyard" parent="." instance=ExtResource("4_p2nh1")]
+offset_left = 80.0
+offset_top = 112.0
+offset_right = 80.0
+offset_bottom = 112.0
+label_text = "Graveyard"
+
+[node name="Kingdom" parent="." instance=ExtResource("5_luije")]
+offset_left = 712.0
+offset_top = 264.0
+offset_right = 1672.0
+offset_bottom = 456.0
+scale = Vector2(0.5, 0.5)
+
+[node name="Kingdom_Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 928.0
+offset_top = 392.0
+offset_right = 997.0
+offset_bottom = 418.0
+text = "Kingdom
+"

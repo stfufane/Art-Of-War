@@ -3,34 +3,92 @@
 [ext_resource type="PackedScene" uid="uid://ccscfsp22jrsp" path="res://scenes/card_placeholder.tscn" id="1_0btqk"]
 [ext_resource type="Script" path="res://scenes/battlefield.gd" id="1_snmx6"]
 
-[node name="Battlefield" type="Node2D"]
+[node name="Battlefield" type="Control"]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
 script = ExtResource("1_snmx6")
 
-[node name="GridContainer" type="Control" parent="."]
+[node name="PlayerContainer" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 576.0
-offset_bottom = 384.0
+offset_left = -192.0
+offset_top = 256.0
+offset_right = 384.0
+offset_bottom = 640.0
+scale = Vector2(0.666589, 0.666589)
 
-[node name="CardPlaceholder2" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
-position = Vector2(192, 0)
-location = Vector2(1, -1)
-
-[node name="CardPlaceholder" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+[node name="CardPlaceholder" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
 location = Vector2(0, -1)
 
-[node name="CardPlaceholder3" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
-position = Vector2(384, 0)
+[node name="CardPlaceholder2" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+offset_left = 192.0
+offset_right = 192.0
+location = Vector2(1, -1)
+
+[node name="CardPlaceholder3" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+offset_left = 384.0
+offset_right = 384.0
 location = Vector2(2, -1)
 
-[node name="CardPlaceholder4" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
-position = Vector2(0, 192)
+[node name="CardPlaceholder4" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+offset_top = 192.0
+offset_bottom = 192.0
 location = Vector2(0, -2)
 
-[node name="CardPlaceholder5" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
-position = Vector2(192, 192)
+[node name="CardPlaceholder5" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+offset_left = 192.0
+offset_top = 192.0
+offset_right = 192.0
+offset_bottom = 192.0
 location = Vector2(1, -2)
 
-[node name="CardPlaceholder6" parent="GridContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
-position = Vector2(384, 192)
+[node name="CardPlaceholder6" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+offset_left = 384.0
+offset_top = 192.0
+offset_right = 384.0
+offset_bottom = 192.0
 location = Vector2(2, -2)
+
+[node name="EnemyContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -192.0
+offset_right = 384.0
+offset_bottom = 384.0
+scale = Vector2(0.665784, 0.665784)
+
+[node name="CardPlaceholder" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
+offset_top = 192.255
+offset_bottom = 192.255
+
+[node name="CardPlaceholder2" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
+offset_left = 192.255
+offset_top = 192.255
+offset_right = 192.255
+offset_bottom = 192.255
+location = Vector2(1, 0)
+
+[node name="CardPlaceholder3" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
+offset_left = 384.509
+offset_top = 192.255
+offset_right = 384.509
+offset_bottom = 192.255
+location = Vector2(2, 0)
+
+[node name="CardPlaceholder4" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
+location = Vector2(0, 1)
+
+[node name="CardPlaceholder5" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
+offset_left = 192.255
+offset_right = 192.255
+location = Vector2(1, 1)
+
+[node name="CardPlaceholder6" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
+offset_left = 384.509
+offset_right = 384.509
+location = Vector2(2, 1)

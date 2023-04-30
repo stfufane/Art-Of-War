@@ -1,33 +1,51 @@
 class_name Battlefield
-extends Node2D
+extends Control
 
-@onready var player_hand = Model.PlayerHand
+@onready var player_hand = Model.player_hand
 
 func _ready():
 	# Connect all the card nodes to react to click and hover
 	for placeholder in get_tree().get_nodes_in_group("cards"):
-		placeholder.connect("battlefield_card_clicked", _placeholder_clicked)
+		placeholder.connect("card_placeholder_clicked", _placeholder_clicked)
 		placeholder.get_node("Container").connect("mouse_entered", _mouse_entered.bind(placeholder))
 		placeholder.get_node("Container").connect("mouse_exited", _mouse_exited.bind(placeholder))
-	pass # Replace with function body.
 
-func _mouse_entered(placeholder_clicked: CardPlaceholder):
-	if placeholder_available(placeholder_clicked):
-		placeholder_clicked.set_text("Place card here")
 
-func _mouse_exited(placeholder_clicked: CardPlaceholder):
-	if placeholder_clicked.current_card == null:
-		placeholder_clicked.set_text("Empty")
+func _mouse_entered(placeholder_hovered: CardPlaceholder):
+	if placeholder_available(placeholder_hovered):
+		placeholder_hovered.set_text("Place card here")
 
+func _mouse_exited(placeholder_hovered: CardPlaceholder):
+	if placeholder_hovered.current_card == null:
+		placeholder_hovered.set_text("")
+
+# Click on a placeholder to put a card on it
 func _placeholder_clicked(id: int):
 	var clicked_placeholder: CardPlaceholder = instance_from_id(id)
+	# We can't add a card if the hand is empty.
+	if player_hand.is_empty():
+		return
 	# We can't put a card if there's already one there.
 	if not placeholder_available(clicked_placeholder):
 		return
 	# Take the card on top of the player's hand
-	var first_card = player_hand.pop_back()
-	clicked_placeholder.set_card(first_card)
+	var first_card = player_hand.pop_front()
+	var added_card = clicked_placeholder.set_card(first_card)
+	added_card.connect("card_clicked", _card_clicked)
 
+# Click on a card to attack with it
+func _card_clicked(id: int):
+	var clicked_card: Card = instance_from_id(id)
+	var placeholder: CardPlaceholder = instance_from_id(clicked_card.placeholder_id)
+	# Highlight the enemy cards that are within reach of the selected card
+	var attack_range = clicked_card.card_type.attack_range
+	var card_coords = placeholder.location
+	for enemy in get_tree().get_nodes_in_group("enemy_cards"):
+		for coords in attack_range:
+			if card_coords + coords == enemy.location:
+				enemy.toggle_highlight()
+
+# Check if a placeholder is available for a card to be placed on it
 func placeholder_available(placeholder: CardPlaceholder) -> bool:
 	if placeholder.current_card != null:
 		return false
