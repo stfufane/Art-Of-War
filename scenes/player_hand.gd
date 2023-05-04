@@ -1,12 +1,25 @@
 class_name PlayerHand
 extends Control
 
-@onready var player_hand = Model.player_hand
-
 func _ready():
-	var card_scene = load("res://scenes/card.tscn")
-	for card in player_hand:
-		var card_instance = card_scene.instantiate()
-		$CardContainer.size.x += card_instance.size.x
-		card_instance.type = card.type
-		$CardContainer.add_child(card_instance)
+	var x = 0
+	for card in Game.player_hand:
+		add_child(card)
+		card.position = Vector2(x, 0)
+		x += card.size.x
+
+func add_card(card: Card):
+	add_child(card)
+	var x = (Game.player_hand.size() - 1) * card.size.x
+	card.position = Vector2(x, 0)
+
+func remove_card(card: Card):
+	Game.player_hand.erase(card)
+	remove_child(card)
+	reorder_cards()
+
+func reorder_cards():
+	var x = 0
+	for card in Game.player_hand:
+		card.position = Vector2(x, 0)
+		x += card.size.x

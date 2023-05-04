@@ -1,7 +1,7 @@
 class_name Battlefield
 extends Control
 
-@onready var player_hand = Model.player_hand
+signal card_added
 
 func _ready():
 	# Connect all the card nodes to react to click and hover
@@ -22,16 +22,21 @@ func _mouse_exited(placeholder_hovered: CardPlaceholder):
 # Click on a placeholder to put a card on it
 func _placeholder_clicked(id: int):
 	var clicked_placeholder: CardPlaceholder = instance_from_id(id)
-	# We can't add a card if the hand is empty.
-	if player_hand.is_empty():
-		return
 	# We can't put a card if there's already one there.
 	if not placeholder_available(clicked_placeholder):
 		return
-	# Take the card on top of the player's hand
-	var first_card = player_hand.pop_front()
-	var added_card = clicked_placeholder.set_card(first_card)
-	added_card.connect("card_clicked", _card_clicked)
+	
+	match Game.current_state:
+		Game.States.INIT_BATTLEFIELD:
+			# We can't put a card if there's no card in hand
+			if Game.card_in_hand == null:
+				return
+			# Take the card that was picked in the hand
+			clicked_placeholder.set_card(Game.card_in_hand)
+			clicked_placeholder.current_card.connect("card_clicked", _card_clicked)
+			card_added.emit()
+		_:
+			pass
 
 # Click on a card to attack with it
 func _card_clicked(id: int):

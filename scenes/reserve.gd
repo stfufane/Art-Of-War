@@ -1,13 +1,14 @@
 class_name Reserve
 extends Control
 
-@onready var reserve = Model.player_reserve
-
 func _ready():
-	var card_scene = load("res://scenes/card.tscn")
-	for card in reserve:
-		var card_instance = card_scene.instantiate()
-		$CardContainer.size.x += card_instance.size.x
-		card_instance.type = card.type
-		$CardContainer.add_child(card_instance)
+	var x = 0
+	for card in Game.player_reserve:
+		card.position = Vector2(x, 0)
+		x += card.size.x
+		add_child(card)
 
+func add_card(card: Card):
+	card.position.x = Game.player_reserve.size() * card.size.x
+	add_child(card)
+	Game.player_reserve.append(card)

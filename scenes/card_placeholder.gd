@@ -22,13 +22,11 @@ func _on_container_gui_input(event):
 	if event.is_action_pressed("left_click"):
 		card_placeholder_clicked.emit(get_instance_id())
 
-func set_card(new_card: CardType) -> Card:
-	var card = load("res://scenes/card.tscn").instantiate()
-	card.type = new_card.type
-	card.placeholder_id = get_instance_id()
-	current_card = card
+func set_card(new_card: Card):
+	current_card = new_card
+	current_card.placeholder_id = get_instance_id()
+	current_card.position.x = 0
 	add_child(current_card)
-	return card
 	
 func toggle_highlight():
 	is_highlighting = not is_highlighting

@@ -1,13 +1,15 @@
 class_name Kingdom
 extends Control
 
-@onready var kingdom = Model.player_kingdom
-
 func _ready():
-	var card_scene = load("res://scenes/card.tscn")
-	for card_type in kingdom:
-		var card_instance = card_scene.instantiate()
-		$CardContainer.size.x += card_instance.size.x
-		card_instance.type = card_type
-		card_instance.set_nb_units(kingdom[card_type])
-		$CardContainer.add_child(card_instance)
+	var x = 0
+	for unit_type in Game.player_kingdom:
+		var card_instance = Game.get_card_instance(unit_type)
+		card_instance.position = Vector2(x, 0)
+		x += card_instance.size.x
+		card_instance.set_nb_units(Game.player_kingdom[unit_type])
+		add_child(card_instance)
+
+func increase_population(type: CardType.UnitType):
+	Game.player_kingdom[type] += 1
+	pass
