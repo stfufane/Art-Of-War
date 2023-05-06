@@ -1,14 +1,42 @@
 class_name Board
 extends Control
 
+@onready var main_menu: PanelContainer = $CanvasLayer/MainMenu
+
 @onready var battlefield: Battlefield = $Battlefield
 @onready var reserve: Reserve = $Reserve
+@onready var enemy_reserve: Reserve = $EnemyReserve
 @onready var kingdom: Kingdom = $Kingdom
+@onready var enemy_kingdom: Kingdom = $EnemyKingdom
 @onready var hand: PlayerHand = $PlayerHand
 @onready var instruction: Label = $Instruction
 @onready var deck: CardPlaceholder = $Deck
 
-func _ready():
+func _on_start_button_pressed():
+	Game.start_server()
+	main_menu.hide()
+	# The game will start when the second player connects
+	multiplayer.peer_connected.connect(_player_joined)
+
+func _on_join_button_pressed():
+	Game.join_server()
+	main_menu.hide()
+	setup()
+
+func _player_joined(p_id: int):
+	print("Player joined : " + str(p_id))
+	setup()
+
+func setup():
+	Game.setup()
+	hand.setup()
+	kingdom.setup()
+	enemy_kingdom.setup()
+	battlefield.setup()
+	reserve.setup()
+	start_game()
+
+func start_game():
 	instruction.text = "Place a card on the battlefield"
 	for card in Game.player_hand:
 		card.connect("card_clicked", _hand_card_selected)
@@ -43,11 +71,11 @@ func _reserve_card_selected(card_id: int):
 	hand.remove_card(card)
 	reserve.add_card(card)
 
-	Game.current_state = Game.States.PLAYER_TURN
+	Game.current_state = Game.States.PLAYER_ACTION_CHOICE
 	instruction.text = "Ready to start your turn"
 
 func _deck_clicked(_placeholder_id: int):
-	if Game.current_state != Game.States.PLAYER_TURN:
+	if Game.current_state != Game.States.PLAYER_ACTION_CHOICE:
 		return
 	if Game.player_deck.is_empty():
 		return

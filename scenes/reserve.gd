@@ -1,7 +1,10 @@
 class_name Reserve
 extends Control
 
-func _ready():
+@export var is_enemy: bool
+@onready var reserve = Game.enemy_reserve if is_enemy else Game.player_reserve
+
+func setup():
 	var x = 0
 	for card in Game.player_reserve:
 		card.position = Vector2(x, 0)

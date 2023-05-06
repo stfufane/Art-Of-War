@@ -30,7 +30,7 @@ offset_right = 1248.0
 offset_bottom = 736.0
 scale = Vector2(0.5, 0.5)
 
-[node name="Hand_Label" type="Label" parent="."]
+[node name="HandLabel" type="Label" parent="."]
 layout_mode = 0
 offset_left = 360.0
 offset_top = 664.0
@@ -41,17 +41,25 @@ text = "Hand"
 [node name="Reserve" parent="." instance=ExtResource("4_mb6ut")]
 layout_mode = 0
 offset_left = 712.0
-offset_top = 544.0
+offset_top = 384.0
 offset_right = 1672.0
-offset_bottom = 736.0
+offset_bottom = 576.0
 scale = Vector2(0.5, 0.5)
 
-[node name="Reserve_Label" type="Label" parent="."]
+[node name="EnemyReserve" parent="." instance=ExtResource("4_mb6ut")]
+offset_left = 712.0
+offset_top = 32.0
+offset_right = 1672.0
+offset_bottom = 224.0
+scale = Vector2(0.5, 0.5)
+is_enemy = true
+
+[node name="ReserveLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 936.0
-offset_top = 664.0
-offset_right = 998.0
-offset_bottom = 690.0
+offset_left = 904.0
+offset_top = 488.0
+offset_right = 966.0
+offset_bottom = 514.0
 text = "Reserve"
 
 [node name="Deck" parent="." instance=ExtResource("5_brr7o")]
@@ -70,23 +78,70 @@ label_text = "Graveyard"
 
 [node name="Kingdom" parent="." instance=ExtResource("6_oavws")]
 offset_left = 712.0
-offset_top = 264.0
+offset_top = 280.0
 offset_right = 1672.0
-offset_bottom = 456.0
+offset_bottom = 472.0
 scale = Vector2(0.5, 0.5)
 
-[node name="Kingdom_Label" type="Label" parent="."]
+[node name="EnemyKingdom" parent="." instance=ExtResource("6_oavws")]
+offset_left = 712.0
+offset_top = 136.0
+offset_right = 1672.0
+offset_bottom = 328.0
+scale = Vector2(0.5, 0.5)
+is_enemy = true
+
+[node name="KingdomLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 928.0
-offset_top = 392.0
-offset_right = 997.0
-offset_bottom = 418.0
+offset_left = 904.0
+offset_top = 243.0
+offset_right = 973.0
+offset_bottom = 269.0
 text = "Kingdom
 "
 
 [node name="Instruction" type="Label" parent="."]
 layout_mode = 0
-offset_left = 832.0
-offset_top = 64.0
-offset_right = 1024.0
-offset_bottom = 128.0
+offset_left = 712.0
+offset_top = 560.0
+offset_right = 1192.0
+offset_bottom = 624.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="MainMenu" type="PanelContainer" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 496.0
+offset_top = 296.0
+offset_right = -496.0
+offset_bottom = -296.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MainMenu"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MainMenu/MarginContainer"]
+layout_mode = 2
+
+[node name="GameTitle" type="Label" parent="CanvasLayer/MainMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Art Of War"
+horizontal_alignment = 1
+
+[node name="StartButton" type="Button" parent="CanvasLayer/MainMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Start Game"
+
+[node name="JoinButton" type="Button" parent="CanvasLayer/MainMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Join Game"
+
+[connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/JoinButton" to="." method="_on_join_button_pressed"]

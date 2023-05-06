@@ -1,7 +1,7 @@
 class_name PlayerHand
 extends Control
 
-func _ready():
+func setup():
 	var x = 0
 	for card in Game.player_hand:
 		add_child(card)

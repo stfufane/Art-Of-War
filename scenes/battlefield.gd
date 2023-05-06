@@ -3,7 +3,7 @@ extends Control
 
 signal card_added
 
-func _ready():
+func setup():
 	# Connect all the card nodes to react to click and hover
 	for placeholder in get_tree().get_nodes_in_group("cards"):
 		placeholder.connect("card_placeholder_clicked", _placeholder_clicked)
@@ -12,8 +12,12 @@ func _ready():
 
 
 func _mouse_entered(placeholder_hovered: CardPlaceholder):
-	if placeholder_available(placeholder_hovered):
-		placeholder_hovered.set_text("Place card here")
+	match Game.current_state:
+		Game.States.INIT_BATTLEFIELD:
+			if placeholder_available(placeholder_hovered):
+				placeholder_hovered.set_text("Place card here")
+		_:
+			pass
 
 func _mouse_exited(placeholder_hovered: CardPlaceholder):
 	if placeholder_hovered.current_card == null:

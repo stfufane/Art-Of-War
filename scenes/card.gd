@@ -17,7 +17,6 @@ func _ready():
 	base_color = $ColorRect.color
 	card_type = Game.CardTypes[unit_type]
 	card_label.text = card_type.name
-	card_label.text = card_type.name
 
 func set_unit_type(type: CardType.UnitType):
 	unit_type = type
