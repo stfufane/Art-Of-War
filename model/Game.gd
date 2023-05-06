@@ -44,7 +44,7 @@ var card_scene = preload("res://scenes/card.tscn")
 
 var current_state = States.WAITING_FOR_PLAYER
 var player_hand: Array[Card] = []
-var card_in_hand: Card = null
+var picked_card: Card = null
 
 var player_reserve: Array[Card] = []
 var enemy_reserve:  Array[Card] = []

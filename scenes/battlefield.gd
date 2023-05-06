@@ -33,22 +33,30 @@ func _placeholder_clicked(id: int):
 	match Game.current_state:
 		Game.States.INIT_BATTLEFIELD:
 			# We can't put a card if there's no card in hand
-			if Game.card_in_hand == null:
+			if Game.picked_card == null:
 				return
 			# Take the card that was picked in the hand
-			clicked_placeholder.set_card(Game.card_in_hand)
+			clicked_placeholder.set_card(Game.picked_card)
+			# Notify the opponent so it adds the card to his battlefield
+			add_enemy_card.rpc(clicked_placeholder.current_card.unit_type, clicked_placeholder.name)
 			clicked_placeholder.current_card.connect("card_clicked", _card_clicked)
 			card_added.emit()
 		_:
 			pass
+
+@rpc("any_peer")
+func add_enemy_card(type: CardType.UnitType, placeholder_name: String):
+	print("Call add card through RPC with peer id " + str(Game.peer_id))
+	var placeholder: CardPlaceholder = $EnemyContainer.get_node(placeholder_name)
+	placeholder.set_card(Game.get_card_instance(type))
 
 # Click on a card to attack with it
 func _card_clicked(id: int):
 	var clicked_card: Card = instance_from_id(id)
 	var placeholder: CardPlaceholder = instance_from_id(clicked_card.placeholder_id)
 	# Highlight the enemy cards that are within reach of the selected card
-	var attack_range = clicked_card.card_type.attack_range
-	var card_coords = placeholder.location
+	var attack_range: PackedVector2Array = clicked_card.card_type.attack_range
+	var card_coords: Vector2 = placeholder.location
 	for enemy in get_tree().get_nodes_in_group("enemy_cards"):
 		for coords in attack_range:
 			if card_coords + coords == enemy.location:

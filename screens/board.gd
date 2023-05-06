@@ -46,14 +46,14 @@ func start_game():
 func _hand_card_selected(card_id: int):
 	var card: Card = instance_from_id(card_id)
 	# If a card had already been selected, put it back in the hand
-	if Game.card_in_hand != null:
-		hand.add_card(Game.card_in_hand)
-	Game.card_in_hand = card
-	hand.remove_card(Game.card_in_hand)
+	if Game.picked_card != null:
+		hand.add_card(Game.picked_card)
+	Game.picked_card = card
+	hand.remove_card(Game.picked_card)
 
 func _card_added_on_battlefield():
-	Game.card_in_hand.disconnect("card_clicked", _hand_card_selected)
-	Game.card_in_hand = null
+	Game.picked_card.disconnect("card_clicked", _hand_card_selected)
+	Game.picked_card = null
 	# Disconnect the click on hand cards
 	for card in Game.player_hand:
 		card.disconnect("card_clicked", _hand_card_selected)
@@ -70,9 +70,14 @@ func _reserve_card_selected(card_id: int):
 		hand_card.disconnect("card_clicked", _reserve_card_selected)
 	hand.remove_card(card)
 	reserve.add_card(card)
+	add_card_to_enemy_reserve.rpc(card.unit_type)
 
 	Game.current_state = Game.States.PLAYER_ACTION_CHOICE
 	instruction.text = "Ready to start your turn"
+
+@rpc("any_peer")
+func add_card_to_enemy_reserve(unit_type: CardType.UnitType):
+	enemy_reserve.add_card(Game.get_card_instance(unit_type))
 
 func _deck_clicked(_placeholder_id: int):
 	if Game.current_state != Game.States.PLAYER_ACTION_CHOICE:

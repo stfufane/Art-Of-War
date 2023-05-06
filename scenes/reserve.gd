@@ -6,12 +6,12 @@ extends Control
 
 func setup():
 	var x = 0
-	for card in Game.player_reserve:
+	for card in reserve:
 		card.position = Vector2(x, 0)
 		x += card.size.x
 		add_child(card)
 
 func add_card(card: Card):
-	card.position.x = Game.player_reserve.size() * card.size.x
+	card.position.x = reserve.size() * card.size.x
 	add_child(card)
-	Game.player_reserve.append(card)
+	reserve.append(card)

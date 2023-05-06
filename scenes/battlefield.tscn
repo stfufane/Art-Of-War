@@ -22,7 +22,7 @@ offset_right = 384.0
 offset_bottom = 640.0
 scale = Vector2(0.666589, 0.666589)
 
-[node name="CardPlaceholder" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+[node name="CardPlaceholder1" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
 location = Vector2(0, -1)
 
 [node name="CardPlaceholder2" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
@@ -62,9 +62,12 @@ offset_right = 384.0
 offset_bottom = 384.0
 scale = Vector2(0.665784, 0.665784)
 
-[node name="CardPlaceholder" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
+[node name="CardPlaceholder1" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
+offset_left = 384.509
 offset_top = 192.255
+offset_right = 384.509
 offset_bottom = 192.255
+location = Vector2(2, 0)
 
 [node name="CardPlaceholder2" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
 offset_left = 192.255
@@ -74,14 +77,13 @@ offset_bottom = 192.255
 location = Vector2(1, 0)
 
 [node name="CardPlaceholder3" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
-offset_left = 384.509
 offset_top = 192.255
-offset_right = 384.509
 offset_bottom = 192.255
-location = Vector2(2, 0)
 
 [node name="CardPlaceholder4" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
-location = Vector2(0, 1)
+offset_left = 384.509
+offset_right = 384.509
+location = Vector2(2, 1)
 
 [node name="CardPlaceholder5" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
 offset_left = 192.255
@@ -89,6 +91,4 @@ offset_right = 192.255
 location = Vector2(1, 1)
 
 [node name="CardPlaceholder6" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
-offset_left = 384.509
-offset_right = 384.509
-location = Vector2(2, 1)
+location = Vector2(0, 1)
