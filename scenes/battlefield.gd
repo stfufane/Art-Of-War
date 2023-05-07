@@ -44,12 +44,6 @@ func _placeholder_clicked(id: int):
 		_:
 			pass
 
-@rpc("any_peer")
-func add_enemy_card(type: CardType.UnitType, placeholder_name: String):
-	print("Call add card through RPC with peer id " + str(Game.peer_id))
-	var placeholder: CardPlaceholder = $EnemyContainer.get_node(placeholder_name)
-	placeholder.set_card(Game.get_card_instance(type))
-
 # Click on a card to attack with it
 func _card_clicked(id: int):
 	var clicked_card: Card = instance_from_id(id)
@@ -78,3 +72,11 @@ func placeholder_available(placeholder: CardPlaceholder) -> bool:
 			if p.current_card != null:
 				return true
 	return false
+
+### 
+# Network functions that are called to reflect local actions on the opponent's battlefield
+###
+
+@rpc("any_peer")
+func add_enemy_card(type: CardType.UnitType, placeholder_name: String):
+	$EnemyContainer.get_node(placeholder_name).set_card(Game.get_card_instance(type))

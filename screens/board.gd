@@ -21,20 +21,26 @@ func _on_start_button_pressed():
 func _on_join_button_pressed():
 	Game.join_server()
 	main_menu.hide()
-	setup()
+	multiplayer.peer_connected.connect(_player_joined)
 
-func _player_joined(p_id: int):
-	print("Player joined : " + str(p_id))
+func _player_joined(_p_id: int):
 	setup()
 
 func setup():
 	Game.setup()
 	hand.setup()
-	kingdom.setup()
-	enemy_kingdom.setup()
 	battlefield.setup()
 	reserve.setup()
+	setup_kingdom()
 	start_game()
+
+func setup_kingdom():
+	# First card of the deck is put in the kingdom
+	var unit_type = Game.player_deck.pop_back()
+	kingdom.increase_population(unit_type)
+	add_card_to_enemy_kingdom.rpc(unit_type)
+	kingdom.setup()
+	enemy_kingdom.setup()
 
 func start_game():
 	instruction.text = "Place a card on the battlefield"
@@ -75,10 +81,6 @@ func _reserve_card_selected(card_id: int):
 	Game.current_state = Game.States.PLAYER_ACTION_CHOICE
 	instruction.text = "Ready to start your turn"
 
-@rpc("any_peer")
-func add_card_to_enemy_reserve(unit_type: CardType.UnitType):
-	enemy_reserve.add_card(Game.get_card_instance(unit_type))
-
 func _deck_clicked(_placeholder_id: int):
 	if Game.current_state != Game.States.PLAYER_ACTION_CHOICE:
 		return
@@ -89,3 +91,15 @@ func _deck_clicked(_placeholder_id: int):
 	hand.add_card(Game.player_hand.back())
 	Game.current_state = Game.States.ENEMY_TURN
 	instruction.text = "Enemy turn"
+
+###
+# Network actions that are called to reflect local actions on the enemy board
+###
+
+@rpc("any_peer")
+func add_card_to_enemy_reserve(unit_type: CardType.UnitType):
+	enemy_reserve.add_card(Game.get_card_instance(unit_type))
+
+@rpc("any_peer")
+func add_card_to_enemy_kingdom(unit_type: CardType.UnitType):
+	enemy_kingdom.increase_population(unit_type)
