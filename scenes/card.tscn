@@ -7,8 +7,8 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 192.0
 offset_bottom = 192.0
-size_flags_horizontal = 2
-size_flags_vertical = 3
+pivot_offset = Vector2(96, 96)
+size_flags_vertical = 4
 script = ExtResource("1_ffpka")
 
 [node name="ColorRect" type="ColorRect" parent="."]

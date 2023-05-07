@@ -26,6 +26,9 @@ func set_card(new_card: Card):
 	current_card = new_card
 	current_card.placeholder_id = get_instance_id()
 	current_card.position.x = 0
+	# Keep this for later when there will be some graphic design
+	# if is_in_group("enemy_cards"):
+	# 	current_card.rotation_degrees = 180
 	add_child(current_card)
 	
 func toggle_highlight():

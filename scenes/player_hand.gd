@@ -14,8 +14,8 @@ func add_card(card: Card):
 	card.position = Vector2(x, 0)
 
 func remove_card(card: Card):
-	Game.player_hand.erase(card)
 	remove_child(card)
+	Game.player_hand.erase(card)
 	reorder_cards()
 
 func reorder_cards():

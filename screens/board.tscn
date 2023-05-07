@@ -18,58 +18,54 @@ script = ExtResource("1_ccqse")
 
 [node name="Battlefield" parent="." instance=ExtResource("2_mg76x")]
 layout_mode = 1
-offset_left = -136.0
-offset_right = -136.0
+offset_left = -264.0
+offset_top = 8.0
+offset_right = -264.0
+offset_bottom = 8.0
 size_flags_horizontal = 0
 
 [node name="PlayerHand" parent="." instance=ExtResource("3_u2ksf")]
 layout_mode = 0
-offset_left = 96.0
+offset_left = 200.0
 offset_top = 544.0
-offset_right = 1248.0
+offset_right = 1352.0
 offset_bottom = 736.0
 scale = Vector2(0.5, 0.5)
 
 [node name="HandLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 360.0
-offset_top = 664.0
-offset_right = 402.0
-offset_bottom = 690.0
+offset_left = 440.0
+offset_top = 648.0
+offset_right = 482.0
+offset_bottom = 674.0
 text = "Hand"
 
 [node name="Reserve" parent="." instance=ExtResource("4_mb6ut")]
 layout_mode = 0
-offset_left = 712.0
-offset_top = 384.0
-offset_right = 1672.0
-offset_bottom = 576.0
+offset_left = 432.0
+offset_top = 387.0
+offset_right = 1392.0
+offset_bottom = 579.0
 scale = Vector2(0.5, 0.5)
 
 [node name="EnemyReserve" parent="." instance=ExtResource("4_mb6ut")]
-offset_left = 712.0
+offset_left = 432.0
 offset_top = 32.0
-offset_right = 1672.0
+offset_right = 1392.0
 offset_bottom = 224.0
 scale = Vector2(0.5, 0.5)
 is_enemy = true
 
 [node name="ReserveLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 904.0
+offset_left = 656.0
 offset_top = 488.0
-offset_right = 966.0
+offset_right = 718.0
 offset_bottom = 514.0
 text = "Reserve"
 
-[node name="Deck" parent="." instance=ExtResource("5_brr7o")]
-offset_left = 80.0
-offset_top = 320.0
-offset_right = 80.0
-offset_bottom = 320.0
-label_text = "Deck"
-
 [node name="Graveyard" parent="." instance=ExtResource("5_brr7o")]
+visible = false
 offset_left = 80.0
 offset_top = 112.0
 offset_right = 80.0
@@ -77,35 +73,35 @@ offset_bottom = 112.0
 label_text = "Graveyard"
 
 [node name="Kingdom" parent="." instance=ExtResource("6_oavws")]
-offset_left = 712.0
+offset_left = 432.0
 offset_top = 280.0
-offset_right = 1672.0
+offset_right = 1392.0
 offset_bottom = 472.0
 scale = Vector2(0.5, 0.5)
 
 [node name="EnemyKingdom" parent="." instance=ExtResource("6_oavws")]
-offset_left = 712.0
+offset_left = 432.0
 offset_top = 136.0
-offset_right = 1672.0
+offset_right = 1392.0
 offset_bottom = 328.0
 scale = Vector2(0.5, 0.5)
 is_enemy = true
 
 [node name="KingdomLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 904.0
-offset_top = 243.0
-offset_right = 973.0
-offset_bottom = 269.0
+offset_left = 656.0
+offset_top = 240.0
+offset_right = 725.0
+offset_bottom = 266.0
 text = "Kingdom
 "
 
 [node name="Instruction" type="Label" parent="."]
 layout_mode = 0
-offset_left = 712.0
-offset_top = 560.0
-offset_right = 1192.0
-offset_bottom = 624.0
+offset_left = 200.0
+offset_top = 674.0
+offset_right = 776.0
+offset_bottom = 712.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -113,9 +109,9 @@ offset_bottom = 624.0
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 496.0
-offset_top = 296.0
-offset_right = -496.0
+offset_left = 376.0
+offset_top = 294.0
+offset_right = -376.0
 offset_bottom = -296.0
 grow_horizontal = 2
 grow_vertical = 2
