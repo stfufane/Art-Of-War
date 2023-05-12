@@ -65,11 +65,11 @@ offset_bottom = 514.0
 text = "Reserve"
 
 [node name="Graveyard" parent="." instance=ExtResource("5_brr7o")]
-visible = false
-offset_left = 80.0
-offset_top = 112.0
-offset_right = 80.0
-offset_bottom = 112.0
+offset_left = 800.0
+offset_top = 514.0
+offset_right = 800.0
+offset_bottom = 514.0
+scale = Vector2(0.7, 0.7)
 label_text = "Graveyard"
 
 [node name="Kingdom" parent="." instance=ExtResource("6_oavws")]
@@ -139,5 +139,48 @@ text = "Start Game"
 layout_mode = 2
 text = "Join Game"
 
+[node name="ActionMenu" type="PanelContainer" parent="CanvasLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 320.0
+offset_top = 280.0
+offset_right = -320.0
+offset_bottom = -280.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/ActionMenu"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/ActionMenu/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Label" type="Label" parent="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Choose your action"
+horizontal_alignment = 1
+
+[node name="RecruitButton" type="Button" parent="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Recruit"
+
+[node name="SupportButton" type="Button" parent="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Add Support"
+
+[node name="AttackButton" type="Button" parent="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Attack"
+
 [connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/JoinButton" to="." method="_on_join_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/RecruitButton" to="." method="_on_recruit_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/SupportButton" to="." method="_on_support_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/AttackButton" to="." method="_on_attack_button_pressed"]

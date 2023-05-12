@@ -9,6 +9,17 @@ var CardTypes = {
 	CardType.UnitType.Monk: CardType.new(CardType.UnitType.Monk, "Monk", 1, 2, 2, [Vector2(-1, 1), Vector2(1, 1), Vector2(-2, 2), Vector2(2, 2)])
 }
 
+var States = {
+	State.Name.WAITING_FOR_PLAYER: State.new(State.Name.WAITING_FOR_PLAYER, "Waiting for player", false),
+	State.Name.INIT_BATTLEFIELD: State.new(State.Name.INIT_BATTLEFIELD, "Init battlefield", true),
+	State.Name.INIT_RESERVE: State.new(State.Name.INIT_RESERVE, "Init reserve", true),
+	State.Name.ACTION_CHOICE: State.new(State.Name.ACTION_CHOICE, "Action choice", false),
+	State.Name.RECRUIT: State.new(State.Name.RECRUIT, "Recruit", false),
+	State.Name.SUPPORT: State.new(State.Name.SUPPORT, "Support", false),
+	State.Name.ATTACK: State.new(State.Name.ATTACK, "Attack", false),
+	State.Name.FINISH_TURN: State.new(State.Name.FINISH_TURN, "Finish turn", false),
+}
+
 # Initialize the player and enemy kingdoms
 var player_kingdom: Dictionary = {
 	CardType.UnitType.Soldier: 0,
@@ -26,33 +37,12 @@ var enemy_kingdom: Dictionary = {
 	CardType.UnitType.Monk: 0
 }
 
-enum State {
-	WAITING_FOR_PLAYER,
-	INIT_BATTLEFIELD,
-	INIT_RESERVE,
-	ACTION_CHOICE,
-	RECRUIT,
-	SUPPORT,
-	ATTACK,
-	FINISH_TURN,
-}
-
-const INSTRUCTIONS: Dictionary = {
-	State.WAITING_FOR_PLAYER: "Enemy is playing.",
-	State.INIT_BATTLEFIELD: "Place a unit on the battlefield.",
-	State.INIT_RESERVE: "Place a unit in your reserve.",
-	State.ACTION_CHOICE: "Choose an action.",
-	State.RECRUIT: "Recruit a unit.",
-	State.SUPPORT: "Use a unit as support.",
-	State.ATTACK: "Attack an enemy unit.",
-	State.FINISH_TURN: "Add a unit to your kingdom.",
-}
-
 var state_init_methods: Dictionary = {}
 
 var card_scene = preload("res://scenes/card.tscn")
 
-var current_state = State.WAITING_FOR_PLAYER
+var current_state: State.Name = State.Name.WAITING_FOR_PLAYER
+var previous_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var player_hand: Array[Card] = []
 var picked_card: Card = null
 
@@ -85,18 +75,13 @@ func join_server():
 	print("Joined server with peer id: " + str(peer_id))
 
 func setup(scene_board: Board):
-	current_state = State.WAITING_FOR_PLAYER
+	current_state = State.Name.WAITING_FOR_PLAYER
 	board = scene_board
-	state_init_methods = {
-		State.WAITING_FOR_PLAYER: null,
-		State.INIT_BATTLEFIELD: board.init_battlefield,
-		State.INIT_RESERVE: board.init_reserve,
-		State.ACTION_CHOICE: null,
-		State.RECRUIT: null,
-		State.SUPPORT: null,
-		State.ATTACK: null,
-		State.FINISH_TURN: null,
-	}
+	States[State.Name.INIT_BATTLEFIELD].callback = board.init_battlefield
+	States[State.Name.INIT_RESERVE].callback = board.init_reserve
+	States[State.Name.ACTION_CHOICE].callback = board.init_choice_action
+	States[State.Name.RECRUIT].callback = board.init_battlefield # Recruitment is exactly like init the battlefield
+	States[State.Name.FINISH_TURN].callback = board.finish_turn
 
 	# First build the deck with 4 of each card.
 	for _i in range(4):
@@ -121,41 +106,28 @@ func get_card_instance(card_type: CardType.UnitType) -> Card:
 	card_instance.set_unit_type(card_type)
 	return card_instance
 
-func get_next_state() -> State:
-	match current_state:
-		State.INIT_BATTLEFIELD:
-			return State.INIT_RESERVE
-		State.INIT_RESERVE:
-			return State.ACTION_CHOICE
-		# TODO Manage the multiple possible states during a player's turn.
-		State.FINISH_TURN:
-			return State.ACTION_CHOICE
-		_:
-			return State.WAITING_FOR_PLAYER
-
-func start_state(state: State, is_rpc: bool = false):
+func start_state(state: State.Name, is_rpc: bool = false):
+	previous_state = current_state
 	current_state = state
-	board.instruction.text = INSTRUCTIONS[state]
+	board.instruction.text = States[state].instruction
 
 	# Avoid sending RPCs to the server when the server is the one calling this function.
 	if not is_rpc:
-		set_enemy_state.rpc(State.WAITING_FOR_PLAYER)
+		set_enemy_state.rpc(State.Name.WAITING_FOR_PLAYER)
 
-	var callback = state_init_methods[state]
-	if callback != null:
-		callback.call()
+	States[state].callback.call()
 
 # When a state is finished by the first player, the second player enters the same state.
 # When the second player finishes the state, the first player enters the next state.
 # In both cases the current player waits.
 func end_state():
-	if first_player:
+	if first_player and States[current_state].happens_once:
 		set_enemy_state.rpc(current_state)
 	else:
-		set_enemy_state.rpc(get_next_state())
-	current_state = State.WAITING_FOR_PLAYER
-	board.instruction.text = INSTRUCTIONS[current_state]
+		set_enemy_state.rpc(States[current_state].get_next_state())
+	current_state = State.Name.WAITING_FOR_PLAYER
+	board.instruction.text = States[current_state].instruction
 
 @rpc("any_peer")
-func set_enemy_state(state: State):
+func set_enemy_state(state: State.Name):
 	start_state(state, true)

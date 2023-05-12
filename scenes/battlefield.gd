@@ -13,7 +13,7 @@ func setup():
 
 func _mouse_entered(placeholder_hovered: CardPlaceholder):
 	match Game.current_state:
-		Game.State.INIT_BATTLEFIELD, Game.State.RECRUIT:
+		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT:
 			if placeholder_available(placeholder_hovered):
 				placeholder_hovered.set_text("Place card here")
 		_:
@@ -31,7 +31,7 @@ func _placeholder_clicked(id: int):
 		return
 	
 	match Game.current_state:
-		Game.State.INIT_BATTLEFIELD, Game.State.RECRUIT:
+		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT:
 			# We can't put a card if there's no card in hand
 			if Game.picked_card == null:
 				return
