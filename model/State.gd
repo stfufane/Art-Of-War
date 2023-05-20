@@ -5,6 +5,7 @@ enum Name {
 	WAITING_FOR_PLAYER,
 	INIT_BATTLEFIELD,
 	INIT_RESERVE,
+	START_TURN,
 	ACTION_CHOICE,
 	RECRUIT,
 	SUPPORT,
@@ -27,6 +28,8 @@ func get_next_state() -> State.Name:
 		State.Name.INIT_BATTLEFIELD:
 			return State.Name.INIT_RESERVE
 		State.Name.INIT_RESERVE:
+			return State.Name.START_TURN
+		State.Name.START_TURN:
 			return State.Name.ACTION_CHOICE
 		State.Name.RECRUIT:
 			return State.Name.FINISH_TURN
@@ -35,6 +38,6 @@ func get_next_state() -> State.Name:
 		State.Name.ATTACK:
 			return State.Name.ACTION_CHOICE
 		State.Name.FINISH_TURN:
-			return State.Name.ACTION_CHOICE
+			return State.Name.START_TURN
 		_:
 			return State.Name.WAITING_FOR_PLAYER

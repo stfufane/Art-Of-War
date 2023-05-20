@@ -13,6 +13,7 @@ var States = {
 	State.Name.WAITING_FOR_PLAYER: State.new(State.Name.WAITING_FOR_PLAYER, "Waiting for player", false),
 	State.Name.INIT_BATTLEFIELD: State.new(State.Name.INIT_BATTLEFIELD, "Init battlefield", true),
 	State.Name.INIT_RESERVE: State.new(State.Name.INIT_RESERVE, "Init reserve", true),
+	State.Name.START_TURN: State.new(State.Name.START_TURN, "Start turn", false),
 	State.Name.ACTION_CHOICE: State.new(State.Name.ACTION_CHOICE, "Action choice", false),
 	State.Name.RECRUIT: State.new(State.Name.RECRUIT, "Recruit", false),
 	State.Name.SUPPORT: State.new(State.Name.SUPPORT, "Support", false),
@@ -79,6 +80,7 @@ func setup(scene_board: Board):
 	board = scene_board
 	States[State.Name.INIT_BATTLEFIELD].callback = board.init_battlefield
 	States[State.Name.INIT_RESERVE].callback = board.init_reserve
+	States[State.Name.START_TURN].callback = board.init_turn
 	States[State.Name.ACTION_CHOICE].callback = board.init_choice_action
 	States[State.Name.RECRUIT].callback = board.init_battlefield # Recruitment is exactly like init the battlefield
 	States[State.Name.FINISH_TURN].callback = board.finish_turn

@@ -3,6 +3,8 @@ extends Control
 
 signal card_added
 
+var attacking_card: Card = null
+
 func setup():
 	# Connect all the card nodes to react to click and hover
 	for placeholder in get_tree().get_nodes_in_group("cards"):
@@ -10,6 +12,10 @@ func setup():
 		placeholder.get_node("Container").connect("mouse_entered", _mouse_entered.bind(placeholder))
 		placeholder.get_node("Container").connect("mouse_exited", _mouse_exited.bind(placeholder))
 
+func disengage_cards():
+	for placeholder in get_tree().get_nodes_in_group("cards"):
+		if placeholder.current_card != null:
+			placeholder.current_card.disengage()
 
 func _mouse_entered(placeholder_hovered: CardPlaceholder):
 	match Game.current_state:
@@ -47,6 +53,9 @@ func _placeholder_clicked(id: int):
 # Click on a card to attack with it
 func _card_clicked(id: int):
 	var clicked_card: Card = instance_from_id(id)
+	if Game.current_state == State.Name.ATTACK:
+		attacking_card = clicked_card
+
 	var placeholder: CardPlaceholder = instance_from_id(clicked_card.placeholder_id)
 	# Highlight the enemy cards that are within reach of the selected card
 	var attack_range: PackedVector2Array = clicked_card.card_type.attack_range
@@ -55,6 +64,11 @@ func _card_clicked(id: int):
 		for coords in attack_range:
 			if card_coords + coords == enemy.location:
 				enemy.toggle_highlight()
+			
+func _enemy_card_clicked(id: int):
+	print("Enemy card clicked " + str(id))
+	attacking_card.attack()
+	pass
 
 # Check if a placeholder is available for a card to be placed on it
 func placeholder_available(placeholder: CardPlaceholder) -> bool:
@@ -79,4 +93,6 @@ func placeholder_available(placeholder: CardPlaceholder) -> bool:
 
 @rpc("any_peer")
 func add_enemy_card(type: CardType.UnitType, placeholder_name: String):
-	$EnemyContainer.get_node(placeholder_name).set_card(Game.get_card_instance(type))
+	var enemy_card = Game.get_card_instance(type)
+	$EnemyContainer.get_node(placeholder_name).set_card(enemy_card)
+	enemy_card.connect("card_clicked", _enemy_card_clicked)

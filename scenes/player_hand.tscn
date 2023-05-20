@@ -11,6 +11,7 @@ size_flags_horizontal = 0
 script = ExtResource("1_wws4w")
 
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

@@ -3,7 +3,10 @@ extends Control
 
 @onready var main_menu: PanelContainer = $CanvasLayer/MainMenu
 @onready var action_menu: PanelContainer = $CanvasLayer/ActionMenu
+@onready var end_turn_menu: PanelContainer = $CanvasLayer/EndTurnMenu
+
 @onready var recruit_button: Button = $CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/RecruitButton
+@onready var pass_button: Button = $CanvasLayer/EndTurnMenu/MarginContainer/VBoxContainer/PassButton
 
 @onready var battlefield: Battlefield = $Battlefield
 @onready var reserve: Reserve = $Reserve
@@ -32,6 +35,7 @@ func setup_kingdom():
 	kingdom.setup()
 	enemy_kingdom.setup()
 
+# Is used at the beginning of the game and then at any turn for recruiting.
 func init_battlefield():
 	for card in Game.player_hand:
 		card.connect("card_clicked", _hand_card_selected)
@@ -41,8 +45,17 @@ func init_reserve():
 	for card in Game.player_hand:
 		card.connect("card_clicked", _reserve_card_selected)
 
+func init_turn():
+	# Reset the cards on the battlefield
+	battlefield.disengage_cards()
+	# Draw a card
+	Game.draw_card()
+	hand.add_card(Game.player_hand.back())
+	# Start the turn
+	Game.start_state(State.Name.ACTION_CHOICE)
+
+# Show the action menu
 func init_choice_action():
-	# Show the action menu
 	# Hide the recruit action if the player attacked already or used a support card.
 	if Game.previous_state == State.Name.ATTACK or Game.previous_state == State.Name.SUPPORT:
 		recruit_button.hide()
@@ -50,10 +63,18 @@ func init_choice_action():
 		recruit_button.show()
 	action_menu.show()
 
+# When attacking or supporting, the opponent can immediately answer with a support card.
+func init_attack_turn():
+	pass
+
+func init_support_turn():
+	pass
+
 func finish_turn():
 	# Add a card in the kingdom or pass.
 	# If you have 6 cards in your hand, you MUST put a card in the kingdom
-	pass
+	pass_button.disabled = Game.player_hand.size() > 5
+	end_turn_menu.show()
 
 ###########
 # Signals #
@@ -90,6 +111,12 @@ func _on_recruit_button_pressed():
 		return
 	Game.start_state(State.Name.RECRUIT)
 	action_menu.hide()
+
+func _on_pass_button_pressed():
+	if Game.current_state != State.Name.FINISH_TURN:
+		return
+	Game.end_state()
+	end_turn_menu.hide()
 
 func _hand_card_selected(card_id: int):
 	var card: Card = instance_from_id(card_id)
