@@ -43,6 +43,7 @@ func _placeholder_clicked(id: int):
 				return
 			# Take the card that was picked in the hand
 			clicked_placeholder.set_card(Game.picked_card)
+			Game.add_card_to_battlefield(Game.picked_card, clicked_placeholder.location)
 			# Notify the opponent so it adds the card to his battlefield
 			add_enemy_card.rpc(clicked_placeholder.current_card.unit_type, clicked_placeholder.name)
 			clicked_placeholder.current_card.connect("card_clicked", _card_clicked)
@@ -50,8 +51,14 @@ func _placeholder_clicked(id: int):
 		_:
 			pass
 
+func all_highlights_off():
+	for enemy_placeholder in get_tree().get_nodes_in_group("enemy_cards"):
+		enemy_placeholder.highlight_off()
+
+
 # Click on a card to attack with it
 func _card_clicked(id: int):
+	all_highlights_off()
 	var clicked_card: Card = instance_from_id(id)
 	if Game.current_state == State.Name.ATTACK:
 		attacking_card = clicked_card
@@ -67,8 +74,23 @@ func _card_clicked(id: int):
 			
 func _enemy_card_clicked(id: int):
 	print("Enemy card clicked " + str(id))
-	attacking_card.attack()
-	pass
+	if Game.current_state != State.Name.ATTACK || attacking_card == null:
+		return
+	
+	# Check that the card is within reach of the attacking card
+	var clicked_card: Card = instance_from_id(id)
+	var placeholder: CardPlaceholder = instance_from_id(clicked_card.placeholder_id)
+	var attack_range = attacking_card.card_type.attack_range
+	var enemy_coords: Vector2 = placeholder.location
+	for coords in attack_range:
+		if enemy_coords == instance_from_id(attacking_card.placeholder_id).location + coords:
+			attacking_card.attack()
+			attacking_card = null
+			all_highlights_off()
+			# TODO: Store the ongoing attack to know if it can be applied or not
+			# Check if the opponent blocks the attack
+			Game.enemy_support()
+			break
 
 # Check if a placeholder is available for a card to be placed on it
 func placeholder_available(placeholder: CardPlaceholder) -> bool:
@@ -94,5 +116,7 @@ func placeholder_available(placeholder: CardPlaceholder) -> bool:
 @rpc("any_peer")
 func add_enemy_card(type: CardType.UnitType, placeholder_name: String):
 	var enemy_card = Game.get_card_instance(type)
-	$EnemyContainer.get_node(placeholder_name).set_card(enemy_card)
+	var enemy_placehoder: CardPlaceholder = $EnemyContainer.get_node(placeholder_name)
+	Game.add_card_to_enemy_battlefield(enemy_card, enemy_placehoder.location)
+	enemy_placehoder.set_card(enemy_card)
 	enemy_card.connect("card_clicked", _enemy_card_clicked)

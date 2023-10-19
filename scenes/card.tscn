@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://vgmja1g5tgtf"]
 
 [ext_resource type="Script" path="res://scenes/card.gd" id="1_ffpka"]
-[ext_resource type="Texture2D" uid="uid://clkpqfjg0skw1" path="res://images/cards/Guard.jpg" id="2_6x802"]
+[ext_resource type="Texture2D" uid="uid://fmc5dhc4mamm" path="res://images/cards/King.jpg" id="3_q0xll"]
 
 [node name="Card" type="Control"]
 layout_mode = 3
@@ -21,15 +21,10 @@ offset_right = 176.0
 offset_bottom = 184.0
 color = Color(0.262745, 0.121569, 0.0509804, 1)
 
-[node name="CardImage" type="TextureRect" parent="."]
-layout_mode = 0
-offset_left = 32.0
-offset_right = 168.0
-offset_bottom = 192.0
-pivot_offset = Vector2(68, 96)
-texture = ExtResource("2_6x802")
-expand_mode = 3
-stretch_mode = 4
+[node name="CardImage" type="Sprite2D" parent="."]
+position = Vector2(96, 96)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_q0xll")
 
 [node name="Container" type="Control" parent="."]
 layout_mode = 1

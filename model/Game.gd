@@ -1,6 +1,6 @@
 extends Node
 
-var CardTypes = {
+var CardTypes: Dictionary = {
 	CardType.UnitType.King: CardType.new(CardType.UnitType.King, "King", 1, 5, 4, [Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)]),
 	CardType.UnitType.Soldier: CardType.new(CardType.UnitType.Soldier, "Soldier", INF, 2, 1, [Vector2(0, 1)]),
 	CardType.UnitType.Archer: CardType.new(CardType.UnitType.Archer, "Archer", 1, 2, 1, [Vector2(-2, 1), Vector2(2, 1), Vector2(-1, 2), Vector2(1, 2)]),
@@ -9,8 +9,8 @@ var CardTypes = {
 	CardType.UnitType.Monk: CardType.new(CardType.UnitType.Monk, "Monk", 1, 2, 2, [Vector2(-1, 1), Vector2(1, 1), Vector2(-2, 2), Vector2(2, 2)])
 }
 
-var States = {
-	State.Name.WAITING_FOR_PLAYER: State.new(State.Name.WAITING_FOR_PLAYER, "Waiting for player", false),
+var States: Dictionary = {
+	State.Name.WAITING_FOR_PLAYER: State.new(State.Name.WAITING_FOR_PLAYER, "Waiting for opponent", false),
 	State.Name.INIT_BATTLEFIELD: State.new(State.Name.INIT_BATTLEFIELD, "Init battlefield", true),
 	State.Name.INIT_RESERVE: State.new(State.Name.INIT_RESERVE, "Init reserve", true),
 	State.Name.START_TURN: State.new(State.Name.START_TURN, "Start turn", false),
@@ -47,6 +47,10 @@ var previous_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var player_hand: Array[Card] = []
 var picked_card: Card = null
 
+# Represents the two sides of the battlefield as flat arrays.
+var player_battlefield: Array[Card] = [null, null, null, null, null, null]
+var enemy_battlefield: Array[Card] = [null, null, null, null, null, null]
+
 var player_reserve: Array[Card] = []
 var enemy_reserve:  Array[Card] = []
 
@@ -82,7 +86,9 @@ func setup(scene_board: Board):
 	States[State.Name.INIT_RESERVE].callback = board.init_reserve
 	States[State.Name.START_TURN].callback = board.init_turn
 	States[State.Name.ACTION_CHOICE].callback = board.init_choice_action
-	States[State.Name.RECRUIT].callback = board.init_battlefield # Recruitment is exactly like init the battlefield
+	States[State.Name.RECRUIT].callback = board.init_recruit_turn
+	States[State.Name.ATTACK].callback = board.init_attack_turn
+	States[State.Name.SUPPORT].callback = board.init_support_turn
 	States[State.Name.FINISH_TURN].callback = board.finish_turn
 
 	# First build the deck with 4 of each card.
@@ -103,6 +109,18 @@ func draw_card():
 	if player_deck.size() > 0:
 		player_hand.append(get_card_instance(player_deck.pop_back()))
 
+func add_card_to_battlefield(card: Card, location: Vector2):
+	if location.y == -1:
+		player_battlefield[location.x] = card
+	else:
+		player_battlefield[location.x + abs(location.y) + 1] = card
+
+func add_card_to_enemy_battlefield(card: Card, location: Vector2):
+	if location.y == 0:
+		enemy_battlefield[location.y + abs(location.x - 2)] = card
+	else:
+		enemy_battlefield[location.y + abs(location.x - 4)] = card
+
 func get_card_instance(card_type: CardType.UnitType) -> Card:
 	var card_instance = card_scene.instantiate()
 	card_instance.set_unit_type(card_type)
@@ -118,6 +136,12 @@ func start_state(state: State.Name, is_rpc: bool = false):
 		set_enemy_state.rpc(State.Name.WAITING_FOR_PLAYER)
 
 	States[state].callback.call()
+
+# After attacking or playing a support card, the enemy can play a support card himself.
+func enemy_support():
+	current_state = State.Name.WAITING_FOR_PLAYER
+	board.instruction.text = States[current_state].instruction
+	set_enemy_state.rpc(State.Name.SUPPORT)
 
 # When a state is finished by the first player, the second player enters the same state.
 # When the second player finishes the state, the first player enters the next state.

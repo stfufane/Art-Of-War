@@ -35,6 +35,10 @@ func toggle_highlight():
 	is_highlighting = not is_highlighting
 	$ColorRect.color = highlight_color if is_highlighting else base_color
 
+func highlight_off():
+	is_highlighting = false
+	$ColorRect.color = base_color
+
 func remove_card():
 	current_card.queue_free()
 	current_card = null
