@@ -5,6 +5,7 @@ extends Control
 @onready var reserve = Game.enemy_reserve if is_enemy else Game.player_reserve
 
 func setup():
+	print("setup reserve " + reserve.length)
 	var x = 0
 	for card in reserve:
 		card.position = Vector2(x, 0)

@@ -60,8 +60,10 @@ func all_highlights_off():
 func _card_clicked(id: int):
 	all_highlights_off()
 	var clicked_card: Card = instance_from_id(id)
-	if Game.current_state == State.Name.ATTACK:
-		attacking_card = clicked_card
+	if Game.current_state != State.Name.ATTACK:
+		return
+
+	attacking_card = clicked_card
 
 	var placeholder: CardPlaceholder = instance_from_id(clicked_card.placeholder_id)
 	# Highlight the enemy cards that are within reach of the selected card

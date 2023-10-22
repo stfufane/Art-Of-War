@@ -110,6 +110,7 @@ func draw_card():
 		player_hand.append(get_card_instance(player_deck.pop_back()))
 
 func add_card_to_battlefield(card: Card, location: Vector2):
+	card.set_location(Card.Location.Battlefield)
 	if location.y == -1:
 		player_battlefield[location.x] = card
 	else:

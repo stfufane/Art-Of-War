@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://chegm7x5sl8rx"]
+[gd_scene load_steps=7 format=3 uid="uid://chegm7x5sl8rx"]
 
 [ext_resource type="Script" path="res://screens/board.gd" id="1_ccqse"]
 [ext_resource type="PackedScene" uid="uid://dcwtowpudpdv2" path="res://scenes/battlefield.tscn" id="2_mg76x"]
@@ -6,12 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://vm1jd1gw330s" path="res://scenes/reserve.tscn" id="4_mb6ut"]
 [ext_resource type="PackedScene" uid="uid://ccscfsp22jrsp" path="res://scenes/card_placeholder.tscn" id="5_brr7o"]
 [ext_resource type="PackedScene" uid="uid://dwehldueqyfq5" path="res://scenes/kingdom.tscn" id="6_oavws"]
-
-[sub_resource type="Environment" id="Environment_st202"]
-background_mode = 3
-glow_enabled = true
-glow_intensity = 1.22
-glow_hdr_threshold = 0.48
 
 [node name="Board" type="Node2D"]
 script = ExtResource("1_ccqse")
@@ -239,9 +233,6 @@ autowrap_mode = 2
 [node name="PassButton" type="Button" parent="CanvasLayer/SupportMenu/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Pass"
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_st202")
 
 [connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/JoinButton" to="." method="_on_join_button_pressed"]
