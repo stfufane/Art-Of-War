@@ -11,16 +11,20 @@ class_name Card
 enum Location {
 	Nowhere,
 	Hand,
+	Picked,
 	Reserve,
 	Kingdom,
-	Battlefield
+	Battlefield,
 }
 
-# The id where the card sits
+# The id where the card sits on the battlefield
 var placeholder_id: int = 0
+
 var base_color: Color
 var highlight_color: Color = Color.DARK_MAGENTA
-var location: Location = Location.Nowhere
+
+# The global location of the card on the board
+var location: Location = Location.Nowhere 
 
 var engaged: bool = false
 var has_shader: bool = false
@@ -35,8 +39,14 @@ func _ready():
 	var image = load("res://images/cards/" + card_type.name + ".jpg")
 	card_image.texture = image
 
+
+func _process(_delta):
+	if location == Location.Picked:
+		var mouse_pos = get_viewport().get_mouse_position()
+		set_global_position(mouse_pos + Vector2(50, 50))
+
+
 func set_location(new_loc: Location):
-	print("Set new location", new_loc)
 	location = new_loc
 
 func set_unit_type(type: CardType.UnitType):
@@ -54,17 +64,20 @@ func attack():
 	card_image.rotation_degrees = -90
 
 func _on_gui_input(event:InputEvent):
-	if event.is_action_pressed("left_click"):
-		card_clicked.emit(get_instance_id())
-	
+	if not event.is_action_pressed("left_click"):
+		return
+
+	card_clicked.emit(get_instance_id())	
 	match location:
 		Location.Nowhere:
 			pass
 		Location.Battlefield:
-				card_image.material = ShaderMaterial.new()
-				if !has_shader:
-					card_image.material.shader = flash_shader
-				else:
-					card_image.material = null
-				has_shader = !has_shader
+			if Game.current_state != State.Name.ATTACK:
+				return
+			card_image.material = ShaderMaterial.new()
+			if !has_shader:
+				card_image.material.shader = flash_shader
+			else:
+				card_image.material = null
+			has_shader = !has_shader
 

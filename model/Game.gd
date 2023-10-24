@@ -1,5 +1,6 @@
 extends Node
 
+
 var CardTypes: Dictionary = {
 	CardType.UnitType.King: CardType.new(CardType.UnitType.King, "King", 1, 5, 4, [Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)]),
 	CardType.UnitType.Soldier: CardType.new(CardType.UnitType.Soldier, "Soldier", INF, 2, 1, [Vector2(0, 1)]),
@@ -8,6 +9,7 @@ var CardTypes: Dictionary = {
 	CardType.UnitType.Wizard: CardType.new(CardType.UnitType.Wizard, "Wizard", 1, 2, 1, [Vector2(0, 1), Vector2(0, 2), Vector2(0, 3)]),
 	CardType.UnitType.Monk: CardType.new(CardType.UnitType.Monk, "Monk", 1, 2, 2, [Vector2(-1, 1), Vector2(1, 1), Vector2(-2, 2), Vector2(2, 2)])
 }
+
 
 var States: Dictionary = {
 	State.Name.WAITING_FOR_PLAYER: State.new(State.Name.WAITING_FOR_PLAYER, "Waiting for opponent", false),
@@ -21,6 +23,7 @@ var States: Dictionary = {
 	State.Name.FINISH_TURN: State.new(State.Name.FINISH_TURN, "Finish turn", false),
 }
 
+
 # Initialize the player and enemy kingdoms
 var player_kingdom: Dictionary = {
 	CardType.UnitType.Soldier: 0,
@@ -30,6 +33,7 @@ var player_kingdom: Dictionary = {
 	CardType.UnitType.Monk: 0
 }
 
+
 var enemy_kingdom: Dictionary = {
 	CardType.UnitType.Soldier: 0,
 	CardType.UnitType.Archer: 0,
@@ -37,6 +41,7 @@ var enemy_kingdom: Dictionary = {
 	CardType.UnitType.Wizard: 0,
 	CardType.UnitType.Monk: 0
 }
+
 
 var state_init_methods: Dictionary = {}
 
@@ -66,6 +71,7 @@ var enet_peer = ENetMultiplayerPeer.new()
 var peer_id: int = 0
 var first_player: bool = false
 
+
 func start_server():
 	enet_peer.create_server(PORT, 2)
 	multiplayer.multiplayer_peer = enet_peer
@@ -73,11 +79,13 @@ func start_server():
 	first_player = true
 	print("Started server with peer id: " + str(peer_id))
 
+
 func join_server():
 	enet_peer.create_client("localhost", PORT)
 	multiplayer.multiplayer_peer = enet_peer
 	peer_id = multiplayer.get_unique_id()
 	print("Joined server with peer id: " + str(peer_id))
+
 
 func setup(scene_board: Board):
 	current_state = State.Name.WAITING_FOR_PLAYER
@@ -105,9 +113,11 @@ func setup(scene_board: Board):
 	for _i in range(3):
 		player_hand.append(get_card_instance(player_deck.pop_back()))
 
+
 func draw_card():
 	if player_deck.size() > 0:
 		player_hand.append(get_card_instance(player_deck.pop_back()))
+
 
 func add_card_to_battlefield(card: Card, location: Vector2):
 	card.set_location(Card.Location.Battlefield)
@@ -116,16 +126,19 @@ func add_card_to_battlefield(card: Card, location: Vector2):
 	else:
 		player_battlefield[location.x + abs(location.y) + 1] = card
 
+
 func add_card_to_enemy_battlefield(card: Card, location: Vector2):
 	if location.y == 0:
 		enemy_battlefield[location.y + abs(location.x - 2)] = card
 	else:
 		enemy_battlefield[location.y + abs(location.x - 4)] = card
 
+
 func get_card_instance(card_type: CardType.UnitType) -> Card:
 	var card_instance = card_scene.instantiate()
 	card_instance.set_unit_type(card_type)
 	return card_instance
+
 
 func start_state(state: State.Name, is_rpc: bool = false):
 	previous_state = current_state
@@ -138,11 +151,13 @@ func start_state(state: State.Name, is_rpc: bool = false):
 
 	States[state].callback.call()
 
+
 # After attacking or playing a support card, the enemy can play a support card himself.
 func enemy_support():
 	current_state = State.Name.WAITING_FOR_PLAYER
 	board.instruction.text = States[current_state].instruction
 	set_enemy_state.rpc(State.Name.SUPPORT)
+
 
 # When a state is finished by the first player, the second player enters the same state.
 # When the second player finishes the state, the first player enters the next state.
@@ -154,6 +169,7 @@ func end_state():
 		set_enemy_state.rpc(States[current_state].get_next_state())
 	current_state = State.Name.WAITING_FOR_PLAYER
 	board.instruction.text = States[current_state].instruction
+
 
 @rpc("any_peer")
 func set_enemy_state(state: State.Name):

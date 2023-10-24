@@ -7,14 +7,12 @@
 [ext_resource type="PackedScene" uid="uid://ccscfsp22jrsp" path="res://scenes/card_placeholder.tscn" id="5_brr7o"]
 [ext_resource type="PackedScene" uid="uid://dwehldueqyfq5" path="res://scenes/kingdom.tscn" id="6_oavws"]
 
-[node name="Board" type="Node2D"]
+[node name="Board" type="Node"]
 script = ExtResource("1_ccqse")
 
 [node name="Battlefield" parent="." instance=ExtResource("2_mg76x")]
-offset_left = 207.0
-offset_top = 21.0
-offset_right = 207.0
-offset_bottom = 21.0
+offset_right = 383.0
+offset_bottom = 512.0
 size_flags_horizontal = 0
 
 [node name="PlayerHand" parent="." instance=ExtResource("3_u2ksf")]

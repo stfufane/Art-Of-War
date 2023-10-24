@@ -1,21 +1,25 @@
 class_name Battlefield
 extends Control
 
+
 signal card_added
 
 var attacking_card: Card = null
+
 
 func setup():
 	# Connect all the card nodes to react to click and hover
 	for placeholder in get_tree().get_nodes_in_group("cards"):
 		placeholder.connect("card_placeholder_clicked", _placeholder_clicked)
-		placeholder.get_node("Container").connect("mouse_entered", _mouse_entered.bind(placeholder))
-		placeholder.get_node("Container").connect("mouse_exited", _mouse_exited.bind(placeholder))
+		placeholder.connect("mouse_entered", _mouse_entered.bind(placeholder))
+		placeholder.connect("mouse_exited", _mouse_exited.bind(placeholder))
+
 
 func disengage_cards():
 	for placeholder in get_tree().get_nodes_in_group("cards"):
 		if placeholder.current_card != null:
 			placeholder.current_card.disengage()
+
 
 func _mouse_entered(placeholder_hovered: CardPlaceholder):
 	match Game.current_state:
@@ -25,9 +29,11 @@ func _mouse_entered(placeholder_hovered: CardPlaceholder):
 		_:
 			pass
 
+
 func _mouse_exited(placeholder_hovered: CardPlaceholder):
 	if placeholder_hovered.current_card == null:
 		placeholder_hovered.set_text("")
+
 
 # Click on a placeholder to put a card on it
 func _placeholder_clicked(id: int):
@@ -50,6 +56,7 @@ func _placeholder_clicked(id: int):
 			card_added.emit()
 		_:
 			pass
+
 
 func all_highlights_off():
 	for enemy_placeholder in get_tree().get_nodes_in_group("enemy_cards"):
@@ -74,8 +81,8 @@ func _card_clicked(id: int):
 			if card_coords + coords == enemy.location:
 				enemy.toggle_highlight()
 			
+
 func _enemy_card_clicked(id: int):
-	print("Enemy card clicked " + str(id))
 	if Game.current_state != State.Name.ATTACK || attacking_card == null:
 		return
 	
@@ -94,6 +101,7 @@ func _enemy_card_clicked(id: int):
 			Game.enemy_support()
 			break
 
+
 # Check if a placeholder is available for a card to be placed on it
 func placeholder_available(placeholder: CardPlaceholder) -> bool:
 	if placeholder.current_card != null:
@@ -110,6 +118,7 @@ func placeholder_available(placeholder: CardPlaceholder) -> bool:
 			if p.current_card != null:
 				return true
 	return false
+
 
 ### 
 # Network functions that are called to reflect local actions on the opponent's battlefield

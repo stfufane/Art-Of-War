@@ -3,8 +3,13 @@
 [ext_resource type="Script" path="res://scenes/card_placeholder.gd" id="1_8uc8j"]
 
 [node name="CardPlaceholder" type="Control"]
+custom_minimum_size = Vector2(120, 120)
 layout_mode = 3
 anchors_preset = 0
+offset_right = 192.0
+offset_bottom = 192.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
 script = ExtResource("1_8uc8j")
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -13,20 +18,21 @@ offset_left = 16.0
 offset_top = 8.0
 offset_right = 176.0
 offset_bottom = 184.0
+mouse_filter = 2
 color = Color(0.207843, 0.439216, 0.282353, 1)
 
-[node name="Container" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 192.0
-offset_bottom = 192.0
-
-[node name="Label" type="Label" parent="Container"]
-layout_mode = 2
-offset_top = 80.0
-offset_right = 192.0
-offset_bottom = 112.0
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[connection signal="gui_input" from="Container" to="." method="_on_container_gui_input"]
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]

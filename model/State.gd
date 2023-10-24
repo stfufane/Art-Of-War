@@ -13,15 +13,18 @@ enum Name {
 	FINISH_TURN,
 }
 
+
 var name: Name
 var callback: Callable = func(): pass
 var instruction: String
 var happens_once: bool
 
+
 func _init(n: Name, i: String, h_o: bool):
 	name = n
 	instruction = i
 	happens_once = h_o
+
 
 # These are the automatic states that are started when calling end_state
 # However, it's possible that a state is started manually in a middle of an other state,
