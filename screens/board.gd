@@ -15,13 +15,13 @@ extends Node
 @onready var enemy_reserve: Reserve = $EnemyReserve
 @onready var kingdom: Kingdom = $Kingdom
 @onready var enemy_kingdom: Kingdom = $EnemyKingdom
-@onready var hand: PlayerHand = $PlayerHand
+@onready var _hand: PlayerHand = $PlayerHand
 @onready var instruction: Label = $Instruction
 
 
 func setup():
 	Game.setup(self)
-	hand.setup()
+	_hand.setup()
 	battlefield.setup()
 	setup_kingdom()
 	if Game.first_player:
@@ -32,7 +32,7 @@ func setup():
 
 func setup_kingdom():
 	# First card of the deck is put in the kingdom
-	var unit_type = Game.player_deck.pop_back()
+	var unit_type = _hand._deck.pop_back()
 	kingdom.increase_population(unit_type)
 	add_card_to_enemy_kingdom.rpc(unit_type)
 	kingdom.setup()
@@ -40,22 +40,21 @@ func setup_kingdom():
 
 
 func init_battlefield():
-	for card in Game.player_hand:
+	for card in _hand._cards:
 		card.connect("card_clicked", _hand_card_selected)
 	battlefield.connect("card_added", _card_added_on_battlefield)
 
 
 func init_reserve():
-	for card in Game.player_hand:
-		card.connect("card_clicked", _reserve_card_chosen)
+	for card in _hand._cards:
+		card.connect("card_clicked", _add_card_to_reserve)
 
 
 func init_turn():
 	# Reset the cards on the battlefield
 	battlefield.disengage_cards()
 	# Draw a card
-	Game.draw_card()
-	hand.add_card(Game.player_hand.back())
+	_hand.draw_card()
 	# Start the turn
 	Game.start_state(State.Name.ACTION_CHOICE)
 
@@ -74,10 +73,12 @@ func init_recruit_turn():
 	# Recruitment is made by default from the reserve
 	# If the reserve is empty, the player can recruit from the hand
 	if !Game.player_reserve.is_empty():
+		instruction.text = "Pick a card from your reserve"
 		for card in Game.player_reserve:
 			card.connect("card_clicked", _reserve_card_selected)
 	else:
-		for card in Game.player_hand:
+		instruction.text = "Pick a card from your hand"
+		for card in _hand._cards:
 			card.connect("card_clicked", _hand_card_selected)
 
 	# In both cases, the card is put on the battlefield
@@ -96,7 +97,7 @@ func init_support_turn():
 func finish_turn():
 	# Add a card in the kingdom or pass.
 	# If you have 6 cards in your hand, you MUST put a card in the kingdom
-	pass_button.disabled = Game.player_hand.size() > 5
+	pass_button.disabled = _hand._cards.size() > 5
 	end_turn_menu.show()
 
 ###########
@@ -164,12 +165,13 @@ func _hand_card_selected(card_id: int):
 	# If a card had already been selected, put it back in the hand
 	if Game.picked_card != null:
 		remove_child(Game.picked_card)
-		hand.add_card(Game.picked_card)
+		_hand.add_card(Game.picked_card)
 	
 	Game.picked_card = card
-	hand.remove_card(Game.picked_card)
+	_hand.remove_card(Game.picked_card)
+
 	add_child(Game.picked_card)
-	Game.picked_card.set_location(Card.Location.Picked)
+	Game.picked_card.set_board_area(Card.BoardArea.Picked)
 
 
 func _reserve_card_selected(card_id: int):
@@ -178,7 +180,7 @@ func _reserve_card_selected(card_id: int):
 		reserve.add_card(Game.picked_card)
 	Game.picked_card = card
 	reserve.remove_card(Game.picked_card)
-	Game.picked_card.set_location(Card.Location.Picked)
+	Game.picked_card.set_board_area(Card.BoardArea.Picked)
 
 
 func _card_added_on_battlefield():
@@ -187,10 +189,9 @@ func _card_added_on_battlefield():
 	if Game.picked_card.is_connected("card_clicked", _reserve_card_selected):
 		Game.picked_card.disconnect("card_clicked", _reserve_card_selected)
 	
-	# remove_child(Game.picked_card)
 	Game.picked_card = null
 	# Disconnect the click on hand cards
-	for card in Game.player_hand:
+	for card in _hand._cards:
 		if card.is_connected("card_clicked", _hand_card_selected):
 			card.disconnect("card_clicked", _hand_card_selected)
 	# Disconnect the click on reserve cards
@@ -205,13 +206,13 @@ func _card_added_on_battlefield():
 		Game.start_state(State.Name.FINISH_TURN)
 
 
-func _reserve_card_chosen(card_id: int):
+func _add_card_to_reserve(card_id: int):
 	var card: Card = instance_from_id(card_id)
-	for hand_card in Game.player_hand:
-		hand_card.disconnect("card_clicked", _reserve_card_chosen)
-	hand.remove_card(card)
+	for hand_card in _hand._cards:
+		hand_card.disconnect("card_clicked", _add_card_to_reserve)
+	_hand.remove_card(card)
 	reserve.add_card(card)
-	add_card_to_enemy_reserve.rpc(card.unit_type)
+	add_card_to_enemy_reserve.rpc(card._unit_type)
 	Game.end_state()
 
 
@@ -220,7 +221,7 @@ func _reserve_card_chosen(card_id: int):
 #################################################################################
 @rpc("any_peer")
 func add_card_to_enemy_reserve(unit_type: CardType.UnitType):
-	enemy_reserve.add_card(Game.get_card_instance(unit_type))
+	enemy_reserve.add_card(Game.create_card_instance(unit_type))
 
 
 @rpc("any_peer")

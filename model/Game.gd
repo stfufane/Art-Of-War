@@ -49,17 +49,10 @@ var card_scene = preload("res://scenes/card.tscn")
 
 var current_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var previous_state: State.Name = State.Name.WAITING_FOR_PLAYER
-var player_hand: Array[Card] = []
 var picked_card: Card = null
-
-# Represents the two sides of the battlefield as flat arrays.
-var player_battlefield: Array[Card] = [null, null, null, null, null, null]
-var enemy_battlefield: Array[Card] = [null, null, null, null, null, null]
 
 var player_reserve: Array[Card] = []
 var enemy_reserve:  Array[Card] = []
-
-var player_deck: Array[CardType.UnitType] = []
 
 # A reference to the board scene to be able to call some of the methods on it.
 var board: Board = null
@@ -99,44 +92,10 @@ func setup(scene_board: Board):
 	States[State.Name.SUPPORT].callback = board.init_support_turn
 	States[State.Name.FINISH_TURN].callback = board.finish_turn
 
-	# First build the deck with 4 of each card.
-	for _i in range(4):
-		player_deck.append(CardType.UnitType.Soldier)
-		player_deck.append(CardType.UnitType.Archer)
-		player_deck.append(CardType.UnitType.Guard)
-		player_deck.append(CardType.UnitType.Wizard)
-		player_deck.append(CardType.UnitType.Monk)
-	player_deck.shuffle()
 
-	# Then draw the hand. It has the king by default + 3 cards.
-	player_hand.append(get_card_instance(CardType.UnitType.King))
-	for _i in range(3):
-		player_hand.append(get_card_instance(player_deck.pop_back()))
-
-
-func draw_card():
-	if player_deck.size() > 0:
-		player_hand.append(get_card_instance(player_deck.pop_back()))
-
-
-func add_card_to_battlefield(card: Card, location: Vector2):
-	card.set_location(Card.Location.Battlefield)
-	if location.y == -1:
-		player_battlefield[location.x] = card
-	else:
-		player_battlefield[location.x + abs(location.y) + 1] = card
-
-
-func add_card_to_enemy_battlefield(card: Card, location: Vector2):
-	if location.y == 0:
-		enemy_battlefield[location.y + abs(location.x - 2)] = card
-	else:
-		enemy_battlefield[location.y + abs(location.x - 4)] = card
-
-
-func get_card_instance(card_type: CardType.UnitType) -> Card:
+func create_card_instance(unit_type: CardType.UnitType) -> Card:
 	var card_instance = card_scene.instantiate()
-	card_instance.set_unit_type(card_type)
+	card_instance.set_unit_type(unit_type)
 	return card_instance
 
 

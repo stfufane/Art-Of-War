@@ -8,7 +8,7 @@ extends Control
 
 func add_card(card: Card):
 	card.position.x = reserve.size() * card.size.x
-	card.set_location(Card.Location.Reserve)
+	card.set_board_area(Card.BoardArea.Reserve)
 	add_child(card)
 	reserve.append(card)
 

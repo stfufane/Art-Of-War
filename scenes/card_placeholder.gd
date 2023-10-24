@@ -1,7 +1,7 @@
 class_name CardPlaceholder
 extends Control
 
-@export var location: Vector2
+@export var coords: Vector2
 @export var label_text: String
 
 @onready var label = $Label

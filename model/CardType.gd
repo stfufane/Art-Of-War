@@ -17,7 +17,7 @@ var defense: int
 var defense_engaged: int
 var attack_range: PackedVector2Array
 
-func _init(t, n, a, d, d_e, a_r):
+func _init(t: UnitType, n: String, a: int, d: int, d_e: int, a_r: PackedVector2Array):
 	type = t
 	name = n
 	attack = a

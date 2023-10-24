@@ -6,6 +6,10 @@ signal card_added
 
 var attacking_card: Card = null
 
+# Represents the two sides of the battlefield as flat arrays.
+var _player_cards: Array[Card] = [null, null, null, null, null, null]
+var _enemy_cards: Array[Card] = [null, null, null, null, null, null]
+
 
 func setup():
 	# Connect all the card nodes to react to click and hover
@@ -20,12 +24,21 @@ func disengage_cards():
 		if placeholder.current_card != null:
 			placeholder.current_card.disengage()
 
+func add_player_card(card: Card, coords: Vector2):
+	card.set_board_area(Card.BoardArea.Battlefield)
+	if coords.y == -1:
+		_player_cards[coords.x] = card
+	else:
+		_player_cards[coords.x + abs(coords.y) + 1] = card
+
 
 func _mouse_entered(placeholder_hovered: CardPlaceholder):
 	match Game.current_state:
 		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT:
 			if placeholder_available(placeholder_hovered):
 				placeholder_hovered.set_text("Place card here")
+			else:
+				placeholder_hovered.set_text("Can't place card here")
 		_:
 			pass
 
@@ -49,9 +62,9 @@ func _placeholder_clicked(id: int):
 				return
 			# Take the card that was picked in the hand
 			clicked_placeholder.set_card(Game.picked_card)
-			Game.add_card_to_battlefield(Game.picked_card, clicked_placeholder.location)
+			add_player_card(Game.picked_card, clicked_placeholder.coords)
 			# Notify the opponent so it adds the card to his battlefield
-			add_enemy_card.rpc(clicked_placeholder.current_card.unit_type, clicked_placeholder.name)
+			add_enemy_card.rpc(clicked_placeholder.current_card._unit_type, clicked_placeholder.name)
 			clicked_placeholder.current_card.connect("card_clicked", _card_clicked)
 			card_added.emit()
 		_:
@@ -74,11 +87,11 @@ func _card_clicked(id: int):
 
 	var placeholder: CardPlaceholder = instance_from_id(clicked_card.placeholder_id)
 	# Highlight the enemy cards that are within reach of the selected card
-	var attack_range: PackedVector2Array = clicked_card.card_type.attack_range
-	var card_coords: Vector2 = placeholder.location
+	var attack_range: PackedVector2Array = clicked_card._type.attack_range
+	var card_coords: Vector2 = placeholder.coords
 	for enemy in get_tree().get_nodes_in_group("enemy_cards"):
 		for coords in attack_range:
-			if card_coords + coords == enemy.location:
+			if card_coords + coords == enemy.coords:
 				enemy.toggle_highlight()
 			
 
@@ -88,11 +101,11 @@ func _enemy_card_clicked(id: int):
 	
 	# Check that the card is within reach of the attacking card
 	var clicked_card: Card = instance_from_id(id)
-	var placeholder: CardPlaceholder = instance_from_id(clicked_card.placeholder_id)
-	var attack_range = attacking_card.card_type.attack_range
-	var enemy_coords: Vector2 = placeholder.location
+	var attack_range = attacking_card._type.attack_range
+	var enemy_coords: Vector2 = instance_from_id(clicked_card.placeholder_id).coords
+	var attacking_card_coords: Vector2 = instance_from_id(attacking_card.placeholder_id).coords
 	for coords in attack_range:
-		if enemy_coords == instance_from_id(attacking_card.placeholder_id).location + coords:
+		if enemy_coords == attacking_card_coords + coords:
 			attacking_card.attack()
 			attacking_card = null
 			all_highlights_off()
@@ -107,16 +120,16 @@ func placeholder_available(placeholder: CardPlaceholder) -> bool:
 	if placeholder.current_card != null:
 		return false
 	# First line is always available
-	if placeholder.location.y == -1:
+	if placeholder.coords.y == -1:
 		return true
 	else:
 		# Need to check the other placeholders to see if there's one in front of the hovered one
 		for p in get_tree().get_nodes_in_group("cards"):
 			# No need to check placeholders on the second line or on a different column
-			if p.location.x != placeholder.location.x or p.location.y == -2:
+			if p.coords.x != placeholder.coords.x or p.coords.y == -2:
 				continue
-			if p.current_card != null:
-				return true
+			if p.current_card == null:
+				return false
 	return false
 
 
@@ -126,8 +139,12 @@ func placeholder_available(placeholder: CardPlaceholder) -> bool:
 
 @rpc("any_peer")
 func add_enemy_card(type: CardType.UnitType, placeholder_name: String):
-	var enemy_card = Game.get_card_instance(type)
+	var enemy_card = Game.create_card_instance(type)
 	var enemy_placehoder: CardPlaceholder = $EnemyContainer.get_node(placeholder_name)
-	Game.add_card_to_enemy_battlefield(enemy_card, enemy_placehoder.location)
 	enemy_placehoder.set_card(enemy_card)
+	var coords = enemy_placehoder.coords
+	if enemy_placehoder.coords.y == 0:
+		_enemy_cards[coords.y + abs(coords.x - 2)] = enemy_card
+	else:
+		_enemy_cards[coords.y + abs(coords.x - 4)] = enemy_card
 	enemy_card.connect("card_clicked", _enemy_card_clicked)

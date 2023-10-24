@@ -9,7 +9,7 @@ extends Control
 func setup():
 	var x = 0
 	for unit_type in kingdom:
-		var card_instance = Game.get_card_instance(unit_type)
+		var card_instance = Game.create_card_instance(unit_type)
 		card_instance.position = Vector2(x, 0)
 		x += card_instance.size.x
 		card_instance.set_nb_units(kingdom[unit_type])
@@ -20,6 +20,6 @@ func setup():
 func increase_population(type: CardType.UnitType):
 	kingdom[type] += 1
 	for card in get_tree().get_nodes_in_group(group):
-		if card.unit_type == type:
+		if card._unit_type == type:
 			card.set_nb_units(kingdom[type])
 			break
