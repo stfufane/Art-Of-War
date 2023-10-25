@@ -4,7 +4,7 @@ extends Control
 
 signal card_added
 
-var attacking_card: Card = null
+var _attacking_card: Card = null
 
 # Represents the two sides of the battlefield as flat arrays.
 var _player_cards: Array[Card] = [null, null, null, null, null, null]
@@ -24,6 +24,7 @@ func disengage_cards():
 		if placeholder.current_card != null:
 			placeholder.current_card.disengage()
 
+
 func add_player_card(card: Card, coords: Vector2):
 	card.set_board_area(Card.BoardArea.Battlefield)
 	if coords.y == -1:
@@ -31,6 +32,31 @@ func add_player_card(card: Card, coords: Vector2):
 	else:
 		_player_cards[coords.x + abs(coords.y) + 1] = card
 
+
+func all_highlights_off():
+	for enemy_placeholder in get_tree().get_nodes_in_group("enemy_cards"):
+		enemy_placeholder.highlight_off()
+
+
+# Check if a placeholder is available for a card to be placed on it
+func placeholder_available(placeholder: CardPlaceholder) -> bool:
+	# First line is always available
+	if placeholder.coords.y == -1:
+		if placeholder.current_card == null:
+			return true
+	else:
+		# Second line is available if there's a card on the first line
+		var front_card = get_placeholder(placeholder.coords + Vector2(0, 1)).current_card
+		if front_card != null and placeholder.current_card == null:
+			return true
+
+	return false
+
+func get_placeholder(coords: Vector2) -> CardPlaceholder:
+	for placeholder in get_tree().get_nodes_in_group("cards"):
+		if placeholder.coords == coords:
+			return placeholder
+	return null
 
 func _mouse_entered(placeholder_hovered: CardPlaceholder):
 	match Game.current_state:
@@ -71,11 +97,6 @@ func _placeholder_clicked(id: int):
 			pass
 
 
-func all_highlights_off():
-	for enemy_placeholder in get_tree().get_nodes_in_group("enemy_cards"):
-		enemy_placeholder.highlight_off()
-
-
 # Click on a card to attack with it
 func _card_clicked(id: int):
 	all_highlights_off()
@@ -83,7 +104,7 @@ func _card_clicked(id: int):
 	if Game.current_state != State.Name.ATTACK:
 		return
 
-	attacking_card = clicked_card
+	_attacking_card = clicked_card
 
 	var placeholder: CardPlaceholder = instance_from_id(clicked_card.placeholder_id)
 	# Highlight the enemy cards that are within reach of the selected card
@@ -96,41 +117,23 @@ func _card_clicked(id: int):
 			
 
 func _enemy_card_clicked(id: int):
-	if Game.current_state != State.Name.ATTACK || attacking_card == null:
+	if Game.current_state != State.Name.ATTACK || _attacking_card == null:
 		return
 	
 	# Check that the card is within reach of the attacking card
 	var clicked_card: Card = instance_from_id(id)
-	var attack_range = attacking_card._type.attack_range
+	var attack_range = _attacking_card._type.attack_range
 	var enemy_coords: Vector2 = instance_from_id(clicked_card.placeholder_id).coords
-	var attacking_card_coords: Vector2 = instance_from_id(attacking_card.placeholder_id).coords
+	var attacking_card_coords: Vector2 = instance_from_id(_attacking_card.placeholder_id).coords
 	for coords in attack_range:
 		if enemy_coords == attacking_card_coords + coords:
-			attacking_card.attack()
-			attacking_card = null
+			_attacking_card.attack()
+			_attacking_card = null
 			all_highlights_off()
 			# TODO: Store the ongoing attack to know if it can be applied or not
 			# Check if the opponent blocks the attack
 			Game.enemy_support()
 			break
-
-
-# Check if a placeholder is available for a card to be placed on it
-func placeholder_available(placeholder: CardPlaceholder) -> bool:
-	if placeholder.current_card != null:
-		return false
-	# First line is always available
-	if placeholder.coords.y == -1:
-		return true
-	else:
-		# Need to check the other placeholders to see if there's one in front of the hovered one
-		for p in get_tree().get_nodes_in_group("cards"):
-			# No need to check placeholders on the second line or on a different column
-			if p.coords.x != placeholder.coords.x or p.coords.y == -2:
-				continue
-			if p.current_card == null:
-				return false
-	return false
 
 
 ### 

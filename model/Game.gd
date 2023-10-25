@@ -81,8 +81,8 @@ func join_server():
 
 
 func setup(scene_board: Board):
-	current_state = State.Name.WAITING_FOR_PLAYER
 	board = scene_board
+	current_state = State.Name.WAITING_FOR_PLAYER
 	States[State.Name.INIT_BATTLEFIELD].callback = board.init_battlefield
 	States[State.Name.INIT_RESERVE].callback = board.init_reserve
 	States[State.Name.START_TURN].callback = board.init_turn
@@ -102,7 +102,7 @@ func create_card_instance(unit_type: CardType.UnitType) -> Card:
 func start_state(state: State.Name, is_rpc: bool = false):
 	previous_state = current_state
 	current_state = state
-	board.instruction.text = States[state].instruction
+	board._instruction.text = States[state].instruction
 
 	# Avoid sending RPCs to the server when the server is the one calling this function.
 	if not is_rpc:
@@ -114,7 +114,7 @@ func start_state(state: State.Name, is_rpc: bool = false):
 # After attacking or playing a support card, the enemy can play a support card himself.
 func enemy_support():
 	current_state = State.Name.WAITING_FOR_PLAYER
-	board.instruction.text = States[current_state].instruction
+	board._instruction.text = States[current_state].instruction
 	set_enemy_state.rpc(State.Name.SUPPORT)
 
 
@@ -127,7 +127,7 @@ func end_state():
 	else:
 		set_enemy_state.rpc(States[current_state].get_next_state())
 	current_state = State.Name.WAITING_FOR_PLAYER
-	board.instruction.text = States[current_state].instruction
+	board._instruction.text = States[current_state].instruction
 
 
 @rpc("any_peer")
