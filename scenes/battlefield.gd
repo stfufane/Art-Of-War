@@ -69,7 +69,7 @@ func _mouse_exited(placeholder_hovered: CardPlaceholder):
 func _placeholder_clicked(id: int):
 	var clicked_placeholder: CardPlaceholder = instance_from_id(id)
 	# We can't put a card if there's already one there.
-	if not placeholder_available(clicked_placeholder):
+	if !placeholder_available(clicked_placeholder):
 		return
 	
 	match Game.get_state():

@@ -40,14 +40,12 @@ func setup_kingdom():
 
 
 func init_battlefield():
-	for card in _hand.get_cards():
-		card.card_clicked.connect(_hand_card_selected)
+	_hand.connect_click(_hand_card_selected)
 	battlefield.card_added.connect(_card_added_on_battlefield)
 
 
 func init_reserve():
-	for card in _hand.get_cards():
-		card.card_clicked.connect(_add_card_to_reserve)
+	_hand.connect_click(_add_card_to_reserve)
 
 
 func init_turn():
@@ -74,12 +72,10 @@ func init_recruit_turn():
 	# If the reserve is empty, the player can recruit from the hand
 	if !_reserve.is_empty():
 		_instruction.text = "Pick a card from your reserve"
-		for card in _reserve.get_cards():
-			card.card_clicked.connect(_reserve_card_selected)
+		_reserve.connect_click(_reserve_card_selected)
 	else:
 		_instruction.text = "Pick a card from your hand"
-		for card in _hand.get_cards():
-			card.card_clicked.connect(_hand_card_selected)
+		_hand.connect_click(_hand_card_selected)
 
 	# In both cases, the card is put on the battlefield
 	battlefield.card_added.connect(_card_added_on_battlefield)
@@ -161,6 +157,7 @@ func _on_pass_button_pressed():
 
 
 func _hand_card_selected(card_id: int):
+	print("hand card selected")
 	var card: Card = instance_from_id(card_id)
 	_hand.switch_card(card, Game.picked_card)
 
@@ -179,20 +176,12 @@ func _reserve_card_selected(card_id: int):
 
 
 func _card_added_on_battlefield():
-	if Game.picked_card.card_clicked.is_connected(_hand_card_selected):
-		Game.picked_card.card_clicked.disconnect(_hand_card_selected)
-	if Game.picked_card.card_clicked.is_connected(_reserve_card_selected):
-		Game.picked_card.card_clicked.disconnect(_reserve_card_selected)
-	
+	Game.picked_card.remove_click_connections()
 	Game.picked_card = null
-	# Disconnect the click on hand cards
-	for card in _hand.get_cards():
-		if card.card_clicked.is_connected(_hand_card_selected):
-			card.card_clicked.disconnect(_hand_card_selected)
-	# Disconnect the click on reserve cards
-	for card in _reserve.get_cards():
-		if card.card_clicked.is_connected(_reserve_card_selected):
-			card.card_clicked.disconnect(_reserve_card_selected)
+
+	# Disconnect the click on hand and reserve cards
+	_hand.disconnect_click(_hand_card_selected)
+	_reserve.disconnect_click(_reserve_card_selected)
 	
 	battlefield.card_added.disconnect(_card_added_on_battlefield)
 	if Game.get_state() == State.Name.INIT_BATTLEFIELD:
@@ -203,8 +192,7 @@ func _card_added_on_battlefield():
 
 func _add_card_to_reserve(card_id: int):
 	var card: Card = instance_from_id(card_id)
-	for hand_card in _hand.get_cards():
-		hand_card.card_clicked.disconnect(_add_card_to_reserve)
+	_hand.disconnect_click(_add_card_to_reserve)
 	_hand.remove_card(card)
 	_reserve.add_card(card)
 	add_card_to_enemy_reserve.rpc(card._unit_type)

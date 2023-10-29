@@ -56,7 +56,7 @@ func connect_click(callback: Callable):
 
 
 func toggle_highlight():
-	is_highlighting = not is_highlighting
+	is_highlighting = !is_highlighting
 	$ColorRect.color = highlight_color if is_highlighting else base_color
 
 

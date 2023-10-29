@@ -20,7 +20,7 @@ func setup():
 
 
 func draw_card():
-	if not _deck.is_empty():
+	if !_deck.is_empty():
 		add_card(Game.create_card_instance(_deck.pop_back()))
 		
 

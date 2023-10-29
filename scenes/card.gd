@@ -60,6 +60,11 @@ func set_nb_units(nb_units: int):
 	$Container/NbUnits.text = str(nb_units)
 
 
+func remove_click_connections() -> void:
+	for connection in card_clicked.get_connections():
+		card_clicked.disconnect(connection.callable)
+
+
 func disengage():
 	_engaged = false
 	_image.rotation_degrees = 0
@@ -90,7 +95,7 @@ func start_flash():
 	_has_flash = true
 
 func stop_flash():
-	if not _has_flash:
+	if !_has_flash:
 		return
 	_image.material = null
 	_has_flash = false
@@ -100,7 +105,7 @@ func stop_flash():
 ############
 
 func _on_gui_input(event:InputEvent):
-	if not event.is_action_pressed(Game.LEFT_CLICK):
+	if !event.is_action_pressed(Game.LEFT_CLICK):
 		return
 
 	card_clicked.emit(get_instance_id())	

@@ -88,7 +88,7 @@ func start_state(state: State.Name, is_rpc: bool = false):
 	board._instruction.text = States[state].instruction
 
 	# Avoid sending RPCs to the server when the server is the one calling this function.
-	if not is_rpc:
+	if !is_rpc:
 		set_enemy_state.rpc(State.Name.WAITING_FOR_PLAYER)
 
 	States[state].callback.call()

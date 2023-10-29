@@ -31,6 +31,17 @@ func switch_card(drawn_card: Card, picked_up_card: Card) -> void:
 	remove_card(drawn_card)
 
 
+func connect_click(callback: Callable) -> void:
+	for card in _cards:
+		card.card_clicked.connect(callback)
+
+
+func disconnect_click(callback: Callable) -> void:
+	for card in _cards:
+		if card.card_clicked.is_connected(callback):
+			card.card_clicked.disconnect(callback)
+
+
 func is_empty() -> bool:
 	return _cards.is_empty()
 
