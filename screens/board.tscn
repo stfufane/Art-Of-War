@@ -42,7 +42,6 @@ offset_top = 32.0
 offset_right = 1392.0
 offset_bottom = 224.0
 scale = Vector2(0.5, 0.5)
-is_enemy = true
 
 [node name="ReserveLabel" type="Label" parent="."]
 offset_left = 656.0
@@ -72,7 +71,6 @@ offset_top = 136.0
 offset_right = 1392.0
 offset_bottom = 328.0
 scale = Vector2(0.5, 0.5)
-is_enemy = true
 
 [node name="KingdomLabel" type="Label" parent="."]
 offset_left = 656.0

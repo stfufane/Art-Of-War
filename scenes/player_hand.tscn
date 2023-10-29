@@ -3,15 +3,26 @@
 [ext_resource type="Script" path="res://scenes/player_hand.gd" id="1_wws4w"]
 
 [node name="PlayerHand" type="Control"]
+custom_minimum_size = Vector2(1152, 192)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 1152.0
 offset_bottom = 192.0
 size_flags_horizontal = 0
 script = ExtResource("1_wws4w")
+board_area = 1
 
 [node name="ColorRect" type="ColorRect" parent="."]
 visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CardContainer" type="HBoxContainer" parent="."]
+layout_direction = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

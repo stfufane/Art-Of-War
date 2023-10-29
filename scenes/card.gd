@@ -1,7 +1,10 @@
-extends Control
 class_name Card
+extends Control
+
+signal card_clicked(int)
 
 @export  var _unit_type : CardType.UnitType
+
 @onready var _type: CardType = Game.CardTypes[_unit_type]
 @onready var _label: Label = $Container/CardName
 @onready var _image: Sprite2D = $CardImage
@@ -29,9 +32,6 @@ var _board_area: BoardArea = BoardArea.Nowhere
 
 var _engaged: bool = false
 var _has_flash: bool = false
-
-# To be listened by other scenes
-signal card_clicked(int)
 
 
 func _ready():
@@ -65,6 +65,10 @@ func disengage():
 	_image.rotation_degrees = 0
 
 
+func get_attack_range() -> PackedVector2Array:
+	return _type.attack_range
+
+
 func attack():
 	_engaged = true
 	_image.rotation_degrees = -90
@@ -96,7 +100,7 @@ func stop_flash():
 ############
 
 func _on_gui_input(event:InputEvent):
-	if not event.is_action_pressed("left_click"):
+	if not event.is_action_pressed(Game.LEFT_CLICK):
 		return
 
 	card_clicked.emit(get_instance_id())	
@@ -104,7 +108,7 @@ func _on_gui_input(event:InputEvent):
 		BoardArea.Nowhere:
 			pass
 		BoardArea.Battlefield:
-			if Game.current_state != State.Name.ATTACK:
+			if Game.get_state() != State.Name.ATTACK:
 				return
 			toggle_flash()
 

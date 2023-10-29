@@ -24,42 +24,21 @@ var States: Dictionary = {
 }
 
 
-# Initialize the player and enemy kingdoms
-var player_kingdom: Dictionary = {
-	CardType.UnitType.Soldier: 0,
-	CardType.UnitType.Archer: 0,
-	CardType.UnitType.Guard: 0,
-	CardType.UnitType.Wizard: 0,
-	CardType.UnitType.Monk: 0
-}
+const CARD_SCENE: PackedScene = preload("res://scenes/card.tscn")
 
+# Input map constant
+const LEFT_CLICK: String = "left_click"
 
-var enemy_kingdom: Dictionary = {
-	CardType.UnitType.Soldier: 0,
-	CardType.UnitType.Archer: 0,
-	CardType.UnitType.Guard: 0,
-	CardType.UnitType.Wizard: 0,
-	CardType.UnitType.Monk: 0
-}
-
-
-var state_init_methods: Dictionary = {}
-
-var card_scene = preload("res://scenes/card.tscn")
-
-var current_state: State.Name = State.Name.WAITING_FOR_PLAYER
+var _current_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var previous_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var picked_card: Card = null
-
-var player_reserve: Array[Card] = []
-var enemy_reserve:  Array[Card] = []
 
 # A reference to the board scene to be able to call some of the methods on it.
 var board: Board = null
 
 # The local multiplayer server port
 const PORT = 1234
-var enet_peer = ENetMultiplayerPeer.new()
+var enet_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 
 var peer_id: int = 0
 var first_player: bool = false
@@ -82,7 +61,7 @@ func join_server():
 
 func setup(scene_board: Board):
 	board = scene_board
-	current_state = State.Name.WAITING_FOR_PLAYER
+	_current_state = State.Name.WAITING_FOR_PLAYER
 	States[State.Name.INIT_BATTLEFIELD].callback = board.init_battlefield
 	States[State.Name.INIT_RESERVE].callback = board.init_reserve
 	States[State.Name.START_TURN].callback = board.init_turn
@@ -94,14 +73,18 @@ func setup(scene_board: Board):
 
 
 func create_card_instance(unit_type: CardType.UnitType) -> Card:
-	var card_instance = card_scene.instantiate()
+	var card_instance = CARD_SCENE.instantiate()
 	card_instance.set_unit_type(unit_type)
 	return card_instance
 
 
+func get_state() -> State.Name :
+	return _current_state
+
+
 func start_state(state: State.Name, is_rpc: bool = false):
-	previous_state = current_state
-	current_state = state
+	previous_state = _current_state
+	_current_state = state
 	board._instruction.text = States[state].instruction
 
 	# Avoid sending RPCs to the server when the server is the one calling this function.
@@ -113,8 +96,8 @@ func start_state(state: State.Name, is_rpc: bool = false):
 
 # After attacking or playing a support card, the enemy can play a support card himself.
 func enemy_support():
-	current_state = State.Name.WAITING_FOR_PLAYER
-	board._instruction.text = States[current_state].instruction
+	_current_state = State.Name.WAITING_FOR_PLAYER
+	board._instruction.text = States[_current_state].instruction
 	set_enemy_state.rpc(State.Name.SUPPORT)
 
 
@@ -122,12 +105,12 @@ func enemy_support():
 # When the second player finishes the state, the first player enters the next state.
 # In both cases the current player waits.
 func end_state():
-	if first_player and States[current_state].happens_once:
-		set_enemy_state.rpc(current_state)
+	if first_player and States[_current_state].happens_once:
+		set_enemy_state.rpc(_current_state)
 	else:
-		set_enemy_state.rpc(States[current_state].get_next_state())
-	current_state = State.Name.WAITING_FOR_PLAYER
-	board._instruction.text = States[current_state].instruction
+		set_enemy_state.rpc(States[_current_state].get_next_state())
+	_current_state = State.Name.WAITING_FOR_PLAYER
+	board._instruction.text = States[_current_state].instruction
 
 
 @rpc("any_peer")

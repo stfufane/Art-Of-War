@@ -18,32 +18,32 @@ offset_right = 576.0
 offset_bottom = 640.0
 scale = Vector2(0.666589, 0.666589)
 
-[node name="CardPlaceholder1" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+[node name="CardPlaceholder1" parent="PlayerContainer" instance=ExtResource("1_0btqk")]
 coords = Vector2(0, -1)
 
-[node name="CardPlaceholder2" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+[node name="CardPlaceholder2" parent="PlayerContainer" instance=ExtResource("1_0btqk")]
 offset_left = 192.0
 offset_right = 384.0
 coords = Vector2(1, -1)
 
-[node name="CardPlaceholder3" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+[node name="CardPlaceholder3" parent="PlayerContainer" instance=ExtResource("1_0btqk")]
 offset_left = 384.0
 offset_right = 576.0
 coords = Vector2(2, -1)
 
-[node name="CardPlaceholder4" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+[node name="CardPlaceholder4" parent="PlayerContainer" instance=ExtResource("1_0btqk")]
 offset_top = 192.0
 offset_bottom = 384.0
 coords = Vector2(0, -2)
 
-[node name="CardPlaceholder5" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+[node name="CardPlaceholder5" parent="PlayerContainer" instance=ExtResource("1_0btqk")]
 offset_left = 192.0
 offset_top = 192.0
 offset_right = 384.0
 offset_bottom = 384.0
 coords = Vector2(1, -2)
 
-[node name="CardPlaceholder6" parent="PlayerContainer" groups=["cards"] instance=ExtResource("1_0btqk")]
+[node name="CardPlaceholder6" parent="PlayerContainer" instance=ExtResource("1_0btqk")]
 offset_left = 384.0
 offset_top = 192.0
 offset_right = 576.0

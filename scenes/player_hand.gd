@@ -1,8 +1,7 @@
 class_name PlayerHand
-extends Control
+extends CardsControl
 
 var _deck: Array[CardType.UnitType] = []
-var _cards: Array[Card] = []
 
 func setup():
 	# Build the deck with 4 of each card.
@@ -15,40 +14,16 @@ func setup():
 	_deck.shuffle()
 
 	# Then draw the hand. It has the king by default + 3 cards.
-	_cards.append(Game.create_card_instance(CardType.UnitType.King))
+	add_card(Game.create_card_instance(CardType.UnitType.King))
 	for _i in range(3):
-		_cards.append(Game.create_card_instance(_deck.pop_back()))
+		add_card(Game.create_card_instance(_deck.pop_back()))
 
-	var x = 0
-	for card in _cards:
-		x += card.size.x
-		put_card(card, x)
 
 func draw_card():
-	if _deck.size() > 0:
-		_cards.append(Game.create_card_instance(_deck.pop_back()))
-		add_card(_cards.back())
+	if not _deck.is_empty():
+		add_card(Game.create_card_instance(_deck.pop_back()))
 		
 
-func add_card(card: Card):
-	var x = (_cards.size() - 1) * card.size.x
-	put_card(card, x)
-	
+func is_deck_empty() -> bool:
+	return _deck.is_empty()
 
-func put_card(card: Card, x: int):
-	add_child(card)
-	card.position = Vector2(x, 0)
-	card.set_board_area(Card.BoardArea.Hand)
-
-
-func remove_card(card: Card):
-	remove_child(card)
-	_cards.erase(card)
-	reorder_cards()
-
-
-func reorder_cards():
-	var x = 0
-	for card in _cards:
-		card.position = Vector2(x, 0)
-		x += card.size.x
