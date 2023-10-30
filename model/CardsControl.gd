@@ -46,5 +46,9 @@ func is_empty() -> bool:
 	return _cards.is_empty()
 
 
+func size() -> int:
+	return _cards.size()
+
+
 func get_cards() -> Array[Card]:
 	return _cards

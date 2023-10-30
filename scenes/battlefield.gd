@@ -77,12 +77,16 @@ func _placeholder_clicked(id: int):
 			# We can't put a card if there's no card in hand
 			if Game.picked_card == null:
 				return
-			# Take the card that was picked in the hand
+			
+			card_added.emit()
+			# Take the card that was picked in the hand and remove previous connected signals
 			clicked_placeholder.set_card(Game.picked_card)
+			Game.picked_card.remove_click_connections()
+			Game.picked_card = null
+
+			clicked_placeholder.connect_click(_card_clicked)
 			# Notify the opponent so it adds the card to his battlefield
 			add_enemy_card.rpc(clicked_placeholder.get_current_card()._unit_type, clicked_placeholder.name)
-			clicked_placeholder.connect_click(_card_clicked)
-			card_added.emit()
 		_:
 			pass
 
@@ -90,11 +94,19 @@ func _placeholder_clicked(id: int):
 # Click on a card to attack with it
 func _card_clicked(id: int):
 	all_highlights_off()
+	if _attacking_card != null:
+		_attacking_card.stop_flash()
+
 	var clicked_card: Card = instance_from_id(id)
 	if Game.get_state() != State.Name.ATTACK:
 		return
 
+	if clicked_card == _attacking_card:
+		_attacking_card = null
+		return
+
 	_attacking_card = clicked_card
+	_attacking_card.start_flash()
 
 	var placeholder: CardPlaceholder = instance_from_id(clicked_card.placeholder_id)
 	# Highlight the enemy cards that are within reach of the selected card

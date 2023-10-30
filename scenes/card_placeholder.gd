@@ -25,6 +25,9 @@ func set_text(new_text: String):
 	label.text = new_text
 
 
+func has_card() -> bool:
+	return _current_card != null
+
 func get_current_card() -> Card:
 	return _current_card
 

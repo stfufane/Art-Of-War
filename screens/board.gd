@@ -93,7 +93,7 @@ func init_support_turn():
 func finish_turn():
 	# Add a card in the kingdom or pass.
 	# If you have 6 cards in your hand, you MUST put a card in the kingdom
-	pass_button.disabled = _hand.get_cards().size() > 5
+	pass_button.disabled = _hand.size() > 5
 	end_turn_menu.show()
 
 ###########
@@ -157,18 +157,16 @@ func _on_pass_button_pressed():
 
 
 func _hand_card_selected(card_id: int):
-	print("hand card selected")
-	var card: Card = instance_from_id(card_id)
-	_hand.switch_card(card, Game.picked_card)
-
-	Game.picked_card = card
-	add_child(Game.picked_card)
-	Game.picked_card.set_board_area(Card.BoardArea.Picked)
+	_card_selected(card_id, _hand)
 
 
 func _reserve_card_selected(card_id: int):
+	_card_selected(card_id, _reserve)
+
+
+func _card_selected(card_id: int, from: CardsControl) -> void:
 	var card: Card = instance_from_id(card_id)
-	_reserve.switch_card(card, Game.picked_card)
+	from.switch_card(card, Game.picked_card)
 	
 	Game.picked_card = card
 	add_child(Game.picked_card)
@@ -176,9 +174,6 @@ func _reserve_card_selected(card_id: int):
 
 
 func _card_added_on_battlefield():
-	Game.picked_card.remove_click_connections()
-	Game.picked_card = null
-
 	# Disconnect the click on hand and reserve cards
 	_hand.disconnect_click(_hand_card_selected)
 	_reserve.disconnect_click(_reserve_card_selected)

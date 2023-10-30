@@ -108,13 +108,5 @@ func _on_gui_input(event:InputEvent):
 	if !event.is_action_pressed(Game.LEFT_CLICK):
 		return
 
-	card_clicked.emit(get_instance_id())	
-	match _board_area:
-		BoardArea.Nowhere:
-			pass
-		BoardArea.Battlefield:
-			if Game.get_state() != State.Name.ATTACK:
-				return
-			toggle_flash()
-
+	card_clicked.emit(get_instance_id())
 
