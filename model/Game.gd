@@ -19,7 +19,9 @@ var States: Dictionary = {
 	State.Name.ACTION_CHOICE: State.new(State.Name.ACTION_CHOICE, "Action choice", false),
 	State.Name.RECRUIT: State.new(State.Name.RECRUIT, "Recruit", false),
 	State.Name.SUPPORT: State.new(State.Name.SUPPORT, "Support", false),
+	State.Name.SUPPORT_BLOCK: State.new(State.Name.SUPPORT_BLOCK, "You can block the enemy support by using a wizard or a king", false),
 	State.Name.ATTACK: State.new(State.Name.ATTACK, "Attack", false),
+	State.Name.ATTACK_BLOCK: State.new(State.Name.ATTACK_BLOCK, "You can block the enemy attack by using a guard or a king", false),
 	State.Name.FINISH_TURN: State.new(State.Name.FINISH_TURN, "Finish turn", false),
 }
 
@@ -32,6 +34,12 @@ const LEFT_CLICK: String = "left_click"
 var _current_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var previous_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var picked_card: Card = null
+
+var _attack_in_progress: bool = false
+var _attack_info: Dictionary = {}
+
+var _current_supports: Array[CardType.UnitType] = []
+var _pending_support: Card = null
 
 # A reference to the board scene to be able to call some of the methods on it.
 var board: Board = null
@@ -67,8 +75,9 @@ func setup(scene_board: Board):
 	States[State.Name.START_TURN].callback = board.init_turn
 	States[State.Name.ACTION_CHOICE].callback = board.init_choice_action
 	States[State.Name.RECRUIT].callback = board.init_recruit_turn
-	States[State.Name.ATTACK].callback = board.init_attack_turn
 	States[State.Name.SUPPORT].callback = board.init_support_turn
+	States[State.Name.ATTACK_BLOCK].callback = board.init_attack_block
+	States[State.Name.SUPPORT_BLOCK].callback = board.init_support_block
 	States[State.Name.FINISH_TURN].callback = board.finish_turn
 
 
@@ -94,11 +103,24 @@ func start_state(state: State.Name, is_rpc: bool = false):
 	States[state].callback.call()
 
 
-# After attacking or playing a support card, the enemy can play a support card himself.
-func enemy_support():
+# After attacking, the enemy can play a support card to block the attack.
+func enemy_attack_block(attacking_card: Card, enemy_placeholder: CardPlaceholder):
+	# First store the info about the attack currently in progress.
+	_attack_in_progress = true
+	_attack_info = {
+		"attacking_card": attacking_card,
+		"enemy_placeholder": enemy_placeholder
+	}
 	_current_state = State.Name.WAITING_FOR_PLAYER
 	board._instruction.text = States[_current_state].instruction
-	set_enemy_state.rpc(State.Name.SUPPORT)
+	set_enemy_state.rpc(State.Name.ATTACK_BLOCK)
+
+
+func enemy_support_block(support_card: Card):
+	_pending_support = support_card
+	_current_state = State.Name.WAITING_FOR_PLAYER
+	board._instruction.text = States[_current_state].instruction
+	set_enemy_state.rpc(State.Name.SUPPORT_BLOCK)
 
 
 # When a state is finished by the first player, the second player enters the same state.

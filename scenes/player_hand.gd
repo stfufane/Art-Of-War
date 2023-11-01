@@ -27,3 +27,8 @@ func draw_card():
 func is_deck_empty() -> bool:
 	return _deck.is_empty()
 
+
+func flash_attack_block_cards():
+	for card in _cards:
+		if card._unit_type == CardType.UnitType.Guard or card._unit_type == CardType.UnitType.King:
+			card.start_flash()

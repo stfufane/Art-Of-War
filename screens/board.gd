@@ -81,12 +81,19 @@ func init_recruit_turn():
 	battlefield.card_added.connect(_card_added_on_battlefield)
 
 
-func init_attack_turn():
+func init_support_turn():
+	support_menu.show()
 	pass
 
 
-func init_support_turn():
-	support_menu.show()
+func init_attack_block():
+	# The player can block the enemy attack if he has a guard or a king in hand.
+	_hand.flash_attack_block_cards()
+	pass
+
+
+func init_support_block():
+	# The player can block the enemy support if he has a wizard or a king in hand.
 	pass
 
 

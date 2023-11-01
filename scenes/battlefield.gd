@@ -124,17 +124,13 @@ func _enemy_card_clicked(id: int):
 	
 	# Check that the card is within reach of the attacking card
 	var clicked_card: Card = instance_from_id(id)
-	var attack_range = _attacking_card.get_attack_range()
-	var enemy_coords: Vector2 = instance_from_id(clicked_card.placeholder_id).coords
+	var enemy_placeholder: CardPlaceholder = instance_from_id(clicked_card.placeholder_id)
+	var enemy_coords: Vector2 = enemy_placeholder.coords
 	var attacking_card_coords: Vector2 = instance_from_id(_attacking_card.placeholder_id).coords
-	for coords in attack_range:
+	for coords in _attacking_card.get_attack_range():
 		if enemy_coords == attacking_card_coords + coords:
-			_attacking_card.attack()
-			_attacking_card = null
 			all_highlights_off()
-			# TODO: Store the ongoing attack to know if it can be applied or not
-			# Check if the opponent blocks the attack
-			Game.enemy_support()
+			Game.enemy_attack_block(_attacking_card, enemy_placeholder)
 			break
 
 
