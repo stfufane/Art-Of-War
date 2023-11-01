@@ -3,9 +3,19 @@ extends Control
 
 signal card_clicked(int)
 
+var Types: Dictionary = {
+	CardType.UnitType.King: CardType.new(CardType.UnitType.King, "King", 1, 5, 4, [Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)]),
+	CardType.UnitType.Soldier: CardType.new(CardType.UnitType.Soldier, "Soldier", INF, 2, 1, [Vector2(0, 1)]),
+	CardType.UnitType.Archer: CardType.new(CardType.UnitType.Archer, "Archer", 1, 2, 1, [Vector2(-2, 1), Vector2(2, 1), Vector2(-1, 2), Vector2(1, 2)]),
+	CardType.UnitType.Guard: CardType.new(CardType.UnitType.Guard, "Guard", 1, 3, 2, [Vector2(0, 1)]),
+	CardType.UnitType.Wizard: CardType.new(CardType.UnitType.Wizard, "Wizard", 1, 2, 1, [Vector2(0, 1), Vector2(0, 2), Vector2(0, 3)]),
+	CardType.UnitType.Monk: CardType.new(CardType.UnitType.Monk, "Monk", 1, 2, 2, [Vector2(-1, 1), Vector2(1, 1), Vector2(-2, 2), Vector2(2, 2)])
+}
+
+
 @export  var _unit_type : CardType.UnitType
 
-@onready var _type: CardType = Game.CardTypes[_unit_type]
+@onready var _type: CardType = Types[_unit_type]
 @onready var _label: Label = $Container/CardName
 @onready var _image: Sprite2D = $CardImage
 @onready var _rect = $ColorRect
@@ -36,7 +46,7 @@ var _has_flash: bool = false
 
 func _ready():
 	base_color = _rect.color
-	_type = Game.CardTypes[_unit_type]
+	_type = Types[_unit_type]
 	_label.text = _type.name
 	var image = load("res://images/cards/" + _type.name + ".jpg")
 	_image.texture = image

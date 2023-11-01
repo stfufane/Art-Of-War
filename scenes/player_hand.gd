@@ -3,6 +3,13 @@ extends CardsControl
 
 var _deck: Array[CardType.UnitType] = []
 
+func _ready():
+	# Setup the game when players are ready.
+	Game.players_ready.connect(setup)
+
+	# Automatically draw a card at the start of a turn.
+	Game.States[State.Name.START_TURN].started.connect(draw_card)
+
 func setup():
 	# Build the deck with 4 of each card.
 	for _i in range(4):

@@ -1,6 +1,8 @@
 class_name State
 extends Object
 
+signal started
+
 enum Name {
 	WAITING_FOR_PLAYER,
 	INIT_BATTLEFIELD,
@@ -17,7 +19,6 @@ enum Name {
 
 
 var name: Name
-var callback: Callable = func(): pass
 var instruction: String
 var happens_once: bool
 

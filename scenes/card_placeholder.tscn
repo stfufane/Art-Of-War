@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/card_placeholder.gd" id="1_8uc8j"]
 
 [node name="CardPlaceholder" type="Control"]
-custom_minimum_size = Vector2(120, 120)
+custom_minimum_size = Vector2(192, 192)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 192.0

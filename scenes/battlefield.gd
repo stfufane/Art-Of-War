@@ -9,6 +9,14 @@ var _attacking_card: Card = null
 @onready var _player_container: Control = $PlayerContainer
 
 
+func _ready():
+	# Setup the battlefield when players are ready.
+	Game.players_ready.connect(setup)
+
+	# Disengage the cards at the beginning of the turn.
+	Game.States[State.Name.START_TURN].started.connect(disengage_cards)
+
+
 func setup():
 	# Connect all the card nodes to react to click and hover
 	for placeholder in _player_container.get_children():
