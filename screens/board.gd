@@ -1,11 +1,6 @@
 class_name Board
 extends Node
 
-@onready var support_menu: PanelContainer = $CanvasLayer/SupportMenu
-@onready var end_turn_menu: PanelContainer = $CanvasLayer/EndTurnMenu
-
-@onready var pass_button: Button = $CanvasLayer/EndTurnMenu/MarginContainer/VBoxContainer/PassButton
-@onready var pass_support_button: Button = $CanvasLayer/SupportMenu/MarginContainer/VBoxContainer/PassButton
 
 @onready var battlefield: Battlefield = $Battlefield
 @onready var _reserve: CardsControl = $Reserve
@@ -20,10 +15,8 @@ func _ready():
 	Game.States[State.Name.INIT_BATTLEFIELD].started.connect(init_battlefield)
 	Game.States[State.Name.INIT_RESERVE].started.connect(init_reserve)
 	Game.States[State.Name.RECRUIT].started.connect(init_recruit_turn)
-	Game.States[State.Name.SUPPORT].started.connect(init_support_turn)
 	Game.States[State.Name.ATTACK_BLOCK].started.connect(init_attack_block)
 	Game.States[State.Name.SUPPORT_BLOCK].started.connect(init_support_block)
-	Game.States[State.Name.FINISH_TURN].started.connect(finish_turn)
 
 
 func setup():
@@ -66,11 +59,6 @@ func init_recruit_turn():
 	battlefield.card_added.connect(_card_added_on_battlefield)
 
 
-func init_support_turn():
-	support_menu.show()
-	pass
-
-
 func init_attack_block():
 	# The player can block the enemy attack if he has a guard or a king in hand.
 	_hand.flash_attack_block_cards()
@@ -82,26 +70,9 @@ func init_support_block():
 	pass
 
 
-func finish_turn():
-	# Add a card in the kingdom or pass.
-	# If you have 6 cards in your hand, you MUST put a card in the kingdom
-	pass_button.disabled = _hand.size() > 5
-	end_turn_menu.show()
-
 ###########
 # Signals #
 ###########
-func _on_pass_support_button_pressed():
-	pass
-
-
-func _on_pass_button_pressed():
-	if Game.get_state() != State.Name.FINISH_TURN:
-		return
-	Game.end_state()
-	end_turn_menu.hide()
-
-
 func _hand_card_selected(card_id: int):
 	_card_selected(card_id, _hand)
 

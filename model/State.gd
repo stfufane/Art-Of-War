@@ -38,8 +38,6 @@ func get_next_state() -> State.Name:
 			return State.Name.INIT_RESERVE
 		State.Name.INIT_RESERVE:
 			return State.Name.START_TURN
-		State.Name.START_TURN:
-			return State.Name.ACTION_CHOICE
 		State.Name.RECRUIT:
 			return State.Name.FINISH_TURN
 		State.Name.SUPPORT:

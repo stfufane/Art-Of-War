@@ -8,7 +8,7 @@ func _ready():
 	Game.players_ready.connect(setup)
 
 	# Automatically draw a card at the start of a turn.
-	Game.States[State.Name.START_TURN].started.connect(draw_card)
+	Game.States[State.Name.START_TURN].started.connect(start_turn)
 
 func setup():
 	# Build the deck with 4 of each card.
@@ -26,6 +26,12 @@ func setup():
 		add_card(Game.create_card_instance(_deck.pop_back()))
 
 
+func start_turn():
+	# Draw a card at the start of the turn and go directly to the next state.
+	draw_card()
+	Game.start_state(State.Name.ACTION_CHOICE)
+
+
 func draw_card():
 	if !_deck.is_empty():
 		add_card(Game.create_card_instance(_deck.pop_back()))
@@ -39,3 +45,16 @@ func flash_attack_block_cards():
 	for card in _cards:
 		if card._unit_type == CardType.UnitType.Guard or card._unit_type == CardType.UnitType.King:
 			card.start_flash()
+
+
+#
+# Overrides from CardsControl
+###############################
+func add_card(card: Card):
+	super.add_card(card)
+	Game.hand_size_updated.emit(_cards.size())
+
+
+func remove_card(card: Card):
+	super.remove_card(card)
+	Game.hand_size_updated.emit(_cards.size())

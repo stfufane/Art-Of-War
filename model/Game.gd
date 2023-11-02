@@ -3,6 +3,7 @@ extends Node
 
 signal players_ready
 signal instruction_updated(instruction: String)
+signal hand_size_updated(size: int)
 
 
 var States: Dictionary = {
@@ -43,11 +44,6 @@ var peer_id: int = 0
 var first_player: bool = false
 
 
-func _ready():
-	players_ready.connect(setup)
-	States[State.Name.START_TURN].started.connect(func(): start_state(State.Name.ACTION_CHOICE))
-
-
 func start_server():
 	enet_peer.create_server(PORT, 2)
 	multiplayer.multiplayer_peer = enet_peer
@@ -63,10 +59,6 @@ func join_server():
 	peer_id = multiplayer.get_unique_id()
 	multiplayer.peer_connected.connect(func(_id: int): players_ready.emit())
 	print("Joined server with peer id: " + str(peer_id))
-
-
-func setup():
-	_current_state = State.Name.WAITING_FOR_PLAYER
 
 
 func create_card_instance(unit_type: CardType.UnitType) -> Card:

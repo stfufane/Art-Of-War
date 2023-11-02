@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://chegm7x5sl8rx"]
+[gd_scene load_steps=12 format=3 uid="uid://chegm7x5sl8rx"]
 
 [ext_resource type="Script" path="res://screens/board.gd" id="1_ccqse"]
 [ext_resource type="PackedScene" uid="uid://dcwtowpudpdv2" path="res://scenes/battlefield.tscn" id="2_mg76x"]
@@ -9,6 +9,8 @@
 [ext_resource type="Script" path="res://screens/Instruction.gd" id="7_7kyvm"]
 [ext_resource type="Script" path="res://screens/MainMenu.gd" id="8_p57cv"]
 [ext_resource type="Script" path="res://screens/ActionMenu.gd" id="9_av1w1"]
+[ext_resource type="Script" path="res://screens/EndTurnMenu.gd" id="10_m4hdm"]
+[ext_resource type="Script" path="res://screens/SupportMenu.gd" id="11_7ktw6"]
 
 [node name="Board" type="Node"]
 script = ExtResource("1_ccqse")
@@ -182,6 +184,7 @@ offset_top = 538.0
 offset_right = -295.0
 offset_bottom = 668.0
 grow_horizontal = 2
+script = ExtResource("10_m4hdm")
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/EndTurnMenu"]
 layout_mode = 2
@@ -214,6 +217,7 @@ offset_top = 538.0
 offset_right = -295.0
 offset_bottom = 668.0
 grow_horizontal = 2
+script = ExtResource("11_7ktw6")
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/SupportMenu"]
 layout_mode = 2
@@ -242,5 +246,5 @@ text = "Pass"
 [connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/SupportButton" to="CanvasLayer/ActionMenu" method="_on_support_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/AttackButton" to="CanvasLayer/ActionMenu" method="_on_attack_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/EndTurnButton" to="CanvasLayer/ActionMenu" method="_on_end_turn_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/EndTurnMenu/MarginContainer/VBoxContainer/PassButton" to="." method="_on_pass_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/SupportMenu/MarginContainer/VBoxContainer/PassButton" to="." method="_on_pass_support_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/EndTurnMenu/MarginContainer/VBoxContainer/PassButton" to="CanvasLayer/EndTurnMenu" method="_on_pass_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/SupportMenu/MarginContainer/VBoxContainer/PassButton" to="CanvasLayer/SupportMenu" method="_on_pass_support_button_pressed"]
