@@ -22,9 +22,7 @@ func _ready():
 
 func setup():
 	# First card of the deck is put in the kingdom
-	var unit_type = _hand._deck.pop_back()
-	kingdom.increase_population(unit_type)
-	add_card_to_enemy_kingdom.rpc(unit_type)
+	_increase_kingdom_population(_hand._deck.pop_back())
 	kingdom.setup()
 	enemy_kingdom.setup()
 
@@ -65,7 +63,19 @@ func _hand_card_clicked(card: Card) -> void:
 			pass # TODO
 		State.Name.SUPPORT_BLOCK:
 			pass # TODO
+		State.Name.FINISH_TURN:
+			if _increase_kingdom_population(card._unit_type):
+				_hand.remove_card(card)
+				Game.end_state()
 
+
+func _increase_kingdom_population(unit_type: CardType.UnitType) -> bool:
+	# Can't add the king to the kingdom
+	if unit_type == CardType.UnitType.King:
+		return false
+	kingdom.increase_population(unit_type)
+	add_card_to_enemy_kingdom.rpc(unit_type)
+	return true
 
 func _reserve_card_clicked(card: Card) -> void:
 	match Game.get_state():
