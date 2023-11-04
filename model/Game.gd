@@ -6,6 +6,13 @@ signal instruction_updated(instruction: String)
 signal hand_size_updated(size: int)
 
 
+# When a card is clicked, it will emit a signal depending on where it lies on the board.
+signal hand_card_clicked(card: Card)
+signal battlefield_card_clicked(card: Card)
+signal enemy_battlefield_card_clicked(card: Card)
+signal reserve_card_clicked(card: Card)
+
+
 var States: Dictionary = {
 	State.Name.WAITING_FOR_PLAYER: State.new(State.Name.WAITING_FOR_PLAYER, "Waiting for opponent", false),
 	State.Name.INIT_BATTLEFIELD: State.new(State.Name.INIT_BATTLEFIELD, "Init battlefield", true),
@@ -44,21 +51,29 @@ var peer_id: int = 0
 var first_player: bool = false
 
 
-func start_server():
+func start_server() -> void:
 	enet_peer.create_server(PORT, 2)
 	multiplayer.multiplayer_peer = enet_peer
 	peer_id = multiplayer.get_unique_id()
 	first_player = true
-	multiplayer.peer_connected.connect(func(_id: int): players_ready.emit())
+	multiplayer.peer_connected.connect(setup)
 	print("Started server with peer id: " + str(peer_id))
 
 
-func join_server():
+func join_server() -> void:
 	enet_peer.create_client("localhost", PORT)
 	multiplayer.multiplayer_peer = enet_peer
 	peer_id = multiplayer.get_unique_id()
-	multiplayer.peer_connected.connect(func(_id: int): players_ready.emit())
+	multiplayer.peer_connected.connect(setup)
 	print("Joined server with peer id: " + str(peer_id))
+
+
+func setup(_player_id: int) -> void:
+	players_ready.emit()
+	if first_player:
+		start_state(State.Name.INIT_BATTLEFIELD)
+	else:
+		instruction_updated.emit("Waiting for the other player")
 
 
 func create_card_instance(unit_type: CardType.UnitType) -> Card:
@@ -71,7 +86,7 @@ func get_state() -> State.Name :
 	return _current_state
 
 
-func start_state(state: State.Name, is_rpc: bool = false):
+func start_state(state: State.Name, is_rpc: bool = false) -> void:
 	previous_state = _current_state
 	_current_state = state
 	instruction_updated.emit(States[state].instruction)
@@ -83,8 +98,19 @@ func start_state(state: State.Name, is_rpc: bool = false):
 	States[state].started.emit()
 
 
+# When a state is finished by the first player, the second player enters the same state.
+# When the second player finishes the state, the first player enters the next state.
+# In both cases the current player waits.
+func end_state() -> void:
+	if first_player and States[_current_state].happens_once:
+		set_enemy_state.rpc(_current_state)
+	else:
+		set_enemy_state.rpc(States[_current_state].get_next_state())
+	start_state(State.Name.WAITING_FOR_PLAYER)
+
+
 # After attacking, the enemy can play a support card to block the attack.
-func enemy_attack_block(attacking_card: Card, enemy_placeholder: CardPlaceholder):
+func enemy_attack_block(attacking_card: Card, enemy_placeholder: CardPlaceholder) -> void:
 	# First store the info about the attack currently in progress.
 	_attack_in_progress = true
 	_attack_info = {
@@ -95,22 +121,12 @@ func enemy_attack_block(attacking_card: Card, enemy_placeholder: CardPlaceholder
 	set_enemy_state.rpc(State.Name.ATTACK_BLOCK)
 
 
-func enemy_support_block(support_card: Card):
+func enemy_support_block(support_card: Card) -> void:
 	_pending_support = support_card
 	start_state(State.Name.WAITING_FOR_PLAYER)
 	set_enemy_state.rpc(State.Name.SUPPORT_BLOCK)
 
 
-# When a state is finished by the first player, the second player enters the same state.
-# When the second player finishes the state, the first player enters the next state.
-# In both cases the current player waits.
-func end_state():
-	if first_player and States[_current_state].happens_once:
-		set_enemy_state.rpc(_current_state)
-	else:
-		set_enemy_state.rpc(States[_current_state].get_next_state())
-	start_state(State.Name.WAITING_FOR_PLAYER)
-
 @rpc("any_peer")
-func set_enemy_state(state: State.Name):
+func set_enemy_state(state: State.Name) -> void:
 	start_state(state, true)

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://6tknyk37omdy"]
 
-[ext_resource type="Script" path="res://scenes/player_hand.gd" id="1_wws4w"]
+[ext_resource type="Script" path="res://scenes/hand.gd" id="1_p8ass"]
 
 [node name="PlayerHand" type="Control"]
 custom_minimum_size = Vector2(1152, 192)
@@ -9,7 +9,7 @@ anchors_preset = 0
 offset_right = 1152.0
 offset_bottom = 192.0
 size_flags_horizontal = 0
-script = ExtResource("1_wws4w")
+script = ExtResource("1_p8ass")
 board_area = 1
 
 [node name="ColorRect" type="ColorRect" parent="."]

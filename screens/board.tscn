@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://screens/board.gd" id="1_ccqse"]
 [ext_resource type="PackedScene" uid="uid://dcwtowpudpdv2" path="res://scenes/battlefield.tscn" id="2_mg76x"]
-[ext_resource type="PackedScene" uid="uid://6tknyk37omdy" path="res://scenes/player_hand.tscn" id="3_u2ksf"]
+[ext_resource type="PackedScene" uid="uid://6tknyk37omdy" path="res://scenes/hand.tscn" id="3_u2ksf"]
 [ext_resource type="PackedScene" uid="uid://vm1jd1gw330s" path="res://scenes/reserve.tscn" id="4_mb6ut"]
 [ext_resource type="PackedScene" uid="uid://ccscfsp22jrsp" path="res://scenes/card_placeholder.tscn" id="5_brr7o"]
 [ext_resource type="PackedScene" uid="uid://dwehldueqyfq5" path="res://scenes/kingdom.tscn" id="6_oavws"]
@@ -20,7 +20,7 @@ offset_right = 383.0
 offset_bottom = 512.0
 size_flags_horizontal = 0
 
-[node name="PlayerHand" parent="." instance=ExtResource("3_u2ksf")]
+[node name="Hand" parent="." instance=ExtResource("3_u2ksf")]
 offset_left = 200.0
 offset_top = 544.0
 offset_right = 1352.0
@@ -47,6 +47,7 @@ offset_top = 32.0
 offset_right = 1392.0
 offset_bottom = 224.0
 scale = Vector2(0.5, 0.5)
+board_area = 4
 
 [node name="ReserveLabel" type="Label" parent="."]
 offset_left = 656.0
@@ -61,6 +62,7 @@ offset_top = 514.0
 offset_right = 800.0
 offset_bottom = 514.0
 scale = Vector2(0.7, 0.7)
+board_area = 0
 label_text = "Graveyard"
 
 [node name="Kingdom" parent="." instance=ExtResource("6_oavws")]

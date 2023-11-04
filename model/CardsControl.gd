@@ -23,23 +23,19 @@ func remove_card(card: Card) -> void:
 	_cards.erase(card)
 
 
+func remove_card_type(type: CardType.UnitType) -> void:
+	for card in _cards:
+		if card._unit_type == type:
+			remove_card(card)
+			return
+
+
 func switch_card(drawn_card: Card, picked_up_card: Card) -> void:
 	# If a card had already been picked up, put it back
 	if picked_up_card != null:
 		add_card(picked_up_card)
 
 	remove_card(drawn_card)
-
-
-func connect_click(callback: Callable) -> void:
-	for card in _cards:
-		card.card_clicked.connect(callback)
-
-
-func disconnect_click(callback: Callable) -> void:
-	for card in _cards:
-		if card.card_clicked.is_connected(callback):
-			card.card_clicked.disconnect(callback)
 
 
 func is_empty() -> bool:

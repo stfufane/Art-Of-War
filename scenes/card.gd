@@ -1,7 +1,6 @@
 class_name Card
 extends Control
 
-signal card_clicked(int)
 
 var Types: Dictionary = {
 	CardType.UnitType.King: CardType.new(CardType.UnitType.King, "King", 1, 5, 4, [Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)]),
@@ -27,12 +26,14 @@ enum BoardArea {
 	Hand,
 	Picked,
 	Reserve,
+	EnemyReserve,
 	Kingdom,
 	Battlefield,
+	EnemyBattlefield
 }
 
 # The id where the card sits on the battlefield
-var placeholder_id: int = 0
+var placeholder: CardPlaceholder = null
 
 var base_color: Color
 var highlight_color: Color = Color.DARK_MAGENTA
@@ -44,7 +45,7 @@ var _engaged: bool = false
 var _has_flash: bool = false
 
 
-func _ready():
+func _ready() -> void:
 	base_color = _rect.color
 	_type = Types[_unit_type]
 	_label.text = _type.name
@@ -62,20 +63,19 @@ func set_board_area(new_area: BoardArea):
 	_board_area = new_area
 
 
-func set_unit_type(type: CardType.UnitType):
+func get_board_area() -> BoardArea:
+	return _board_area
+
+
+func set_unit_type(type: CardType.UnitType) -> void:
 	_unit_type = type
 
 
-func set_nb_units(nb_units: int):
+func set_nb_units(nb_units: int) -> void:
 	$Container/NbUnits.text = str(nb_units)
 
 
-func remove_click_connections() -> void:
-	for connection in card_clicked.get_connections():
-		card_clicked.disconnect(connection.callable)
-
-
-func disengage():
+func disengage() -> void:
 	_engaged = false
 	_image.rotation_degrees = 0
 
@@ -84,27 +84,28 @@ func get_attack_range() -> PackedVector2Array:
 	return _type.attack_range
 
 
-func attack():
+func attack() -> void:
 	_engaged = true
 	_image.rotation_degrees = -90
 	stop_flash()
 
 
-func toggle_flash():
+func toggle_flash() -> void:
 	if _has_flash:
 		stop_flash()
 	else:
 		start_flash()
 
 
-func start_flash():
+func start_flash() -> void:
 	if _has_flash:
 		return
 	_image.material = ShaderMaterial.new()
 	_image.material.shader = _flash_shader
 	_has_flash = true
 
-func stop_flash():
+
+func stop_flash() -> void:
 	if !_has_flash:
 		return
 	_image.material = null
@@ -113,10 +114,19 @@ func stop_flash():
 
 ## Signals
 ############
-
-func _on_gui_input(event:InputEvent):
+func _on_gui_input(event:InputEvent) -> void:
 	if !event.is_action_pressed(Game.LEFT_CLICK):
 		return
 
-	card_clicked.emit(get_instance_id())
+	match _board_area:
+		BoardArea.Hand:
+			Game.hand_card_clicked.emit(self)
+		BoardArea.Reserve:
+			Game.reserve_card_clicked.emit(self)
+		BoardArea.Battlefield:
+			Game.battlefield_card_clicked.emit(self)
+		BoardArea.EnemyBattlefield:
+			Game.enemy_battlefield_card_clicked.emit(self)
+		_:
+			pass
 

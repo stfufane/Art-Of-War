@@ -1,9 +1,9 @@
 class_name CardPlaceholder
 extends Control
 
-signal card_placeholder_clicked(int)
+signal card_placeholder_clicked(CardPlaceholder)
 
-
+# Will tell on which part of the battlefield the placeholder is (player or enemy)
 @export var board_area: Card.BoardArea = Card.BoardArea.Battlefield
 @export var coords: Vector2
 @export var label_text: String
@@ -39,7 +39,7 @@ func set_card(new_card: Card):
 		add_child(new_card)
 
 	_current_card = new_card
-	_current_card.placeholder_id = get_instance_id()
+	_current_card.placeholder = self
 	_current_card.position = Vector2(0, 0)
 	_current_card.set_board_area(board_area)
 
@@ -54,10 +54,6 @@ func disengage_card():
 		_current_card.disengage()
 
 
-func connect_click(callback: Callable):
-	_current_card.card_clicked.connect(callback)
-
-
 func toggle_highlight():
 	is_highlighting = !is_highlighting
 	$ColorRect.color = highlight_color if is_highlighting else base_color
@@ -70,4 +66,4 @@ func highlight_off():
 
 func _on_gui_input(event:InputEvent):
 	if event.is_action_pressed(Game.LEFT_CLICK):
-		card_placeholder_clicked.emit(get_instance_id())
+		card_placeholder_clicked.emit(self)

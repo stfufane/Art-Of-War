@@ -15,6 +15,7 @@ var _cards: Dictionary = {
 func setup():
 	for unit_type in _cards:
 		var card_instance = Game.create_card_instance(unit_type)
+		card_instance.set_board_area(Card.BoardArea.Kingdom)
 		card_instance.set_nb_units(_cards[unit_type])
 		_card_container.add_child(card_instance)
 
