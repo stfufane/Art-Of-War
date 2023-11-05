@@ -2,7 +2,6 @@ class_name Board
 extends Node
 
 
-@onready var battlefield: Battlefield = $Battlefield
 @onready var _reserve: CardsControl = $Reserve
 @onready var enemy_reserve: CardsControl = $EnemyReserve
 @onready var kingdom: Kingdom = $Kingdom
@@ -14,17 +13,14 @@ func _ready():
 	Game.players_ready.connect(setup)
 	Game.hand_card_clicked.connect(_hand_card_clicked)
 	Game.reserve_card_clicked.connect(_reserve_card_clicked)
+	Game.no_support_played.connect(_no_support_played)
 
 	Game.States[State.Name.RECRUIT].started.connect(init_recruit_turn)
-	Game.States[State.Name.ATTACK_BLOCK].started.connect(init_attack_block)
-	Game.States[State.Name.SUPPORT_BLOCK].started.connect(init_support_block)
 
 
 func setup():
 	# First card of the deck is put in the kingdom
-	_increase_kingdom_population(_hand._deck.pop_back())
-	kingdom.setup()
-	enemy_kingdom.setup()
+	increase_kingdom_population(_hand._deck.pop_back())
 
 
 func init_recruit_turn():
@@ -36,55 +32,7 @@ func init_recruit_turn():
 		Game.instruction_updated.emit("Pick a card from your hand")
 
 
-func init_attack_block():
-	# The player can block the enemy attack if he has a guard or a king in hand.
-	pass
-
-
-func init_support_block():
-	# The player can block the enemy support if he has a wizard or a king in hand.
-	pass
-
-
-###########
-# Signals #
-###########
-func _hand_card_clicked(card: Card) -> void:
-	match Game.get_state():
-		State.Name.INIT_BATTLEFIELD:
-			_card_selected(card, _hand)
-		State.Name.INIT_RESERVE:
-			_add_card_to_reserve(card)
-		State.Name.RECRUIT:
-			# We can recruit from the hand only if the reserve is empty
-			if _reserve.is_empty():
-				_card_selected(card, _hand)
-		State.Name.ATTACK_BLOCK:
-			pass # TODO
-		State.Name.SUPPORT_BLOCK:
-			pass # TODO
-		State.Name.FINISH_TURN:
-			if _increase_kingdom_population(card._unit_type):
-				_hand.remove_card(card)
-				Game.end_state()
-
-
-func _increase_kingdom_population(unit_type: CardType.UnitType) -> bool:
-	# Can't add the king to the kingdom
-	if unit_type == CardType.UnitType.King:
-		return false
-	kingdom.increase_population(unit_type)
-	add_card_to_enemy_kingdom.rpc(unit_type)
-	return true
-
-func _reserve_card_clicked(card: Card) -> void:
-	match Game.get_state():
-		State.Name.INIT_RESERVE, State.Name.RECRUIT:
-			_card_selected(card, _reserve)
-			remove_card_from_enemy_reserve.rpc(card._unit_type)
-
-
-func _card_selected(card: Card, from: CardsControl) -> void:
+func card_selected(card: Card, from: CardsControl) -> void:
 	from.switch_card(card, Game.picked_card)
 	
 	Game.picked_card = card
@@ -92,12 +40,79 @@ func _card_selected(card: Card, from: CardsControl) -> void:
 	Game.picked_card.set_board_area(Card.BoardArea.Picked)
 
 
-func _add_card_to_reserve(card: Card):
+func add_card_to_reserve(card: Card):
 	_hand.remove_card(card)
 	_reserve.add_card(card)
 	add_card_to_enemy_reserve.rpc(card._unit_type)
-	Game.end_state()
 
+
+func recruit_from_hand(card: Card) -> void:
+	# We can recruit from the hand only if the reserve is empty
+	# and if we didn't pick up a card from the reserve already
+	if _reserve.is_empty() and (Game.picked_card == null or Game.picked_card._picked_from != Card.BoardArea.Reserve):
+		card_selected(card, _hand)
+
+
+func play_attack_block(card: Card) -> void:
+	# The player can block the enemy attack if he has a guard or a king in hand.
+	if card._unit_type != CardType.UnitType.Guard and card._unit_type != CardType.UnitType.King:
+		return
+	
+	add_card_to_reserve(card)
+
+
+func play_support_block(card: Card) -> void:
+	# The player can block the enemy support if he has a wizard or a king in hand.
+	if card._unit_type != CardType.UnitType.Wizard and card._unit_type != CardType.UnitType.King:
+		return
+
+	add_card_to_reserve(card)
+
+
+func increase_kingdom_population(unit_type: CardType.UnitType) -> bool:
+	# Can't add the king to the kingdom
+	if unit_type == CardType.UnitType.King:
+		return false
+	kingdom.increase_population(unit_type)
+	add_card_to_enemy_kingdom.rpc(unit_type)
+	return true
+
+
+func finish_turn(card: Card) -> void:
+	if increase_kingdom_population(card._unit_type):
+		_hand.remove_card(card)
+		Game.end_state()
+
+###########
+# Signals #
+###########
+func _hand_card_clicked(card: Card) -> void:
+	match Game.get_state():
+		State.Name.INIT_BATTLEFIELD:
+			card_selected(card, _hand)
+		State.Name.INIT_RESERVE:
+			add_card_to_reserve(card)
+			Game.end_state()
+		State.Name.RECRUIT:
+			recruit_from_hand(card)
+		State.Name.ATTACK_BLOCK:
+			play_attack_block(card)
+		State.Name.SUPPORT_BLOCK:
+			play_support_block(card)
+		State.Name.FINISH_TURN:
+			finish_turn(card)
+
+
+func _reserve_card_clicked(card: Card) -> void:
+	match Game.get_state():
+		State.Name.INIT_RESERVE, State.Name.RECRUIT:
+			card_selected(card, _reserve)
+			remove_card_from_enemy_reserve.rpc(card._unit_type)
+
+
+func _no_support_played() -> void:
+	# Send a signal to the enemy to tell him that we didn't play any support card
+	pass
 
 #################################################################################
 # Network actions that are called to reflect local actions on the enemy board  ##

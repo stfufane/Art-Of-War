@@ -40,6 +40,7 @@ var highlight_color: Color = Color.DARK_MAGENTA
 
 # The global location of the card on the board
 var _board_area: BoardArea = BoardArea.Nowhere 
+var _picked_from: BoardArea = BoardArea.Nowhere
 
 var _engaged: bool = false
 var _has_flash: bool = false
@@ -60,6 +61,9 @@ func _process(_delta):
 
 
 func set_board_area(new_area: BoardArea):
+	# When picking a card, it's removed from its area so we want to know where it came from.
+	if new_area == BoardArea.Picked:
+		_picked_from = _board_area
 	_board_area = new_area
 
 

@@ -2,11 +2,16 @@ class_name ActionMenu
 extends PanelContainer
 
 @onready var recruit_button = $MarginContainer/VBoxContainer/RecruitButton
+@onready var attack_button = $MarginContainer/VBoxContainer/AttackButton
 
 
 func _ready():
 	Game.States[State.Name.ACTION_CHOICE].started.connect(_action_choice_started)
+	Game.is_attack_available.connect(set_attack_button_enabled)
 
+
+func set_attack_button_enabled(enabled: bool):
+	attack_button.disabled = !enabled
 
 func _action_choice_started():
 	# Hide the recruit action if the player attacked already or used a support card.

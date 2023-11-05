@@ -18,6 +18,9 @@ func _ready():
 	# Disengage the cards at the beginning of the turn.
 	Game.States[State.Name.START_TURN].started.connect(disengage_cards)
 
+	# Before the player chooses an action, check if he can attack.
+	Game.States[State.Name.ACTION_CHOICE].started.connect(func(): Game.is_attack_available.emit(is_attack_available()))
+
 
 func setup() -> void:
 	# Connect all the card nodes to react to click and hover
@@ -29,7 +32,7 @@ func setup() -> void:
 
 func disengage_cards() -> void:
 	for placeholder in _player_container.get_children():
-		placeholder.disengage_card()
+		placeholder.disengage_card()	
 
 
 func all_highlights_off() -> void:
@@ -103,6 +106,22 @@ func _placeholder_clicked(clicked_placeholder: CardPlaceholder) -> void:
 				Game.start_state(State.Name.FINISH_TURN)
 		_:
 			pass
+
+
+# Check that at least one card can attack an enemy card.
+func is_attack_available() -> bool:
+	for placeholder in _player_container.get_children():
+		if !placeholder.has_card():
+			continue
+		var attack_range: PackedVector2Array = placeholder.get_current_card().get_attack_range()
+		var card_coords: Vector2 = placeholder.coords
+		for enemy in _enemy_container.get_children():
+			if !enemy.has_card():
+				continue
+			for coords in attack_range:
+				if card_coords + coords == enemy.coords:
+					return true
+	return false
 
 
 # Click on a card to attack with it

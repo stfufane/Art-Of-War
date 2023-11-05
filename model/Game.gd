@@ -4,6 +4,8 @@ extends Node
 signal players_ready
 signal instruction_updated(instruction: String)
 signal hand_size_updated(size: int)
+signal is_attack_available(bool)
+signal no_support_played
 
 
 # When a card is clicked, it will emit a signal depending on where it lies on the board.
@@ -57,7 +59,6 @@ func start_server() -> void:
 	peer_id = multiplayer.get_unique_id()
 	first_player = true
 	multiplayer.peer_connected.connect(setup)
-	print("Started server with peer id: " + str(peer_id))
 
 
 func join_server() -> void:
@@ -65,7 +66,6 @@ func join_server() -> void:
 	multiplayer.multiplayer_peer = enet_peer
 	peer_id = multiplayer.get_unique_id()
 	multiplayer.peer_connected.connect(setup)
-	print("Joined server with peer id: " + str(peer_id))
 
 
 func setup(_player_id: int) -> void:
@@ -106,6 +106,7 @@ func end_state() -> void:
 		set_enemy_state.rpc(_current_state)
 	else:
 		set_enemy_state.rpc(States[_current_state].get_next_state())
+	States[_current_state].ended.emit()
 	start_state(State.Name.WAITING_FOR_PLAYER)
 
 

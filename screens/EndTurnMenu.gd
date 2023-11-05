@@ -5,6 +5,7 @@ extends PanelContainer
 
 func _ready():
 	Game.States[State.Name.FINISH_TURN].started.connect(show)
+	Game.States[State.Name.FINISH_TURN].ended.connect(hide)
 	Game.hand_size_updated.connect(set_pass_enabled)
 
 
@@ -17,5 +18,4 @@ func _on_pass_button_pressed():
 	if Game.get_state() != State.Name.FINISH_TURN:
 		return
 	Game.end_state()
-	hide()
 

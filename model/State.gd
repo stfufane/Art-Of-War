@@ -2,6 +2,7 @@ class_name State
 extends Object
 
 signal started
+signal ended
 
 enum Name {
 	WAITING_FOR_PLAYER,

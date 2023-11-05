@@ -11,6 +11,9 @@ var _cards: Dictionary = {
 	CardType.UnitType.Monk: 0
 }
 
+func _ready():
+	Game.players_ready.connect(setup)
+
 
 func setup():
 	for unit_type in _cards:
