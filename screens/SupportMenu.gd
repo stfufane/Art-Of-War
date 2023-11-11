@@ -8,6 +8,8 @@ func _ready():
 	# Display the menu when the support state is started
 	Game.States[State.Name.SUPPORT_BLOCK].started.connect(show)
 	Game.States[State.Name.ATTACK_BLOCK].started.connect(show)
+	Game.States[State.Name.SUPPORT_BLOCK].ended.connect(hide)
+	Game.States[State.Name.ATTACK_BLOCK].ended.connect(hide)
 
 
 func _on_pass_support_button_pressed():

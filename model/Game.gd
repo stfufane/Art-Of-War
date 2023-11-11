@@ -21,10 +21,10 @@ var States: Dictionary = {
 	State.Name.INIT_RESERVE: State.new(State.Name.INIT_RESERVE, "Init reserve", true),
 	State.Name.START_TURN: State.new(State.Name.START_TURN, "Start turn", false),
 	State.Name.ACTION_CHOICE: State.new(State.Name.ACTION_CHOICE, "Action choice", false),
-	State.Name.RECRUIT: State.new(State.Name.RECRUIT, "Recruit", false),
-	State.Name.SUPPORT: State.new(State.Name.SUPPORT, "Support", false),
+	State.Name.RECRUIT: State.new(State.Name.RECRUIT, "Recruit a unit", false),
+	State.Name.SUPPORT: State.new(State.Name.SUPPORT, "Play a support by adding it to your reserve", false),
 	State.Name.SUPPORT_BLOCK: State.new(State.Name.SUPPORT_BLOCK, "You can block the enemy support by using a wizard or a king", false),
-	State.Name.ATTACK: State.new(State.Name.ATTACK, "Attack", false),
+	State.Name.ATTACK: State.new(State.Name.ATTACK, "Attack a unit on the enemy battlefield", false),
 	State.Name.ATTACK_BLOCK: State.new(State.Name.ATTACK_BLOCK, "You can block the enemy attack by using a guard or a king", false),
 	State.Name.FINISH_TURN: State.new(State.Name.FINISH_TURN, "Finish turn", false),
 }
@@ -52,6 +52,9 @@ var enet_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 var peer_id: int = 0
 var first_player: bool = false
 
+# Useful when having having a support loop to know who is actually playing.
+var _my_turn: bool = false
+
 
 func start_server() -> void:
 	enet_peer.create_server(PORT, 2)
@@ -75,6 +78,9 @@ func setup(_player_id: int) -> void:
 	else:
 		instruction_updated.emit("Waiting for the other player")
 
+	# When the turn starts, pass _my_turn to true and pass it to false for the enemy.
+	States[State.Name.START_TURN].started.connect(start_turn)
+
 
 func create_card_instance(unit_type: CardType.UnitType) -> Card:
 	var card_instance = CARD_SCENE.instantiate()
@@ -82,17 +88,24 @@ func create_card_instance(unit_type: CardType.UnitType) -> Card:
 	return card_instance
 
 
+func start_turn() -> void:
+	_my_turn = true
+	set_enemy_turn.rpc()
+
+
 func get_state() -> State.Name :
 	return _current_state
 
 
-func start_state(state: State.Name, is_rpc: bool = false) -> void:
+func start_state(state: State.Name) -> void:
 	previous_state = _current_state
 	_current_state = state
 	instruction_updated.emit(States[state].instruction)
 
+	States[previous_state].ended.emit()
+
 	# Avoid sending RPCs to the server when the server is the one calling this function.
-	if !is_rpc and state != State.Name.WAITING_FOR_PLAYER:
+	if state != State.Name.WAITING_FOR_PLAYER:
 		set_enemy_state.rpc(State.Name.WAITING_FOR_PLAYER)
 
 	States[state].started.emit()
@@ -106,8 +119,6 @@ func end_state() -> void:
 		set_enemy_state.rpc(_current_state)
 	else:
 		set_enemy_state.rpc(States[_current_state].get_next_state())
-	States[_current_state].ended.emit()
-	start_state(State.Name.WAITING_FOR_PLAYER)
 
 
 # After attacking, the enemy can play a support card to block the attack.
@@ -118,16 +129,58 @@ func enemy_attack_block(attacking_card: Card, enemy_placeholder: CardPlaceholder
 		"attacking_card": attacking_card,
 		"enemy_placeholder": enemy_placeholder
 	}
-	start_state(State.Name.WAITING_FOR_PLAYER)
 	set_enemy_state.rpc(State.Name.ATTACK_BLOCK)
+
+
+func process_attack_block(attack_blocked: bool, is_rpc: bool = true) -> void:
+	# If attack was blocked, we can block the support with an other support until it's not possible to block anymore
+	if attack_blocked:
+		start_state(State.Name.ATTACK_BLOCK)
+		return
+
+	# Otherwise we apply the attack that was in progress
+	if _my_turn:
+		print("process_attack_block during my turn")
+		if is_rpc:
+			print(_attack_in_progress)
+			print(_attack_info)
+			# TODO: process attack
+		else:
+			print("Attack was cancelled")
+
+		# We can then choose an other action.
+		start_state(State.Name.ACTION_CHOICE)
+
+
+func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
+	if support_blocked:
+		# If support was blocked, we can block it with an other support until it's not possible to block anymore
+		start_state(State.Name.SUPPORT_BLOCK)
+		return
+	
+	# Otherwise we apply the support effect if the enemy passed (if the call is non-rpc, it means the player passed)
+	if _my_turn:
+		print("process_support_block during my turn")
+		if is_rpc:
+			print(_pending_support)
+			_current_supports.append(_pending_support._unit_type)
+			# TODO: process support effect
+		else:
+			print("Support was cancelled")
+		# Whoever passed, we can choose an other action
+		start_state(State.Name.ACTION_CHOICE)
 
 
 func enemy_support_block(support_card: Card) -> void:
 	_pending_support = support_card
-	start_state(State.Name.WAITING_FOR_PLAYER)
 	set_enemy_state.rpc(State.Name.SUPPORT_BLOCK)
 
 
 @rpc("any_peer")
 func set_enemy_state(state: State.Name) -> void:
-	start_state(state, true)
+	start_state(state)
+
+
+@rpc("any_peer")
+func set_enemy_turn() -> void:
+	_my_turn = false

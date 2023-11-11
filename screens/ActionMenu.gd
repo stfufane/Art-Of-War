@@ -3,15 +3,23 @@ extends PanelContainer
 
 @onready var recruit_button = $MarginContainer/VBoxContainer/RecruitButton
 @onready var attack_button = $MarginContainer/VBoxContainer/AttackButton
+@onready var support_button = $MarginContainer/VBoxContainer/SupportButton
 
 
 func _ready():
 	Game.States[State.Name.ACTION_CHOICE].started.connect(_action_choice_started)
 	Game.is_attack_available.connect(set_attack_button_enabled)
+	Game.hand_size_updated.connect(set_support_button_enabled)
 
 
 func set_attack_button_enabled(enabled: bool):
 	attack_button.disabled = !enabled
+
+
+func set_support_button_enabled(hand_size: int) -> void:
+	# TODO Check that reserve is not full
+	support_button.disabled = hand_size == 0
+
 
 func _action_choice_started():
 	# Hide the recruit action if the player attacked already or used a support card.

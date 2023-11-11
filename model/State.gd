@@ -30,6 +30,34 @@ func _init(n: Name, i: String, h_o: bool):
 	happens_once = h_o
 
 
+# For debug purposes
+func _to_string() -> String:
+	match name:
+		State.Name.WAITING_FOR_PLAYER:
+			return "Waiting for player"
+		State.Name.INIT_BATTLEFIELD:
+			return "Initializing battlefield"
+		State.Name.INIT_RESERVE:
+			return "Initializing reserve"
+		State.Name.START_TURN:
+			return "Starting turn"
+		State.Name.ACTION_CHOICE:
+			return "Choosing action"
+		State.Name.RECRUIT:
+			return "Recruiting"
+		State.Name.SUPPORT:
+			return "Supporting"
+		State.Name.SUPPORT_BLOCK:
+			return "Support blocking"
+		State.Name.ATTACK:
+			return "Attacking"
+		State.Name.ATTACK_BLOCK:
+			return "Attack blocking"
+		State.Name.FINISH_TURN:
+			return "Finishing turn"
+		_:
+			return "Unknown state"
+
 # These are the automatic states that are started when calling end_state
 # However, it's possible that a state is started manually in a middle of an other state,
 # so the transition is not always the one defined here

@@ -9,6 +9,7 @@ func _ready() -> void:
 
 	# Automatically draw a card at the start of a turn.
 	Game.States[State.Name.START_TURN].started.connect(start_turn)
+	Game.States[State.Name.SUPPORT].started.connect(flash_support_cards)
 	Game.States[State.Name.ATTACK_BLOCK].started.connect(flash_attack_block_cards)
 	Game.States[State.Name.SUPPORT_BLOCK].started.connect(flash_support_block_cards)
 
@@ -41,6 +42,18 @@ func draw_card() -> void:
 
 func is_deck_empty() -> bool:
 	return _deck.is_empty()
+
+
+func stop_all_flashes() -> void:
+	for card in _cards:
+		card.stop_flash()
+
+
+func flash_support_cards() -> void:
+	for card in _cards:
+		# Guards and wizards can only be played to block the other player
+		if card._unit_type != CardType.UnitType.Wizard and card._unit_type != CardType.UnitType.Guard:
+			card.start_flash()
 
 
 func flash_attack_block_cards() -> void:

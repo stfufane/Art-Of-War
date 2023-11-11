@@ -53,12 +53,26 @@ func recruit_from_hand(card: Card) -> void:
 		card_selected(card, _hand)
 
 
+func play_support(card: Card) -> void:
+	# Wizards and guards can only be played to counter the enemy's support
+	if card._unit_type == CardType.UnitType.Wizard or card._unit_type == CardType.UnitType.Guard:
+		return
+	
+	# Play a support from the hand
+	_hand.stop_all_flashes()
+	add_card_to_reserve(card)
+	Game.enemy_support_block(card)
+	pass
+
+
 func play_attack_block(card: Card) -> void:
 	# The player can block the enemy attack if he has a guard or a king in hand.
 	if card._unit_type != CardType.UnitType.Guard and card._unit_type != CardType.UnitType.King:
 		return
 	
+	_hand.stop_all_flashes()
 	add_card_to_reserve(card)
+	attack_was_blocked.rpc(true)
 
 
 func play_support_block(card: Card) -> void:
@@ -66,7 +80,9 @@ func play_support_block(card: Card) -> void:
 	if card._unit_type != CardType.UnitType.Wizard and card._unit_type != CardType.UnitType.King:
 		return
 
+	_hand.stop_all_flashes()
 	add_card_to_reserve(card)
+	support_was_blocked.rpc(true)
 
 
 func increase_kingdom_population(unit_type: CardType.UnitType) -> bool:
@@ -95,6 +111,8 @@ func _hand_card_clicked(card: Card) -> void:
 			Game.end_state()
 		State.Name.RECRUIT:
 			recruit_from_hand(card)
+		State.Name.SUPPORT:
+			play_support(card)
 		State.Name.ATTACK_BLOCK:
 			play_attack_block(card)
 		State.Name.SUPPORT_BLOCK:
@@ -111,8 +129,20 @@ func _reserve_card_clicked(card: Card) -> void:
 
 
 func _no_support_played() -> void:
-	# Send a signal to the enemy to tell him that we didn't play any support card
-	pass
+	_hand.stop_all_flashes()
+	# Send a signal to the enemy to tell him that we didn't play any support card to block his attack or support.
+	# If we are passing, no need to tell the enemy, we just cancel the action we were doing.
+	match Game.get_state():
+		State.Name.ATTACK_BLOCK:
+			if Game._my_turn:
+				Game.process_attack_block(false, false)
+			else:
+				attack_was_blocked.rpc(false)
+		State.Name.SUPPORT_BLOCK:
+			if Game._my_turn:
+				Game.process_support_block(false, false)
+			else:
+				support_was_blocked.rpc(false)
 
 #################################################################################
 # Network actions that are called to reflect local actions on the enemy board  ##
@@ -128,3 +158,11 @@ func remove_card_from_enemy_reserve(unit_type: CardType.UnitType):
 @rpc("any_peer")
 func add_card_to_enemy_kingdom(unit_type: CardType.UnitType):
 	enemy_kingdom.increase_population(unit_type)
+
+@rpc("any_peer")
+func attack_was_blocked(blocked: bool):
+	Game.process_attack_block(blocked)
+
+@rpc("any_peer")
+func support_was_blocked(blocked: bool):
+	Game.process_support_block(blocked)
