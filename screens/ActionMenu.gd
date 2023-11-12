@@ -7,7 +7,8 @@ extends PanelContainer
 
 
 func _ready():
-	Game.States[State.Name.ACTION_CHOICE].started.connect(_action_choice_started)
+	Game.States[State.Name.START_TURN].started.connect(func(): recruit_button.disabled = false)
+	Game.States[State.Name.ACTION_CHOICE].started.connect(show)
 	Game.is_attack_available.connect(set_attack_button_enabled)
 	Game.hand_size_updated.connect(set_support_button_enabled)
 
@@ -21,16 +22,8 @@ func set_support_button_enabled(hand_size: int) -> void:
 	support_button.disabled = hand_size == 0
 
 
-func _action_choice_started():
-	# Hide the recruit action if the player attacked already or used a support card.
-	if Game.previous_state == State.Name.ATTACK or Game.previous_state == State.Name.SUPPORT:
-		recruit_button.hide()
-	else:
-		recruit_button.show()
-	show()
-
-
 func _on_attack_button_pressed():
+	recruit_button.disabled = true # Can't recruit after an other action
 	if Game.get_state() != State.Name.ACTION_CHOICE:
 		return
 	Game.start_state(State.Name.ATTACK)
@@ -38,6 +31,7 @@ func _on_attack_button_pressed():
 
 
 func _on_support_button_pressed():
+	recruit_button.disabled = true # Can't recruit after an other action
 	if Game.get_state() != State.Name.ACTION_CHOICE:
 		return
 	Game.start_state(State.Name.SUPPORT)
