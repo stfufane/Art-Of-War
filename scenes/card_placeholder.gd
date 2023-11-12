@@ -28,6 +28,7 @@ func set_text(new_text: String):
 func has_card() -> bool:
 	return _current_card != null
 
+
 func get_current_card() -> Card:
 	return _current_card
 

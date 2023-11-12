@@ -14,6 +14,7 @@ func _ready():
 
 	Game.battlefield_card_clicked.connect(_card_clicked)
 	Game.enemy_battlefield_card_clicked.connect(_enemy_card_clicked)
+	Game.card_killed.connect(_enemy_card_killed)
 
 	# Disengage the cards at the beginning of the turn.
 	Game.States[State.Name.START_TURN].started.connect(disengage_cards)
@@ -32,8 +33,8 @@ func setup() -> void:
 
 func disengage_cards() -> void:
 	for placeholder in _player_container.get_children():
-		placeholder.disengage_card()	
-
+		placeholder.disengage_card()
+		disengage_enemy_card.rpc(placeholder.name)
 
 func all_highlights_off() -> void:
 	for enemy_placeholder in _enemy_container.get_children():
@@ -57,6 +58,13 @@ func placeholder_available(placeholder: CardPlaceholder) -> bool:
 
 func get_placeholder(coords: Vector2) -> CardPlaceholder:
 	for placeholder in _player_container.get_children():
+		if placeholder.coords == coords:
+			return placeholder
+	return null
+
+
+func get_enemy_placeholder(coords: Vector2) -> CardPlaceholder:
+	for placeholder in _enemy_container.get_children():
 		if placeholder.coords == coords:
 			return placeholder
 	return null
@@ -154,6 +162,8 @@ func _enemy_card_clicked(clicked_card: Card):
 		return
 	
 	# Check that the card is within reach of the attacking card
+	_attacking_card.attack()
+	enemy_card_attacking.rpc(_attacking_card.placeholder.name) # Notify the opponent that the card is attacking
 	var enemy_placeholder: CardPlaceholder = clicked_card.placeholder
 	var enemy_coords: Vector2 = enemy_placeholder.coords
 	var attacking_card_coords: Vector2 = _attacking_card.placeholder.coords
@@ -164,6 +174,17 @@ func _enemy_card_clicked(clicked_card: Card):
 			break
 
 
+func _enemy_card_killed(killed_card: Card) -> void:
+	killed_card.placeholder.remove_card()
+	# Check if there was a card in the row behind and move it forward if it's the case
+	var behind_placeholder: CardPlaceholder = get_enemy_placeholder(killed_card.placeholder.coords + Vector2(0, 1))
+	if behind_placeholder != null and behind_placeholder.has_card():
+		killed_card.placeholder.set_card(behind_placeholder.get_current_card()) # it will reparent the card
+
+	# Reflect the change on the enemy's board
+	remove_card.rpc(killed_card.placeholder.name)
+
+
 ### 
 # Network functions that are called to reflect local actions on the opponent's battlefield
 ###
@@ -171,7 +192,29 @@ func _enemy_card_clicked(clicked_card: Card):
 @rpc("any_peer")
 func add_enemy_card(type: CardType.UnitType, placeholder_name: String):
 	var enemy_card = Game.create_card_instance(type)
-	var enemy_placeholder: CardPlaceholder = $EnemyContainer.get_node(placeholder_name)
+	var enemy_placeholder: CardPlaceholder = _enemy_container.get_node(NodePath(placeholder_name))
 	enemy_placeholder.set_card(enemy_card)
 	enemy_card.rotation_degrees = 180 # Mirror it on the enemy side
 
+
+@rpc("any_peer")
+func remove_card(placeholder_name: String):
+	var placeholder: CardPlaceholder = _player_container.get_node(NodePath(placeholder_name))
+	placeholder.remove_card()
+	# Check if there was a card in the row behind and move it forward if it's the case
+	var behind_placeholder: CardPlaceholder = get_placeholder(placeholder.coords + Vector2(0, -1))
+	if behind_placeholder != null and behind_placeholder.has_card():
+		placeholder.set_card(behind_placeholder.get_current_card()) # it will reparent the card
+
+
+@rpc("any_peer")
+func enemy_card_attacking(placeholder_name: String):
+	var placeholder: CardPlaceholder = _enemy_container.get_node(NodePath(placeholder_name))
+	placeholder.get_current_card().rotation_degrees = 90
+
+
+@rpc("any_peer")
+func disengage_enemy_card(placeholder_name: String):
+	var placeholder: CardPlaceholder = _enemy_container.get_node(NodePath(placeholder_name))
+	if placeholder.has_card():
+		placeholder.get_current_card().rotation_degrees = 180

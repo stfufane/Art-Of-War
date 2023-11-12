@@ -45,16 +45,20 @@ var _picked_from: BoardArea = BoardArea.Nowhere
 var _engaged: bool = false
 var _has_flash: bool = false
 
+var _hp: int = 0
+var _hurt: bool = false
+
 
 func _ready() -> void:
 	base_color = _rect.color
 	_type = Types[_unit_type]
 	_label.text = _type.name
+	_hp = _type.defense
 	var image = load("res://images/cards/" + _type.name + ".jpg")
 	_image.texture = image
 
 
-func _process(_delta):
+func _process(_delta: float):
 	if _board_area == BoardArea.Picked:
 		var mouse_pos = get_viewport().get_mouse_position()
 		set_global_position(mouse_pos + Vector2(10, 10))
@@ -81,7 +85,9 @@ func set_nb_units(nb_units: int) -> void:
 
 func disengage() -> void:
 	_engaged = false
-	_image.rotation_degrees = 0
+	_hp = _type.defense
+	_hurt = false
+	rotation_degrees = 0
 
 
 func get_attack_range() -> PackedVector2Array:
@@ -90,8 +96,15 @@ func get_attack_range() -> PackedVector2Array:
 
 func attack() -> void:
 	_engaged = true
-	_image.rotation_degrees = -90
+	rotation_degrees = -90
+	_hp = _type.defense_engaged
 	stop_flash()
+
+
+func take_damage(damage: int) -> void:
+	_hp -= damage
+	if _hp > 0:
+		_hurt = true
 
 
 func toggle_flash() -> void:
@@ -118,7 +131,7 @@ func stop_flash() -> void:
 
 ## Signals
 ############
-func _on_gui_input(event:InputEvent) -> void:
+func _on_gui_input(event: InputEvent) -> void:
 	if !event.is_action_pressed(Game.LEFT_CLICK):
 		return
 

@@ -14,6 +14,7 @@ func _ready():
 	Game.hand_card_clicked.connect(_hand_card_clicked)
 	Game.reserve_card_clicked.connect(_reserve_card_clicked)
 	Game.no_support_played.connect(_no_support_played)
+	Game.attack_validated.connect(_validate_attack)
 
 	Game.States[State.Name.RECRUIT].started.connect(init_recruit_turn)
 
@@ -143,6 +144,35 @@ func _no_support_played() -> void:
 				Game.process_support_block(false, false)
 			else:
 				support_was_blocked.rpc(false)
+
+
+func _validate_attack() -> void:
+	var attack_info: Dictionary = Game.get_attack_info()
+	attack_info.attacking_card.stop_flash()
+	var attacking_card: CardType = attack_info.attacking_card._type
+	var attack_damage = attacking_card.attack
+	# Soldier has a special attack that depends on the number of cards in hand
+	if attack_info.attacking_card._unit_type == CardType.UnitType.Soldier:
+		attack_damage = _hand.size()
+	var target: Card = attack_info.enemy_placeholder.get_current_card()
+	target.take_damage(attack_damage)
+
+	# if the target still has hp, it's just hurt, the game continues
+	if target._hp > 0:
+		return
+
+	# if the target has exactly 0 hp and was not hurt, it's captured and added to my kingdom
+	if target._hp == 0 and !target._hurt:
+		increase_kingdom_population(target._unit_type)
+
+	# If it did not survive, the card is removed from the battlefield anyway
+	Game.card_killed.emit(target)
+	
+	# If the target was a king, the game is over
+	if target._unit_type == CardType.UnitType.King:
+		# TODO: handle game over
+		return
+
 
 #################################################################################
 # Network actions that are called to reflect local actions on the enemy board  ##

@@ -6,6 +6,8 @@ signal instruction_updated(instruction: String)
 signal hand_size_updated(size: int)
 signal is_attack_available(bool)
 signal no_support_played
+signal attack_validated
+signal card_killed(card: Card)
 
 
 # When a card is clicked, it will emit a signal depending on where it lies on the board.
@@ -39,7 +41,6 @@ var _current_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var previous_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var picked_card: Card = null
 
-var _attack_in_progress: bool = false
 var _attack_info: Dictionary = {}
 
 var _current_supports: Array[CardType.UnitType] = []
@@ -93,10 +94,6 @@ func start_turn() -> void:
 	set_enemy_turn.rpc()
 
 
-func get_state() -> State.Name :
-	return _current_state
-
-
 func start_state(state: State.Name) -> void:
 	previous_state = _current_state
 	_current_state = state
@@ -124,7 +121,6 @@ func end_state() -> void:
 # After attacking, the enemy can play a support card to block the attack.
 func enemy_attack_block(attacking_card: Card, enemy_placeholder: CardPlaceholder) -> void:
 	# First store the info about the attack currently in progress.
-	_attack_in_progress = true
 	_attack_info = {
 		"attacking_card": attacking_card,
 		"enemy_placeholder": enemy_placeholder
@@ -140,16 +136,13 @@ func process_attack_block(attack_blocked: bool, is_rpc: bool = true) -> void:
 
 	# Otherwise we apply the attack that was in progress
 	if _my_turn:
-		print("process_attack_block during my turn")
 		if is_rpc:
-			print(_attack_in_progress)
-			print(_attack_info)
-			# TODO: process attack
+			attack_validated.emit()
 		else:
 			print("Attack was cancelled")
-
-		# We can then choose an other action.
-		start_state(State.Name.ACTION_CHOICE)
+	
+	# We can then choose an other action.
+	start_state(State.Name.ACTION_CHOICE)
 
 
 func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
@@ -160,9 +153,7 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 	
 	# Otherwise we apply the support effect if the enemy passed (if the call is non-rpc, it means the player passed)
 	if _my_turn:
-		print("process_support_block during my turn")
 		if is_rpc:
-			print(_pending_support)
 			_current_supports.append(_pending_support._unit_type)
 			# TODO: process support effect
 		else:
@@ -175,6 +166,21 @@ func enemy_support_block(support_card: Card) -> void:
 	_pending_support = support_card
 	set_enemy_state.rpc(State.Name.SUPPORT_BLOCK)
 
+
+#################################################################################
+# Getters
+#################################################################################
+
+func get_state() -> State.Name :
+	return _current_state
+
+
+func get_attack_info() -> Dictionary:
+	return _attack_info
+
+#################################################################################
+# Network actions that are called to reflect local actions on the enemy board  ##
+#################################################################################
 
 @rpc("any_peer")
 func set_enemy_state(state: State.Name) -> void:
