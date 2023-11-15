@@ -32,9 +32,6 @@ enum BoardArea {
 	EnemyBattlefield
 }
 
-# The id where the card sits on the battlefield
-var placeholder: CardPlaceholder = null
-
 var base_color: Color
 var highlight_color: Color = Color.DARK_MAGENTA
 

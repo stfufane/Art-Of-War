@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://fmc5dhc4mamm" path="res://images/cards/King.jpg" id="3_q0xll"]
 
 [node name="Card" type="Control"]
+z_index = 1
 custom_minimum_size = Vector2(192, 192)
 layout_mode = 3
 anchors_preset = 0

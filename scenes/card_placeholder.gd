@@ -21,7 +21,7 @@ func _ready():
 	label.text = label_text
 
 
-func set_text(new_text: String):
+func set_text(new_text: String) -> void:
 	label.text = new_text
 
 
@@ -33,34 +33,35 @@ func get_current_card() -> Card:
 	return _current_card
 
 
-func set_card(new_card: Card):
+func set_card(new_card: Card) -> void:
 	if new_card.get_parent() != null:
 		new_card.reparent(self)
 	else:
 		add_child(new_card)
 
 	_current_card = new_card
-	_current_card.placeholder = self
 	_current_card.position = Vector2(0, 0)
 	_current_card.set_board_area(board_area)
 
 
-func remove_card():
-	_current_card.queue_free()
+func remove_card(destroy: bool = true) -> void:
+	# In some cases we want to remove the card from the placeholder without destroying it
+	if destroy:
+		_current_card.queue_free()
 	_current_card = null
 
 
-func disengage_card():
+func disengage_card() -> void:
 	if _current_card != null:
 		_current_card.disengage()
 
 
-func toggle_highlight():
+func toggle_highlight() -> void:
 	is_highlighting = !is_highlighting
 	$ColorRect.color = highlight_color if is_highlighting else base_color
 
 
-func highlight_off():
+func highlight_off() -> void:
 	is_highlighting = false
 	$ColorRect.color = base_color
 

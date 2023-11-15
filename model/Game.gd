@@ -7,6 +7,7 @@ signal hand_size_updated(size: int)
 signal is_attack_available(bool)
 signal no_support_played
 signal attack_validated
+signal archer_attacked(card: Card)
 signal card_killed(card: Card)
 
 
@@ -25,6 +26,7 @@ var States: Dictionary = {
 	State.Name.RECRUIT: State.new("Recruit a unit", false),
 	State.Name.SUPPORT: State.new("Play a support by adding it to your reserve", false),
 	State.Name.MOVE_UNIT: State.new("Move a unit on the battlefield", false),
+	State.Name.ARCHER_ATTACK: State.new("Choose a target to hit with your archer", false),
 	State.Name.SUPPORT_BLOCK: State.new("You can block the enemy support by using a wizard or a king", false),
 	State.Name.ATTACK: State.new("Attack a unit on the enemy battlefield", false),
 	State.Name.ATTACK_BLOCK: State.new("You can block the enemy attack by using a guard or a king", false),
@@ -92,6 +94,7 @@ func create_card_instance(unit_type: CardType.UnitType) -> Card:
 
 func start_turn() -> void:
 	_my_turn = true
+	_attack_bonus = 0
 	set_enemy_turn.rpc()
 
 
@@ -141,31 +144,37 @@ func process_attack_block(attack_blocked: bool, is_rpc: bool = true) -> void:
 			attack_validated.emit()
 		else:
 			print("Attack was cancelled")
+
+	_attack_info.clear()
 	
 	# We can then choose an other action.
 	start_state(State.Name.ACTION_CHOICE)
 
 
 func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
+	# If support was blocked, we can block it with an other support until it's not possible to block anymore
 	if support_blocked:
-		# If support was blocked, we can block it with an other support until it's not possible to block anymore
 		start_state(State.Name.SUPPORT_BLOCK)
 		return
 	
 	# Otherwise we apply the support effect if the enemy passed (if the call is non-rpc, it means the player passed)
 	if _my_turn:
 		if is_rpc:
-			match _pending_support.get_unit_type():
+			match _pending_support._unit_type:
 				CardType.UnitType.Soldier:
 					_attack_bonus += 1
+					start_state(State.Name.ACTION_CHOICE)
 				CardType.UnitType.Monk:
-					pass # TODO: init unit move
+					start_state(State.Name.MOVE_UNIT)
 				CardType.UnitType.Archer:
-					pass # TODO: Deal one damage to an enemy unit
+					start_state(State.Name.ARCHER_ATTACK)
 		else:
 			print("Support was cancelled")
-		# Whoever passed, we can choose an other action
-		start_state(State.Name.ACTION_CHOICE)
+			# Start a new action
+			start_state(State.Name.ACTION_CHOICE)
+	
+	# No more pending support after the resolution
+	_pending_support = null
 
 
 func enemy_support_block(support_card: Card) -> void:

@@ -3,6 +3,7 @@ extends Control
 
 
 var _attacking_card: Card = null
+var _moved_card: Card = null
 
 @onready var _enemy_container: Control = $EnemyContainer
 @onready var _player_container: Control = $PlayerContainer
@@ -20,7 +21,7 @@ func _ready():
 	Game.States[State.Name.START_TURN].started.connect(disengage_cards)
 
 	# Before the player chooses an action, check if he can attack.
-	Game.States[State.Name.ACTION_CHOICE].started.connect(func(): Game.is_attack_available.emit(is_attack_available()))
+	Game.States[State.Name.ACTION_CHOICE].started.connect(start_action)
 
 
 func setup() -> void:
@@ -31,10 +32,16 @@ func setup() -> void:
 		placeholder.mouse_exited.connect(_mouse_exited.bind(placeholder))
 
 
+func start_action() -> void:
+	Game.is_attack_available.emit(is_attack_available())
+	_moved_card = null
+
+
 func disengage_cards() -> void:
 	for placeholder in _player_container.get_children():
 		placeholder.disengage_card()
 		disengage_enemy_card.rpc(placeholder.name)
+
 
 func all_highlights_off() -> void:
 	for enemy_placeholder in _enemy_container.get_children():
@@ -49,8 +56,9 @@ func placeholder_available(placeholder: CardPlaceholder) -> bool:
 			return true
 	else:
 		# Second line is available if there's a card on the first line
+		# Except if we're moving a card and want to swap it.
 		var front_card = get_placeholder(placeholder.coords + Vector2(0, 1)).get_current_card()
-		if front_card != null and placeholder.get_current_card() == null:
+		if front_card != null and front_card != _moved_card and placeholder.get_current_card() == null:
 			return true
 
 	return false
@@ -75,13 +83,11 @@ func _mouse_entered(placeholder_hovered: CardPlaceholder) -> void:
 		return
 	
 	match Game.get_state():
-		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT:
+		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT, State.Name.MOVE_UNIT:
 			if placeholder_available(placeholder_hovered):
 				placeholder_hovered.set_text("Place card here")
 			else:
 				placeholder_hovered.set_text("Can't place card here")
-		_:
-			pass
 
 
 func _mouse_exited(placeholder_hovered: CardPlaceholder) -> void:
@@ -90,14 +96,10 @@ func _mouse_exited(placeholder_hovered: CardPlaceholder) -> void:
 
 # Click on a placeholder to put a card on it
 func _placeholder_clicked(clicked_placeholder: CardPlaceholder) -> void:
-	# We can't put a card if there's already one there.
-	if !placeholder_available(clicked_placeholder):
-		return
-	
 	match Game.get_state():
 		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT:
-			# We can't put a card if there's no card in hand
-			if Game.picked_card == null:
+			# We can't put a card if there's already one there or if there's no card in hand
+			if Game.picked_card == null or !placeholder_available(clicked_placeholder):
 				return
 
 			# Take the card that was picked in the hand
@@ -112,8 +114,14 @@ func _placeholder_clicked(clicked_placeholder: CardPlaceholder) -> void:
 				Game.end_state()
 			else:
 				Game.start_state(State.Name.FINISH_TURN)
-		_:
-			pass
+
+		State.Name.MOVE_UNIT:
+			if _moved_card == null or !placeholder_available(clicked_placeholder):
+				return
+			_moved_card.stop_flash()
+			clicked_placeholder.set_card(_moved_card)
+			# TODO reflect move on enemy battlefield
+			Game.start_state(State.Name.ACTION_CHOICE)
 
 
 # Check that at least one card can attack an enemy card.
@@ -135,54 +143,77 @@ func is_attack_available() -> bool:
 # Click on a card to attack with it
 func _card_clicked(clicked_card: Card) -> void:
 	all_highlights_off()
-	if _attacking_card != null:
-		_attacking_card.stop_flash()
+	var clicked_placeholder: CardPlaceholder = clicked_card.get_parent()
 
-	if Game.get_state() != State.Name.ATTACK:
-		return
+	match Game.get_state():
+		State.Name.ATTACK:
+			if _attacking_card != null:
+				_attacking_card.stop_flash()
 
-	if clicked_card == _attacking_card:
-		_attacking_card = null
-		return
+			if clicked_card == _attacking_card:
+				_attacking_card = null
+				return
 
-	_attacking_card = clicked_card
-	_attacking_card.start_flash()
+			_attacking_card = clicked_card
+			_attacking_card.start_flash()
 
-	# Highlight the enemy cards that are within reach of the selected card
-	var attack_range: PackedVector2Array = clicked_card.get_attack_range()
-	var card_coords: Vector2 = clicked_card.placeholder.coords
-	for enemy in _enemy_container.get_children():
-		for coords in attack_range:
-			if card_coords + coords == enemy.coords:
-				enemy.toggle_highlight()
+			# Highlight the enemy cards that are within reach of the selected card
+			var attack_range: PackedVector2Array = clicked_card.get_attack_range()
+			var card_coords: Vector2 = clicked_placeholder.coords
+			for enemy in _enemy_container.get_children():
+				for coords in attack_range:
+					if card_coords + coords == enemy.coords:
+						enemy.toggle_highlight()
+
+		State.Name.MOVE_UNIT:
+			if _moved_card == null:
+				_moved_card = clicked_card
+				_moved_card.start_flash()
+				return
+
+			# If we have selected a card, swap with the new one.
+			# var card_to_swap: Card = Game.create_card_instance(_moved_card._unit_type)
+			var moved_placeholder: CardPlaceholder = _moved_card.get_parent()
+			moved_placeholder.set_card(clicked_card)
+			clicked_placeholder.set_card(_moved_card)
+			_moved_card.stop_flash()
+			# TODO reflect move on enemy battlefield
+			Game.start_state(State.Name.ACTION_CHOICE)
 
 
-func _enemy_card_clicked(clicked_card: Card):
-	if Game.get_state() != State.Name.ATTACK || _attacking_card == null:
-		return
-	
-	# Check that the card is within reach of the attacking card
-	_attacking_card.attack()
-	enemy_card_attacking.rpc(_attacking_card.placeholder.name) # Notify the opponent that the card is attacking
-	var enemy_placeholder: CardPlaceholder = clicked_card.placeholder
-	var enemy_coords: Vector2 = enemy_placeholder.coords
-	var attacking_card_coords: Vector2 = _attacking_card.placeholder.coords
-	for coords in _attacking_card.get_attack_range():
-		if enemy_coords == attacking_card_coords + coords:
-			all_highlights_off()
-			Game.enemy_attack_block(_attacking_card, enemy_placeholder)
-			break
+func _enemy_card_clicked(clicked_card: Card):	
+	match Game.get_state():
+		State.Name.ATTACK:
+			if _attacking_card == null:
+				return
+			
+			# Check that the card is within reach of the attacking card
+			_attacking_card.attack()
+			var attack_placeholder: CardPlaceholder = _attacking_card.get_parent()
+			enemy_card_attacking.rpc(attack_placeholder.name) # Notify the opponent that the card is attacking
+			var enemy_placeholder: CardPlaceholder = clicked_card.get_parent()
+			var enemy_coords: Vector2 = enemy_placeholder.coords
+			var attacking_card_coords: Vector2 = attack_placeholder.coords
+			for coords in _attacking_card.get_attack_range():
+				if enemy_coords == attacking_card_coords + coords:
+					all_highlights_off()
+					Game.enemy_attack_block(_attacking_card, enemy_placeholder)
+					break
+
+		State.Name.ARCHER_ATTACK:
+			Game.archer_attacked.emit(clicked_card)
 
 
 func _enemy_card_killed(killed_card: Card) -> void:
-	killed_card.placeholder.remove_card()
+	var placeholder: CardPlaceholder = killed_card.get_parent()
+	placeholder.remove_card()
 	# Check if there was a card in the row behind and move it forward if it's the case
-	var behind_placeholder: CardPlaceholder = get_enemy_placeholder(killed_card.placeholder.coords + Vector2(0, 1))
+	var behind_placeholder: CardPlaceholder = get_enemy_placeholder(placeholder.coords + Vector2(0, 1))
 	if behind_placeholder != null and behind_placeholder.has_card():
-		killed_card.placeholder.set_card(behind_placeholder.get_current_card()) # it will reparent the card
+		placeholder.set_card(behind_placeholder.get_current_card()) # it will reparent the card
 
 	# Reflect the change on the enemy's board
-	remove_card.rpc(killed_card.placeholder.name)
+	remove_card.rpc(placeholder.name)
 
 
 ### 

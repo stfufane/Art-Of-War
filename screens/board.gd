@@ -14,6 +14,7 @@ func _ready():
 	Game.hand_card_clicked.connect(_hand_card_clicked)
 	Game.no_support_played.connect(_no_support_played)
 	Game.attack_validated.connect(_validate_attack)
+	Game.archer_attacked.connect(_archer_attacked)
 
 	Game.States[State.Name.RECRUIT].started.connect(init_recruit_turn)
 
@@ -97,6 +98,27 @@ func increase_kingdom_population(unit_type: CardType.UnitType) -> bool:
 	return true
 
 
+func handle_card_damage(target: Card, damage: int) -> void:
+	target.take_damage(damage)
+
+	# if the target still has hp, it's just hurt, the game continues
+	if target._hp > 0:
+		return
+
+	# if the target has exactly 0 hp and was not hurt, it's captured and added to my kingdom
+	# When used as a support, the archer cannot capture a card, it just kills it
+	if target._hp == 0 and !target._hurt and Game.get_state() != State.Name.ARCHER_ATTACK:
+		increase_kingdom_population(target._unit_type)
+
+	# If it did not survive, the card is removed from the battlefield anyway
+	Game.card_killed.emit(target)
+	
+	# If the target was a king, the game is over
+	if target._unit_type == CardType.UnitType.King:
+		# TODO: handle game over
+		return
+
+
 func finish_turn(card: Card) -> void:
 	if increase_kingdom_population(card._unit_type):
 		_hand.remove_card(card)
@@ -146,28 +168,21 @@ func _validate_attack() -> void:
 	attack_info.attacking_card.stop_flash()
 	var attacking_card: CardType = attack_info.attacking_card._type
 	var attack_damage = attacking_card.attack
+	
 	# Soldier has a special attack that depends on the number of cards in hand
 	if attack_info.attacking_card._unit_type == CardType.UnitType.Soldier:
 		attack_damage = _hand.size()
+	# Apply the potential attack bonus from the soldier support
+	attack_damage += Game._attack_bonus
+
 	var target: Card = attack_info.enemy_placeholder.get_current_card()
-	target.take_damage(attack_damage)
+	handle_card_damage(target, attack_damage)
 
-	# if the target still has hp, it's just hurt, the game continues
-	if target._hp > 0:
-		return
 
-	# if the target has exactly 0 hp and was not hurt, it's captured and added to my kingdom
-	if target._hp == 0 and !target._hurt:
-		increase_kingdom_population(target._unit_type)
-
-	# If it did not survive, the card is removed from the battlefield anyway
-	Game.card_killed.emit(target)
-	
-	# If the target was a king, the game is over
-	if target._unit_type == CardType.UnitType.King:
-		# TODO: handle game over
-		return
-
+func _archer_attacked(target: Card) -> void:
+	handle_card_damage(target, 1)
+	# Go back to the action choice menu.
+	Game.start_state(State.Name.ACTION_CHOICE)
 
 #################################################################################
 # Network actions that are called to reflect local actions on the enemy board  ##
