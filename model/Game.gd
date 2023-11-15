@@ -14,7 +14,6 @@ signal card_killed(card: Card)
 signal hand_card_clicked(card: Card)
 signal battlefield_card_clicked(card: Card)
 signal enemy_battlefield_card_clicked(card: Card)
-signal reserve_card_clicked(card: Card)
 
 
 var States: Dictionary = {

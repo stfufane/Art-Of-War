@@ -23,7 +23,7 @@ func set_support_button_enabled(hand_size: int) -> void:
 
 
 func _on_attack_button_pressed():
-	recruit_button.disabled = true # Can't recruit after an other action
+	recruit_button.disabled = true # Can't recruit after attacking
 	if Game.get_state() != State.Name.ACTION_CHOICE:
 		return
 	Game.start_state(State.Name.ATTACK)
@@ -31,7 +31,6 @@ func _on_attack_button_pressed():
 
 
 func _on_support_button_pressed():
-	recruit_button.disabled = true # Can't recruit after an other action
 	if Game.get_state() != State.Name.ACTION_CHOICE:
 		return
 	Game.start_state(State.Name.SUPPORT)

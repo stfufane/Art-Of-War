@@ -48,3 +48,7 @@ func size() -> int:
 
 func get_cards() -> Array[Card]:
 	return _cards
+
+
+func get_first_card() -> Card:
+	return _cards.front()

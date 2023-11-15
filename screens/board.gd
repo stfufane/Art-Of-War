@@ -12,7 +12,6 @@ extends Node
 func _ready():
 	Game.players_ready.connect(setup)
 	Game.hand_card_clicked.connect(_hand_card_clicked)
-	Game.reserve_card_clicked.connect(_reserve_card_clicked)
 	Game.no_support_played.connect(_no_support_played)
 	Game.attack_validated.connect(_validate_attack)
 
@@ -27,10 +26,13 @@ func setup():
 func init_recruit_turn():
 	# Recruitment is made by default from the reserve
 	# If the reserve is empty, the player can recruit from the hand
-	if !_reserve.is_empty():
-		Game.instruction_updated.emit("Pick a card from your reserve")
-	else:
+	if _reserve.is_empty():
 		Game.instruction_updated.emit("Pick a card from your hand")
+		return
+	
+	# Automatically pick the first card from the reserve
+	Game.instruction_updated.emit("The first card from your reserve has been picked")
+	card_selected(_reserve.get_first_card(), _reserve)
 
 
 func card_selected(card: Card, from: CardsControl) -> void:
@@ -120,13 +122,6 @@ func _hand_card_clicked(card: Card) -> void:
 			play_support_block(card)
 		State.Name.FINISH_TURN:
 			finish_turn(card)
-
-
-func _reserve_card_clicked(card: Card) -> void:
-	match Game.get_state():
-		State.Name.INIT_RESERVE, State.Name.RECRUIT:
-			card_selected(card, _reserve)
-			remove_card_from_enemy_reserve.rpc(card._unit_type)
 
 
 func _no_support_played() -> void:
