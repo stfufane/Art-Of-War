@@ -17,17 +17,18 @@ signal enemy_battlefield_card_clicked(card: Card)
 
 
 var States: Dictionary = {
-	State.Name.WAITING_FOR_PLAYER: State.new(State.Name.WAITING_FOR_PLAYER, "Waiting for opponent", false),
-	State.Name.INIT_BATTLEFIELD: State.new(State.Name.INIT_BATTLEFIELD, "Init battlefield", true),
-	State.Name.INIT_RESERVE: State.new(State.Name.INIT_RESERVE, "Init reserve", true),
-	State.Name.START_TURN: State.new(State.Name.START_TURN, "Start turn", false),
-	State.Name.ACTION_CHOICE: State.new(State.Name.ACTION_CHOICE, "Action choice", false),
-	State.Name.RECRUIT: State.new(State.Name.RECRUIT, "Recruit a unit", false),
-	State.Name.SUPPORT: State.new(State.Name.SUPPORT, "Play a support by adding it to your reserve", false),
-	State.Name.SUPPORT_BLOCK: State.new(State.Name.SUPPORT_BLOCK, "You can block the enemy support by using a wizard or a king", false),
-	State.Name.ATTACK: State.new(State.Name.ATTACK, "Attack a unit on the enemy battlefield", false),
-	State.Name.ATTACK_BLOCK: State.new(State.Name.ATTACK_BLOCK, "You can block the enemy attack by using a guard or a king", false),
-	State.Name.FINISH_TURN: State.new(State.Name.FINISH_TURN, "Finish turn", false),
+	State.Name.WAITING_FOR_PLAYER: State.new("Waiting for opponent", false),
+	State.Name.INIT_BATTLEFIELD: State.new("Init battlefield", true),
+	State.Name.INIT_RESERVE: State.new("Init reserve", true),
+	State.Name.START_TURN: State.new("Start turn", false),
+	State.Name.ACTION_CHOICE: State.new("Action choice", false),
+	State.Name.RECRUIT: State.new("Recruit a unit", false),
+	State.Name.SUPPORT: State.new("Play a support by adding it to your reserve", false),
+	State.Name.MOVE_UNIT: State.new("Move a unit on the battlefield", false),
+	State.Name.SUPPORT_BLOCK: State.new("You can block the enemy support by using a wizard or a king", false),
+	State.Name.ATTACK: State.new("Attack a unit on the enemy battlefield", false),
+	State.Name.ATTACK_BLOCK: State.new("You can block the enemy attack by using a guard or a king", false),
+	State.Name.FINISH_TURN: State.new("Finish turn", false),
 }
 
 
@@ -41,9 +42,10 @@ var previous_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var picked_card: Card = null
 
 var _attack_info: Dictionary = {}
+var _attack_bonus: int = 0
 
-var _current_supports: Array[CardType.UnitType] = []
 var _pending_support: Card = null
+
 
 # The local multiplayer server port
 const PORT = 1234
@@ -114,7 +116,7 @@ func end_state() -> void:
 	if first_player and States[_current_state].happens_once:
 		set_enemy_state.rpc(_current_state)
 	else:
-		set_enemy_state.rpc(States[_current_state].get_next_state())
+		set_enemy_state.rpc(State.get_next_state(_current_state))
 
 
 # After attacking, the enemy can play a support card to block the attack.
@@ -153,8 +155,13 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 	# Otherwise we apply the support effect if the enemy passed (if the call is non-rpc, it means the player passed)
 	if _my_turn:
 		if is_rpc:
-			_current_supports.append(_pending_support._unit_type)
-			# TODO: process support effect
+			match _pending_support.get_unit_type():
+				CardType.UnitType.Soldier:
+					_attack_bonus += 1
+				CardType.UnitType.Monk:
+					pass # TODO: init unit move
+				CardType.UnitType.Archer:
+					pass # TODO: Deal one damage to an enemy unit
 		else:
 			print("Support was cancelled")
 		# Whoever passed, we can choose an other action
