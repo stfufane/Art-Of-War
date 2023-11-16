@@ -78,6 +78,33 @@ func get_enemy_placeholder(coords: Vector2) -> CardPlaceholder:
 	return null
 
 
+# Check that at least one card can attack an enemy card.
+func is_attack_available() -> bool:
+	for placeholder in _player_container.get_children():
+		if !placeholder.has_card():
+			continue
+		var attack_range: PackedVector2Array = placeholder.get_current_card().get_attack_range()
+		var card_coords: Vector2 = placeholder.coords
+		for enemy in _enemy_container.get_children():
+			if !enemy.has_card():
+				continue
+			for coords in attack_range:
+				if card_coords + coords == enemy.coords:
+					return true
+	return false
+
+
+func move_card_behind(placeholder: CardPlaceholder, enemy: bool) -> void:
+	var behind_placeholder: CardPlaceholder = null
+	if enemy:
+		behind_placeholder = get_enemy_placeholder(placeholder.coords + Vector2(0, 1))
+	else:
+		behind_placeholder = get_placeholder(placeholder.coords + Vector2(0, -1))
+	
+	if behind_placeholder != null and behind_placeholder.has_card():
+		placeholder.set_card(behind_placeholder.get_current_card()) # it will reparent the card
+
+
 func _mouse_entered(placeholder_hovered: CardPlaceholder) -> void:
 	if placeholder_hovered.has_card():
 		return
@@ -107,7 +134,7 @@ func _placeholder_clicked(clicked_placeholder: CardPlaceholder) -> void:
 			Game.picked_card = null
 
 			# Notify the opponent so it adds the card to his battlefield
-			add_enemy_card.rpc(clicked_placeholder.get_current_card()._unit_type, clicked_placeholder.name)
+			set_enemy_card.rpc(clicked_placeholder.get_current_card()._unit_type, clicked_placeholder.name, clicked_placeholder.get_current_card()._engaged)
 
 			# Go to the next state
 			if Game.get_state() == State.Name.INIT_BATTLEFIELD:
@@ -118,26 +145,18 @@ func _placeholder_clicked(clicked_placeholder: CardPlaceholder) -> void:
 		State.Name.MOVE_UNIT:
 			if _moved_card == null or !placeholder_available(clicked_placeholder):
 				return
+			
 			_moved_card.stop_flash()
+			var moved_from: CardPlaceholder = _moved_card.get_parent()
+			move_card_behind(moved_from, false)
+
+			# Remove the card remotely on the enemy battlefield
+			remove_enemy_card.rpc(moved_from.name)
+			# Move the card to the new placeholder
 			clicked_placeholder.set_card(_moved_card)
-			# TODO reflect move on enemy battlefield
+			# And notify the enemy with the new card's position
+			set_enemy_card.rpc(_moved_card._unit_type, clicked_placeholder.name, _moved_card._engaged)
 			Game.start_state(State.Name.ACTION_CHOICE)
-
-
-# Check that at least one card can attack an enemy card.
-func is_attack_available() -> bool:
-	for placeholder in _player_container.get_children():
-		if !placeholder.has_card():
-			continue
-		var attack_range: PackedVector2Array = placeholder.get_current_card().get_attack_range()
-		var card_coords: Vector2 = placeholder.coords
-		for enemy in _enemy_container.get_children():
-			if !enemy.has_card():
-				continue
-			for coords in attack_range:
-				if card_coords + coords == enemy.coords:
-					return true
-	return false
 
 
 # Click on a card to attack with it
@@ -166,18 +185,25 @@ func _card_clicked(clicked_card: Card) -> void:
 						enemy.toggle_highlight()
 
 		State.Name.MOVE_UNIT:
+			# Define the card we want to move
 			if _moved_card == null:
 				_moved_card = clicked_card
 				_moved_card.start_flash()
 				return
 
+			# If we click on the same card, cancel the move
+			if _moved_card == clicked_card:
+				_moved_card.stop_flash()
+				_moved_card = null
+				return
+
 			# If we have selected a card, swap with the new one.
-			# var card_to_swap: Card = Game.create_card_instance(_moved_card._unit_type)
 			var moved_placeholder: CardPlaceholder = _moved_card.get_parent()
 			moved_placeholder.set_card(clicked_card)
+			set_enemy_card.rpc(clicked_card._unit_type, moved_placeholder.name, clicked_card._engaged)
 			clicked_placeholder.set_card(_moved_card)
+			set_enemy_card.rpc(_moved_card._unit_type, clicked_placeholder.name, _moved_card._engaged)
 			_moved_card.stop_flash()
-			# TODO reflect move on enemy battlefield
 			Game.start_state(State.Name.ACTION_CHOICE)
 
 
@@ -208,9 +234,7 @@ func _enemy_card_killed(killed_card: Card) -> void:
 	var placeholder: CardPlaceholder = killed_card.get_parent()
 	placeholder.remove_card()
 	# Check if there was a card in the row behind and move it forward if it's the case
-	var behind_placeholder: CardPlaceholder = get_enemy_placeholder(placeholder.coords + Vector2(0, 1))
-	if behind_placeholder != null and behind_placeholder.has_card():
-		placeholder.set_card(behind_placeholder.get_current_card()) # it will reparent the card
+	move_card_behind(placeholder, true)
 
 	# Reflect the change on the enemy's board
 	remove_card.rpc(placeholder.name)
@@ -221,22 +245,27 @@ func _enemy_card_killed(killed_card: Card) -> void:
 ###
 
 @rpc("any_peer")
-func add_enemy_card(type: CardType.UnitType, placeholder_name: String):
+func set_enemy_card(type: CardType.UnitType, placeholder_name: String, engaged: bool):
 	var enemy_card = Game.create_card_instance(type)
+	if engaged:
+		enemy_card.engage()
 	var enemy_placeholder: CardPlaceholder = _enemy_container.get_node(NodePath(placeholder_name))
 	enemy_placeholder.set_card(enemy_card)
-	enemy_card.rotation_degrees = 180 # Mirror it on the enemy side
+	enemy_card.rotation_degrees += 180 # Mirror it on the enemy side
+
+
+@rpc("any_peer")
+func remove_enemy_card(placeholder_name: String):
+	var enemy_placeholder: CardPlaceholder = _enemy_container.get_node(NodePath(placeholder_name))
+	enemy_placeholder.remove_card()
+	move_card_behind(enemy_placeholder, true)
 
 
 @rpc("any_peer")
 func remove_card(placeholder_name: String):
 	var placeholder: CardPlaceholder = _player_container.get_node(NodePath(placeholder_name))
 	placeholder.remove_card()
-	# Check if there was a card in the row behind and move it forward if it's the case
-	var behind_placeholder: CardPlaceholder = get_placeholder(placeholder.coords + Vector2(0, -1))
-	if behind_placeholder != null and behind_placeholder.has_card():
-		placeholder.set_card(behind_placeholder.get_current_card()) # it will reparent the card
-
+	move_card_behind(placeholder, false)
 
 @rpc("any_peer")
 func enemy_card_attacking(placeholder_name: String):

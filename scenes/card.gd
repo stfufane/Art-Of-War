@@ -87,13 +87,17 @@ func disengage() -> void:
 	rotation_degrees = 0
 
 
+func engage() -> void:
+	_engaged = true
+	rotation_degrees = -90
+
+
 func get_attack_range() -> PackedVector2Array:
 	return _type.attack_range
 
 
 func attack() -> void:
-	_engaged = true
-	rotation_degrees = -90
+	engage()
 	_hp = _type.defense_engaged
 	stop_flash()
 
