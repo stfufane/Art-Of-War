@@ -27,6 +27,7 @@ var States: Dictionary = {
 	State.Name.ACTION_CHOICE: State.new("Action choice", false),
 	State.Name.RECRUIT: State.new("Recruit a unit", false),
 	State.Name.SUPPORT: State.new("Play a support by adding it to your reserve", false),
+	State.Name.KING_SUPPORT: State.new("Choose what unit your king is playing as", false),
 	State.Name.MOVE_UNIT: State.new("Move a unit on the battlefield", false),
 	State.Name.ARCHER_ATTACK: State.new("Choose a target to hit with your archer", false),
 	State.Name.SUPPORT_BLOCK: State.new("You can block the enemy support by using a wizard or a king", false),
@@ -48,7 +49,7 @@ var picked_card: Card = null
 var _attack_info: Dictionary = {}
 var _attack_bonus: int = 0
 
-var _pending_support: Card = null
+var _pending_support: CardType.UnitType = CardType.UnitType.King
 
 
 # The local multiplayer server port
@@ -162,7 +163,7 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 	# Otherwise we apply the support effect if the enemy passed (if the call is non-rpc, it means the player passed)
 	if _my_turn:
 		if is_rpc:
-			match _pending_support._unit_type:
+			match _pending_support:
 				CardType.UnitType.Soldier:
 					_attack_bonus += 1
 					start_state(State.Name.ACTION_CHOICE)
@@ -174,12 +175,9 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 			print("Support was cancelled")
 			# Start a new action
 			start_state(State.Name.ACTION_CHOICE)
-	
-	# No more pending support after the resolution
-	_pending_support = null
 
 
-func enemy_support_block(support_card: Card) -> void:
+func enemy_support_block(support_card: CardType.UnitType) -> void:
 	_pending_support = support_card
 	set_enemy_state.rpc(State.Name.SUPPORT_BLOCK)
 

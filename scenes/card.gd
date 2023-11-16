@@ -143,6 +143,3 @@ func _on_gui_input(event: InputEvent) -> void:
 			Game.battlefield_card_clicked.emit(self)
 		BoardArea.EnemyBattlefield:
 			Game.enemy_battlefield_card_clicked.emit(self)
-		_:
-			pass
-

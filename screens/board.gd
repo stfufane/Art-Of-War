@@ -65,8 +65,14 @@ func play_support(card: Card) -> void:
 	# Play a support from the hand
 	_hand.stop_all_flashes()
 	add_card_to_reserve(card)
-	Game.enemy_support_block(card)
-	pass
+	
+	if card._unit_type == CardType.UnitType.King:
+		# If the king is played as a support, it's a special case
+		# The player can choose as which type of card he wants to play it
+		Game.start_state(State.Name.KING_SUPPORT)
+		return
+
+	Game.enemy_support_block(card._unit_type)
 
 
 func play_attack_block(card: Card) -> void:

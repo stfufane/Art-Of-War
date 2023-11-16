@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://chegm7x5sl8rx"]
+[gd_scene load_steps=14 format=3 uid="uid://chegm7x5sl8rx"]
 
 [ext_resource type="Script" path="res://screens/board.gd" id="1_ccqse"]
 [ext_resource type="PackedScene" uid="uid://dcwtowpudpdv2" path="res://scenes/battlefield.tscn" id="2_mg76x"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://screens/ReshuffleMenu.gd" id="9_b0lv5"]
 [ext_resource type="Script" path="res://screens/EndTurnMenu.gd" id="10_m4hdm"]
 [ext_resource type="Script" path="res://screens/SupportMenu.gd" id="11_7ktw6"]
+[ext_resource type="Script" path="res://screens/KingSupportMenu.gd" id="11_x3644"]
 
 [node name="Board" type="Node"]
 script = ExtResource("1_ccqse")
@@ -210,6 +211,47 @@ text = "Attack"
 layout_mode = 2
 text = "End Turn"
 
+[node name="KingSupportMenu" type="PanelContainer" parent="CanvasLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 320.0
+offset_top = 270.0
+offset_right = -320.0
+offset_bottom = -306.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("11_x3644")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/KingSupportMenu"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/KingSupportMenu/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Label" type="Label" parent="CanvasLayer/KingSupportMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "What support is the king doing?"
+horizontal_alignment = 1
+
+[node name="SoldierButton" type="Button" parent="CanvasLayer/KingSupportMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Soldier"
+
+[node name="ArcherButton" type="Button" parent="CanvasLayer/KingSupportMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Archer"
+
+[node name="MonkButton" type="Button" parent="CanvasLayer/KingSupportMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Monk"
+
 [node name="EndTurnMenu" type="PanelContainer" parent="CanvasLayer"]
 visible = false
 anchors_preset = 5
@@ -284,5 +326,8 @@ text = "Pass"
 [connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/SupportButton" to="CanvasLayer/ActionMenu" method="_on_support_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/AttackButton" to="CanvasLayer/ActionMenu" method="_on_attack_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/EndTurnButton" to="CanvasLayer/ActionMenu" method="_on_end_turn_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/KingSupportMenu/MarginContainer/VBoxContainer/SoldierButton" to="CanvasLayer/KingSupportMenu" method="_on_soldier_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/KingSupportMenu/MarginContainer/VBoxContainer/ArcherButton" to="CanvasLayer/KingSupportMenu" method="_on_archer_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/KingSupportMenu/MarginContainer/VBoxContainer/MonkButton" to="CanvasLayer/KingSupportMenu" method="_on_monk_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/EndTurnMenu/MarginContainer/VBoxContainer/PassButton" to="CanvasLayer/EndTurnMenu" method="_on_pass_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/SupportMenu/MarginContainer/VBoxContainer/PassButton" to="CanvasLayer/SupportMenu" method="_on_pass_support_button_pressed"]
