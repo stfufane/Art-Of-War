@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://chegm7x5sl8rx"]
+[gd_scene load_steps=13 format=3 uid="uid://chegm7x5sl8rx"]
 
 [ext_resource type="Script" path="res://screens/board.gd" id="1_ccqse"]
 [ext_resource type="PackedScene" uid="uid://dcwtowpudpdv2" path="res://scenes/battlefield.tscn" id="2_mg76x"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://screens/Instruction.gd" id="7_7kyvm"]
 [ext_resource type="Script" path="res://screens/MainMenu.gd" id="8_p57cv"]
 [ext_resource type="Script" path="res://screens/ActionMenu.gd" id="9_av1w1"]
+[ext_resource type="Script" path="res://screens/ReshuffleMenu.gd" id="9_b0lv5"]
 [ext_resource type="Script" path="res://screens/EndTurnMenu.gd" id="10_m4hdm"]
 [ext_resource type="Script" path="res://screens/SupportMenu.gd" id="11_7ktw6"]
 
@@ -131,6 +132,39 @@ text = "Start Game"
 layout_mode = 2
 text = "Join Game"
 
+[node name="ReshuffleMenu" type="PanelContainer" parent="CanvasLayer"]
+visible = false
+offset_left = 376.0
+offset_top = 294.0
+offset_right = 584.0
+offset_bottom = 424.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_b0lv5")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/ReshuffleMenu"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/ReshuffleMenu/MarginContainer"]
+layout_mode = 2
+
+[node name="ReshuffleTitle" type="Label" parent="CanvasLayer/ReshuffleMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Reshuffle ?"
+horizontal_alignment = 1
+
+[node name="ReshuffleButton" type="Button" parent="CanvasLayer/ReshuffleMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Yes"
+
+[node name="PlayButton" type="Button" parent="CanvasLayer/ReshuffleMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Play"
+
 [node name="ActionMenu" type="PanelContainer" parent="CanvasLayer"]
 visible = false
 anchors_preset = 15
@@ -244,6 +278,8 @@ text = "Pass"
 
 [connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/StartButton" to="CanvasLayer/MainMenu" method="_on_start_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MainMenu/MarginContainer/VBoxContainer/JoinButton" to="CanvasLayer/MainMenu" method="_on_join_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/ReshuffleMenu/MarginContainer/VBoxContainer/ReshuffleButton" to="CanvasLayer/ReshuffleMenu" method="_on_reshuffle_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/ReshuffleMenu/MarginContainer/VBoxContainer/PlayButton" to="CanvasLayer/ReshuffleMenu" method="_on_play_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/RecruitButton" to="CanvasLayer/ActionMenu" method="_on_recruit_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/SupportButton" to="CanvasLayer/ActionMenu" method="_on_support_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/ActionMenu/MarginContainer/VBoxContainer/AttackButton" to="CanvasLayer/ActionMenu" method="_on_attack_button_pressed"]

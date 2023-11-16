@@ -1,9 +1,9 @@
 class_name ActionMenu
 extends PanelContainer
 
-@onready var recruit_button = $MarginContainer/VBoxContainer/RecruitButton
-@onready var attack_button = $MarginContainer/VBoxContainer/AttackButton
-@onready var support_button = $MarginContainer/VBoxContainer/SupportButton
+@onready var recruit_button: Button = $MarginContainer/VBoxContainer/RecruitButton
+@onready var attack_button:  Button = $MarginContainer/VBoxContainer/AttackButton
+@onready var support_button: Button = $MarginContainer/VBoxContainer/SupportButton
 
 
 func _ready():

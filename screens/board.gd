@@ -10,12 +10,12 @@ extends Node
 
 
 func _ready():
-	Game.players_ready.connect(setup)
 	Game.hand_card_clicked.connect(_hand_card_clicked)
 	Game.no_support_played.connect(_no_support_played)
 	Game.attack_validated.connect(_validate_attack)
 	Game.archer_attacked.connect(_archer_attacked)
-
+	
+	Game.States[State.Name.INIT_BATTLEFIELD].started.connect(setup)
 	Game.States[State.Name.RECRUIT].started.connect(init_recruit_turn)
 
 

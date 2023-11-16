@@ -2,6 +2,7 @@ extends Node
 
 
 signal players_ready
+signal reshuffle_deck
 signal instruction_updated(instruction: String)
 signal hand_size_updated(size: int)
 signal is_attack_available(bool)
@@ -19,6 +20,7 @@ signal enemy_battlefield_card_clicked(card: Card)
 
 var States: Dictionary = {
 	State.Name.WAITING_FOR_PLAYER: State.new("Waiting for opponent", false),
+	State.Name.RESHUFFLE: State.new("Need to reshuffle your hand ?", true),
 	State.Name.INIT_BATTLEFIELD: State.new("Init battlefield", true),
 	State.Name.INIT_RESERVE: State.new("Init reserve", true),
 	State.Name.START_TURN: State.new("Start turn", false),
@@ -78,7 +80,7 @@ func join_server() -> void:
 func setup(_player_id: int) -> void:
 	players_ready.emit()
 	if first_player:
-		start_state(State.Name.INIT_BATTLEFIELD)
+		start_state(State.Name.RESHUFFLE)
 	else:
 		instruction_updated.emit("Waiting for the other player")
 

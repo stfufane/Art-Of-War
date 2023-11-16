@@ -23,6 +23,13 @@ func remove_card(card: Card) -> void:
 	_cards.erase(card)
 
 
+func clear() -> void:
+	for card in _cards:
+		_card_container.remove_child(card)
+		card.queue_free()
+	_cards.clear()
+
+
 func remove_card_type(type: CardType.UnitType) -> void:
 	for card in _cards:
 		if card._unit_type == type:

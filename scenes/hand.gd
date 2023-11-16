@@ -6,6 +6,7 @@ var _deck: Array[CardType.UnitType] = []
 func _ready() -> void:
 	# Setup the game when players are ready.
 	Game.players_ready.connect(setup)
+	Game.reshuffle_deck.connect(reshuffle_deck)
 
 	# Automatically draw a card at the start of a turn.
 	Game.States[State.Name.START_TURN].started.connect(start_turn)
@@ -27,6 +28,13 @@ func setup() -> void:
 	add_card(Game.create_card_instance(CardType.UnitType.King))
 	for _i in range(3):
 		add_card(Game.create_card_instance(_deck.pop_back()))
+
+
+func reshuffle_deck() -> void:
+	# Reset all the deck and cards in hand and draw a new hand.
+	clear()
+	_deck.clear()
+	setup()
 
 
 func start_turn() -> void:

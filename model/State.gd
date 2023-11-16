@@ -6,6 +6,7 @@ signal ended
 
 enum Name {
 	WAITING_FOR_PLAYER,
+	RESHUFFLE,
 	INIT_BATTLEFIELD,
 	INIT_RESERVE,
 	START_TURN,
@@ -34,6 +35,8 @@ func _init(i: String, h_o: bool):
 # so the transition is not always the one defined here
 static func get_next_state(name: State.Name) -> State.Name:
 	match name:
+		State.Name.RESHUFFLE:
+			return State.Name.INIT_BATTLEFIELD
 		State.Name.INIT_BATTLEFIELD:
 			return State.Name.INIT_RESERVE
 		State.Name.INIT_RESERVE:
