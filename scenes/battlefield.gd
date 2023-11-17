@@ -83,6 +83,8 @@ func is_attack_available() -> bool:
 	for placeholder in _player_container.get_children():
 		if !placeholder.has_card():
 			continue
+		if placeholder.get_current_card()._engaged:
+			continue
 		var attack_range: PackedVector2Array = placeholder.get_current_card().get_attack_range()
 		var card_coords: Vector2 = placeholder.coords
 		for enemy in _enemy_container.get_children():
