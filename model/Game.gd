@@ -10,6 +10,8 @@ signal no_support_played
 signal attack_validated
 signal archer_attacked(card: Card)
 signal card_killed(card: Card)
+signal battlefield_card_switched(card: Card, to: Card.BoardArea)
+signal first_reserve_card_removed
 
 
 # When a card is clicked, it will emit a signal depending on where it lies on the board.

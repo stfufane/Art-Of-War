@@ -14,7 +14,9 @@ func _ready():
 	Game.no_support_played.connect(_no_support_played)
 	Game.attack_validated.connect(_validate_attack)
 	Game.archer_attacked.connect(_archer_attacked)
-	
+	Game.battlefield_card_switched.connect(_card_back_from_battlefield)
+	Game.first_reserve_card_removed.connect(_card_removed_from_reserve)
+
 	Game.States[State.Name.INIT_BATTLEFIELD].started.connect(setup)
 	Game.States[State.Name.RECRUIT].started.connect(init_recruit_turn)
 
@@ -44,8 +46,9 @@ func card_selected(card: Card, from: CardsControl) -> void:
 	Game.picked_card.set_board_area(Card.BoardArea.Picked)
 
 
-func add_card_to_reserve(card: Card):
-	_hand.remove_card(card)
+func add_card_to_reserve(card: Card, from: CardsControl = null):
+	if from != null:
+		from.remove_card(card)
 	_reserve.add_card(card)
 	add_card_to_enemy_reserve.rpc(card._unit_type)
 
@@ -64,7 +67,7 @@ func play_support(card: Card) -> void:
 	
 	# Play a support from the hand
 	_hand.stop_all_flashes()
-	add_card_to_reserve(card)
+	add_card_to_reserve(card, _hand)
 	
 	if card._unit_type == CardType.UnitType.King:
 		# If the king is played as a support, it's a special case
@@ -81,7 +84,7 @@ func play_attack_block(card: Card) -> void:
 		return
 	
 	_hand.stop_all_flashes()
-	add_card_to_reserve(card)
+	add_card_to_reserve(card, _hand)
 	attack_was_blocked.rpc(true)
 
 
@@ -91,7 +94,7 @@ func play_support_block(card: Card) -> void:
 		return
 
 	_hand.stop_all_flashes()
-	add_card_to_reserve(card)
+	add_card_to_reserve(card, _hand)
 	support_was_blocked.rpc(true)
 
 
@@ -138,7 +141,7 @@ func _hand_card_clicked(card: Card) -> void:
 		State.Name.INIT_BATTLEFIELD:
 			card_selected(card, _hand)
 		State.Name.INIT_RESERVE:
-			add_card_to_reserve(card)
+			add_card_to_reserve(card, _hand)
 			Game.end_state()
 		State.Name.RECRUIT:
 			recruit_from_hand(card)
@@ -190,6 +193,18 @@ func _archer_attacked(target: Card) -> void:
 	# Go back to the action choice menu.
 	Game.start_state(State.Name.ACTION_CHOICE)
 
+
+func _card_back_from_battlefield(card: Card, to: Card.BoardArea) -> void:
+	match to:
+		Card.BoardArea.Reserve:
+			add_card_to_reserve(card)
+		Card.BoardArea.Hand:
+			_hand.add_card(card)
+
+
+func _card_removed_from_reserve() -> void:
+	remove_first_card_from_enemy_reserve.rpc()
+
 #################################################################################
 # Network actions that are called to reflect local actions on the enemy board  ##
 #################################################################################
@@ -198,8 +213,8 @@ func add_card_to_enemy_reserve(unit_type: CardType.UnitType):
 	enemy_reserve.add_card(Game.create_card_instance(unit_type))
 
 @rpc("any_peer")
-func remove_card_from_enemy_reserve(unit_type: CardType.UnitType):
-	enemy_reserve.remove_card_type(unit_type)
+func remove_first_card_from_enemy_reserve():
+	enemy_reserve.remove_first_card()
 
 @rpc("any_peer")
 func add_card_to_enemy_kingdom(unit_type: CardType.UnitType):

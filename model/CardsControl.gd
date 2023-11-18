@@ -23,6 +23,11 @@ func remove_card(card: Card) -> void:
 	_cards.erase(card)
 
 
+func remove_first_card() -> void:
+	var card_to_remove = _cards.pop_front()
+	_card_container.remove_child(card_to_remove)
+
+
 func clear() -> void:
 	for card in _cards:
 		_card_container.remove_child(card)

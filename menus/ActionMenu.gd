@@ -5,16 +5,25 @@ extends PanelContainer
 @onready var attack_button:  Button = $MarginContainer/VBoxContainer/AttackButton
 @onready var support_button: Button = $MarginContainer/VBoxContainer/SupportButton
 
+var _has_recruited: bool = false
+
 
 func _ready():
-	Game.States[State.Name.START_TURN].started.connect(func(): recruit_button.disabled = false)
+	Game.States[State.Name.START_TURN].started.connect(reset_buttons)
 	Game.States[State.Name.ACTION_CHOICE].started.connect(show)
 	Game.is_attack_available.connect(set_attack_button_enabled)
 	Game.hand_size_updated.connect(set_support_button_enabled)
 
 
+func reset_buttons():
+	_has_recruited = false
+	recruit_button.disabled = false
+	attack_button.disabled = false
+	support_button.disabled = false
+
+
 func set_attack_button_enabled(enabled: bool):
-	attack_button.disabled = !enabled
+	attack_button.disabled = !enabled or _has_recruited
 
 
 func set_support_button_enabled(hand_size: int) -> void:
@@ -38,6 +47,9 @@ func _on_support_button_pressed():
 
 
 func _on_recruit_button_pressed():
+	_has_recruited = true
+	recruit_button.disabled = true # Can't recruit twice
+	attack_button.disabled = true # Can't attack after recruiting
 	if Game.get_state() != State.Name.ACTION_CHOICE:
 		return
 	Game.start_state(State.Name.RECRUIT)

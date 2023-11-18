@@ -96,6 +96,32 @@ func is_attack_available() -> bool:
 	return false
 
 
+func validate_picked_card_added(clicked_placeholder: CardPlaceholder, clicked_card: Card = null) -> void:
+	# TODO find why card is not really removed from the placeholder after a card switch.
+
+	# Send a signal to the opponent to remove the card from his reserve
+	if Game.picked_card._picked_from == Card.BoardArea.Reserve:
+		Game.first_reserve_card_removed.emit()
+
+	if clicked_card != null:
+		# Put back the clicked card to the reserve or the hand.
+		Game.battlefield_card_switched.emit(clicked_card, Game.picked_card._picked_from)
+
+	# Take the card that was picked in the hand
+	clicked_placeholder.set_card(Game.picked_card)
+	Game.picked_card = null
+
+	# Notify the opponent so it adds the card to his battlefield
+	set_enemy_card.rpc(clicked_placeholder.get_current_card()._unit_type, clicked_placeholder.name, clicked_placeholder.get_current_card()._engaged)
+
+	# Go to the next state
+	if Game.get_state() == State.Name.INIT_BATTLEFIELD:
+		Game.end_state()
+	else:
+		# You can still play a support if you want but not attack neither recruit again.
+		Game.start_state(State.Name.ACTION_CHOICE)
+
+
 func move_card_behind(placeholder: CardPlaceholder, enemy: bool) -> void:
 	var behind_placeholder: CardPlaceholder = null
 	if enemy:
@@ -128,21 +154,8 @@ func _placeholder_clicked(clicked_placeholder: CardPlaceholder) -> void:
 	match Game.get_state():
 		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT:
 			# We can't put a card if there's already one there or if there's no card in hand
-			if Game.picked_card == null or !placeholder_available(clicked_placeholder):
-				return
-
-			# Take the card that was picked in the hand
-			clicked_placeholder.set_card(Game.picked_card)
-			Game.picked_card = null
-
-			# Notify the opponent so it adds the card to his battlefield
-			set_enemy_card.rpc(clicked_placeholder.get_current_card()._unit_type, clicked_placeholder.name, clicked_placeholder.get_current_card()._engaged)
-
-			# Go to the next state
-			if Game.get_state() == State.Name.INIT_BATTLEFIELD:
-				Game.end_state()
-			else:
-				Game.start_state(State.Name.FINISH_TURN)
+			if Game.picked_card != null and placeholder_available(clicked_placeholder):
+				validate_picked_card_added(clicked_placeholder)
 
 		State.Name.MOVE_UNIT:
 			if _moved_card == null or !placeholder_available(clicked_placeholder):
@@ -185,6 +198,10 @@ func _card_clicked(clicked_card: Card) -> void:
 				for coords in attack_range:
 					if card_coords + coords == enemy.coords:
 						enemy.toggle_highlight()
+
+		State.Name.RECRUIT:
+			if Game.picked_card != null:
+				validate_picked_card_added(clicked_placeholder, clicked_card)
 
 		State.Name.MOVE_UNIT:
 			# Define the card we want to move
@@ -252,6 +269,8 @@ func set_enemy_card(type: CardType.UnitType, placeholder_name: String, engaged: 
 	if engaged:
 		enemy_card.engage()
 	var enemy_placeholder: CardPlaceholder = _enemy_container.get_node(NodePath(placeholder_name))
+	if enemy_placeholder.has_card():
+		enemy_placeholder.remove_card()
 	enemy_placeholder.set_card(enemy_card)
 	enemy_card.rotation_degrees += 180 # Mirror it on the enemy side
 
