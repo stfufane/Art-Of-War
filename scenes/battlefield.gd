@@ -97,8 +97,6 @@ func is_attack_available() -> bool:
 
 
 func validate_picked_card_added(clicked_placeholder: CardPlaceholder, clicked_card: Card = null) -> void:
-	# TODO find why card is not really removed from the placeholder after a card switch.
-
 	# Send a signal to the opponent to remove the card from his reserve
 	if Game.picked_card._picked_from == Card.BoardArea.Reserve:
 		Game.first_reserve_card_removed.emit()

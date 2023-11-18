@@ -38,6 +38,15 @@ var States: Dictionary = {
 	State.Name.FINISH_TURN: State.new("Finish turn", false),
 }
 
+var CardTypes: Dictionary = {
+	CardType.UnitType.King: CardType.new(CardType.UnitType.King, "King", 1, 5, 4, [Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)]),
+	CardType.UnitType.Soldier: CardType.new(CardType.UnitType.Soldier, "Soldier", 0, 2, 1, [Vector2(0, 1)]),
+	CardType.UnitType.Archer: CardType.new(CardType.UnitType.Archer, "Archer", 1, 2, 1, [Vector2(-2, 1), Vector2(2, 1), Vector2(-1, 2), Vector2(1, 2)]),
+	CardType.UnitType.Guard: CardType.new(CardType.UnitType.Guard, "Guard", 1, 3, 2, [Vector2(0, 1)]),
+	CardType.UnitType.Wizard: CardType.new(CardType.UnitType.Wizard, "Wizard", 1, 2, 1, [Vector2(0, 1), Vector2(0, 2), Vector2(0, 3)]),
+	CardType.UnitType.Monk: CardType.new(CardType.UnitType.Monk, "Monk", 1, 2, 2, [Vector2(-1, 1), Vector2(1, 1), Vector2(-2, 2), Vector2(2, 2)])
+}
+
 
 const CARD_SCENE: PackedScene = preload("res://scenes/card.tscn")
 
