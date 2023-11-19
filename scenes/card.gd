@@ -10,6 +10,7 @@ extends Control
 @onready var _rect = $ColorRect
 @onready var _flash_shader: Shader = preload("res://scenes/flash.gdshader")
 
+
 # Tells where the card lies, to adapt its behaviour
 enum BoardArea {
 	Nowhere,

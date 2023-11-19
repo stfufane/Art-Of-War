@@ -1,3 +1,4 @@
+class_name EndTurnMenu
 extends PanelContainer
 
 @onready var pass_button: Button = $MarginContainer/VBoxContainer/PassButton

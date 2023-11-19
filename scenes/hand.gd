@@ -55,6 +55,13 @@ func is_deck_empty() -> bool:
 func stop_all_flashes() -> void:
 	for card in _cards:
 		card.stop_flash()
+		
+
+func has_support_cards() -> bool:
+	for card in _cards:
+		if card._unit_type != CardType.UnitType.Wizard and card._unit_type != CardType.UnitType.Guard:
+			return true
+	return false
 
 
 func flash_support_cards() -> void:

@@ -17,16 +17,21 @@ func _ready():
 	Game.battlefield_card_switched.connect(_card_back_from_battlefield)
 	Game.first_reserve_card_removed.connect(_card_removed_from_reserve)
 
+	Game.States[State.Name.ACTION_CHOICE].started.connect(start_action)
 	Game.States[State.Name.INIT_BATTLEFIELD].started.connect(setup)
 	Game.States[State.Name.RECRUIT].started.connect(init_recruit_turn)
 
 
-func setup():
+func setup() -> void:
 	# First card of the deck is put in the kingdom
 	increase_kingdom_population(_hand._deck.pop_back())
+	
+
+func start_action() -> void:
+	Game.is_support_available.emit(_hand.has_support_cards() and _reserve.size() < 5)
 
 
-func init_recruit_turn():
+func init_recruit_turn() -> void:
 	# Recruitment is made by default from the reserve
 	# If the reserve is empty, the player can recruit from the hand
 	if _reserve.is_empty():

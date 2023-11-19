@@ -12,7 +12,7 @@ func _ready():
 	Game.States[State.Name.START_TURN].started.connect(reset_buttons)
 	Game.States[State.Name.ACTION_CHOICE].started.connect(show)
 	Game.is_attack_available.connect(set_attack_button_enabled)
-	Game.hand_size_updated.connect(set_support_button_enabled)
+	Game.is_support_available.connect(set_support_button_enabled)
 
 
 func reset_buttons():
@@ -24,11 +24,10 @@ func reset_buttons():
 
 func set_attack_button_enabled(enabled: bool):
 	attack_button.disabled = !enabled or _has_recruited
+	
 
-
-func set_support_button_enabled(hand_size: int) -> void:
-	# TODO Check that reserve is not full
-	support_button.disabled = hand_size == 0
+func set_support_button_enabled(enabled: bool):
+	support_button.disabled = !enabled
 
 
 func _on_attack_button_pressed():
