@@ -289,11 +289,13 @@ func remove_card(placeholder_name: String):
 @rpc("any_peer")
 func enemy_card_attacking(placeholder_name: String):
 	var placeholder: CardPlaceholder = _enemy_container.get_node(NodePath(placeholder_name))
-	placeholder.get_current_card().rotation_degrees = 90
+	var attacking_card: Card = placeholder.get_current_card()
+	attacking_card.engage()
 
 
 @rpc("any_peer")
 func disengage_enemy_card(placeholder_name: String):
 	var placeholder: CardPlaceholder = _enemy_container.get_node(NodePath(placeholder_name))
 	if placeholder.has_card():
-		placeholder.get_current_card().rotation_degrees = 180
+		var enemy_card: Card = placeholder.get_current_card()
+		enemy_card.disengage()

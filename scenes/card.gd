@@ -74,12 +74,13 @@ func disengage() -> void:
 	_engaged = false
 	_hp = _type.defense
 	_hurt = false
-	rotation_degrees = 0
+	rotation_degrees = 0 if _board_area == BoardArea.Battlefield else 180
 
 
 func engage() -> void:
 	_engaged = true
-	rotation_degrees = -90
+	_hp = _type.defense_engaged
+	rotation_degrees = -90 if _board_area == BoardArea.Battlefield else 90
 
 
 func get_attack_range() -> PackedVector2Array:
@@ -88,7 +89,6 @@ func get_attack_range() -> PackedVector2Array:
 
 func attack() -> void:
 	engage()
-	_hp = _type.defense_engaged
 	stop_flash()
 
 
