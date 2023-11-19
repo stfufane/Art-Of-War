@@ -149,7 +149,8 @@ func enemy_attack_block(attacking_card: Card, enemy_placeholder: CardPlaceholder
 func process_attack_block(attack_blocked: bool, is_rpc: bool = true) -> void:
 	# If attack was blocked, we can block the support with an other support until it's not possible to block anymore
 	if attack_blocked:
-		start_state(State.Name.ATTACK_BLOCK)
+		# After an attack has been blocked, the enemy can play a support card to block the other support.
+		start_state(State.Name.SUPPORT_BLOCK)
 		return
 
 	# Otherwise we apply the attack that was in progress
@@ -182,10 +183,14 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 					start_state(State.Name.MOVE_UNIT)
 				CardType.UnitType.Archer:
 					start_state(State.Name.ARCHER_ATTACK)
+				CardType.UnitType.King: # King means no pending support, attack block in progress instead
+					process_attack_block(false, true)
 		else:
 			print("Support was cancelled")
 			# Start a new action
 			start_state(State.Name.ACTION_CHOICE)
+
+	_pending_support = CardType.UnitType.King # Reset the pending support
 
 
 func enemy_support_block(support_card: CardType.UnitType) -> void:
