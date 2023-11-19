@@ -5,7 +5,7 @@ signal players_ready
 signal reshuffle_deck
 
 signal instruction_updated(instruction: String)
-signal add_event(event: String)
+signal add_event(aux: String, event: String)
 
 signal hand_size_updated(size: int)
 signal is_attack_available(bool)
@@ -163,7 +163,7 @@ func process_attack_block(attack_blocked: bool, is_rpc: bool = true) -> void:
 		if is_rpc:
 			attack_validated.emit()
 		else:
-			print("Attack was cancelled")
+			add_event.emit("are", "unable to play the attack, it has been blocked")
 
 	_attack_info.clear()
 	
@@ -183,6 +183,7 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 			match _pending_support:
 				CardType.UnitType.Soldier:
 					_attack_bonus += 1
+					add_event.emit("have", "added a +1 bonus on the card attacks for this round.")
 					start_state(State.Name.ACTION_CHOICE)
 				CardType.UnitType.Monk:
 					start_state(State.Name.MOVE_UNIT)
@@ -191,7 +192,7 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 				CardType.UnitType.King: # King means no pending support, attack block in progress instead
 					process_attack_block(false, true)
 		else:
-			print("Support was cancelled")
+			add_event.emit("are", "unable to play the support, it has been blocked.")
 			# Start a new action
 			start_state(State.Name.ACTION_CHOICE)
 
@@ -199,6 +200,7 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 
 
 func enemy_support_block(support_card: CardType.UnitType) -> void:
+	add_event.emit("are", "trying to play a " + str(support_card) + " as a support")
 	_pending_support = support_card
 	set_enemy_state.rpc(State.Name.SUPPORT_BLOCK)
 
@@ -213,20 +215,7 @@ func get_state() -> State.Name :
 
 func get_attack_info() -> Dictionary:
 	return _attack_info
-	
 
-func get_player_name() -> String:
-	if first_player:
-		return "Player 1"
-	else:
-		return "Player 2"
-		
-
-func get_other_player_name() -> String:
-	if first_player:
-		return "Player 2"
-	else:
-		return "Player 1"
 
 #################################################################################
 # Network actions that are called to reflect local actions on the enemy board  ##

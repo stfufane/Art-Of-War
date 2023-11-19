@@ -8,14 +8,14 @@ func _ready():
 	Game.add_event.connect(update_text)
 
 
-func update_text(text: String) -> void:
+func update_text(aux: String, text: String) -> void:
 	content.newline()
-	content.append_text(Game.get_player_name() + ": " + text)
-	add_line.rpc(text)
+	content.append_text("You " + aux + " " + text)
+	add_line.rpc(aux, text)
 
 
 @rpc("any_peer")
-func add_line(text: String):
+func add_line(aux: String, text: String):
 	content.newline()
-	content.append_text(Game.get_other_player_name() + ": " + text)
+	content.append_text("Enemy " + ("has " if aux == "have" else "is ") + text)
 

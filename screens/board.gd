@@ -51,9 +51,10 @@ func card_selected(card: Card, from: CardsControl) -> void:
 	Game.picked_card.set_board_area(Card.BoardArea.Picked)
 
 
-func add_card_to_reserve(card: Card, from: CardsControl = null):
+func add_card_to_reserve(card: Card, from: CardsControl = null) -> void:
 	if from != null:
 		from.remove_card(card)
+	Game.add_event.emit("have", "added a " + str(card._type) + " to the reserve")
 	_reserve.add_card(card)
 	add_card_to_enemy_reserve.rpc(card._unit_type)
 
@@ -90,6 +91,7 @@ func play_attack_block(card: Card) -> void:
 	
 	_hand.stop_all_flashes()
 	add_card_to_reserve(card, _hand)
+	Game.add_event.emit("are", "blocking the attack with a " + str(card._type))
 	attack_was_blocked.rpc(true)
 
 
@@ -100,6 +102,7 @@ func play_support_block(card: Card) -> void:
 
 	_hand.stop_all_flashes()
 	add_card_to_reserve(card, _hand)
+	Game.add_event.emit("are", "blocking the support with a " + str(card._type))
 	support_was_blocked.rpc(true)
 
 
@@ -117,12 +120,17 @@ func handle_card_damage(target: Card, damage: int) -> void:
 
 	# if the target still has hp, it's just hurt, the game continues
 	if target._hp > 0:
+		Game.add_event.emit("have", "hurt the " + str(target._type) + 
+			", it now has " + str(target._hp) + " hp.")
 		return
 
 	# if the target has exactly 0 hp and was not hurt, it's captured and added to my kingdom
 	# When used as a support, the archer cannot capture a card, it just kills it
 	if target._hp == 0 and !target._hurt and Game.get_state() != State.Name.ARCHER_ATTACK:
+		Game.add_event.emit("have", "captured the " + str(target._type))
 		increase_kingdom_population(target._unit_type)
+	else:
+		Game.add_event.emit("have", "killed the " + str(target._type))
 
 	# If it did not survive, the card is removed from the battlefield anyway
 	Game.card_killed.emit(target)
@@ -135,6 +143,7 @@ func handle_card_damage(target: Card, damage: int) -> void:
 
 func finish_turn(card: Card) -> void:
 	if increase_kingdom_population(card._unit_type):
+		Game.add_event.emit("have", "added a " + str(card._type) + " to the kingdom")
 		_hand.remove_card(card)
 		Game.end_state()
 
