@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://menus/EndTurnMenu.gd" id="1_dp2di"]
 
 [node name="EndTurnMenu" type="PanelContainer"]
-visible = false
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5

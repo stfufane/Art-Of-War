@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://chegm7x5sl8rx"]
+[gd_scene load_steps=15 format=3 uid="uid://chegm7x5sl8rx"]
 
 [ext_resource type="Script" path="res://screens/board.gd" id="1_ccqse"]
 [ext_resource type="PackedScene" uid="uid://dcwtowpudpdv2" path="res://scenes/battlefield.tscn" id="2_mg76x"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dwehldueqyfq5" path="res://scenes/kingdom.tscn" id="6_oavws"]
 [ext_resource type="Script" path="res://screens/Instruction.gd" id="7_7kyvm"]
 [ext_resource type="PackedScene" uid="uid://cv8lqsflk2em" path="res://menus/main_menu.tscn" id="8_3r52e"]
+[ext_resource type="PackedScene" uid="uid://bey1tkfjh8hb" path="res://scenes/game_log.tscn" id="8_vvxce"]
 [ext_resource type="PackedScene" uid="uid://v7r7mdr3ywca" path="res://menus/reshuffle_menu.tscn" id="9_mlf5y"]
 [ext_resource type="PackedScene" uid="uid://ctswbhe2o2lq" path="res://menus/action_menu.tscn" id="10_iyuk0"]
 [ext_resource type="PackedScene" uid="uid://d3b4vyxt86l1o" path="res://menus/king_support_menu.tscn" id="11_1m8jw"]
@@ -59,6 +60,7 @@ offset_bottom = 514.0
 text = "Reserve"
 
 [node name="Graveyard" parent="." instance=ExtResource("5_brr7o")]
+visible = false
 offset_left = 800.0
 offset_top = 514.0
 offset_right = 800.0
@@ -98,14 +100,26 @@ script = ExtResource("7_7kyvm")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
+[node name="GameEvents" parent="CanvasLayer" instance=ExtResource("8_vvxce")]
+offset_left = 773.0
+offset_top = 530.0
+offset_right = 1029.0
+offset_bottom = 786.0
+scale = Vector2(0.7, 0.7)
+
 [node name="MainMenu" parent="CanvasLayer" instance=ExtResource("8_3r52e")]
 
 [node name="ReshuffleMenu" parent="CanvasLayer" instance=ExtResource("9_mlf5y")]
+visible = false
 
 [node name="ActionMenu" parent="CanvasLayer" instance=ExtResource("10_iyuk0")]
+visible = false
 
 [node name="KingSupportMenu" parent="CanvasLayer" instance=ExtResource("11_1m8jw")]
+visible = false
 
 [node name="EndTurnMenu" parent="CanvasLayer" instance=ExtResource("12_iu3ad")]
+visible = false
 
 [node name="SupportMenu" parent="CanvasLayer" instance=ExtResource("13_oqk1y")]
+visible = false

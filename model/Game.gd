@@ -3,9 +3,14 @@ extends Node
 
 signal players_ready
 signal reshuffle_deck
+
 signal instruction_updated(instruction: String)
+signal add_event(event: String)
+
 signal hand_size_updated(size: int)
 signal is_attack_available(bool)
+signal is_support_available(bool)
+
 signal no_support_played
 signal attack_validated
 signal archer_attacked(card: Card)
@@ -208,6 +213,20 @@ func get_state() -> State.Name :
 
 func get_attack_info() -> Dictionary:
 	return _attack_info
+	
+
+func get_player_name() -> String:
+	if first_player:
+		return "Player 1"
+	else:
+		return "Player 2"
+		
+
+func get_other_player_name() -> String:
+	if first_player:
+		return "Player 2"
+	else:
+		return "Player 1"
 
 #################################################################################
 # Network actions that are called to reflect local actions on the enemy board  ##

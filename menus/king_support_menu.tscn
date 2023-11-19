@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://menus/KingSupportMenu.gd" id="1_g5kyn"]
 
 [node name="KingSupportMenu" type="PanelContainer"]
-visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

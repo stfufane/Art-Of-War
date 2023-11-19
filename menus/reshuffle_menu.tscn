@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://menus/ReshuffleMenu.gd" id="1_akwr2"]
 
 [node name="ReshuffleMenu" type="PanelContainer"]
-visible = false
 offset_left = 376.0
 offset_top = 294.0
 offset_right = 584.0
