@@ -16,6 +16,8 @@ func _ready():
 	Game.battlefield_card_clicked.connect(_card_clicked)
 	Game.enemy_battlefield_card_clicked.connect(_enemy_card_clicked)
 	Game.card_killed.connect(_enemy_card_killed)
+	Game.attack_validated.connect(_attack_ended)
+	Game.attack_cancelled.connect(_attack_ended)
 
 	# Disengage the cards at the beginning of the turn.
 	Game.States[State.Name.START_TURN].started.connect(disengage_cards)
@@ -46,6 +48,15 @@ func disengage_cards() -> void:
 func all_highlights_off() -> void:
 	for enemy_placeholder in _enemy_container.get_children():
 		enemy_placeholder.highlight_off()
+
+
+func all_flashes_off() -> void:
+	for placeholder in _player_container.get_children():
+		if placeholder.has_card():
+			placeholder.get_current_card().stop_flash()
+	for enemy_placeholder in _enemy_container.get_children():
+		if enemy_placeholder.has_card():
+			enemy_placeholder.get_current_card().stop_flash()
 
 
 # Check if a placeholder is available for a card to be placed on it
@@ -237,8 +248,8 @@ func _enemy_card_clicked(clicked_card: Card):
 			# Check that the card is within reach of the attacking card
 			_attacking_card.attack()
 			var attack_placeholder: CardPlaceholder = _attacking_card.get_parent()
-			enemy_card_attacking.rpc(attack_placeholder.name) # Notify the opponent that the card is attacking
 			var enemy_placeholder: CardPlaceholder = clicked_card.get_parent()
+			enemy_card_attacking.rpc(attack_placeholder.name, enemy_placeholder.name) # Notify the opponent that the card is attacking
 			var enemy_coords: Vector2 = enemy_placeholder.coords
 			var attacking_card_coords: Vector2 = attack_placeholder.coords
 			for coords in _attacking_card.get_attack_range():
@@ -253,6 +264,10 @@ func _enemy_card_clicked(clicked_card: Card):
 		State.Name.ARCHER_ATTACK:
 			Game.add_event.emit("have", "dealt 1 damage to the " + str(clicked_card._type) + " with the archer")
 			Game.archer_attacked.emit(clicked_card)
+
+
+func _attack_ended() -> void:
+	enemy_attack_ended.rpc()
 
 
 func _enemy_card_killed(killed_card: Card) -> void:
@@ -295,10 +310,19 @@ func remove_card(placeholder_name: String):
 	move_card_behind(placeholder, false)
 
 @rpc("any_peer")
-func enemy_card_attacking(placeholder_name: String):
+func enemy_card_attacking(placeholder_name: String, target_placeholder_name: String):
 	var placeholder: CardPlaceholder = _enemy_container.get_node(NodePath(placeholder_name))
+	var target_placeholder: CardPlaceholder = _player_container.get_node(NodePath(target_placeholder_name))
 	var attacking_card: Card = placeholder.get_current_card()
+	var target_card: Card = target_placeholder.get_current_card()
 	attacking_card.engage()
+	attacking_card.start_flash()
+	target_card.start_flash()
+	
+
+@rpc("any_peer")
+func enemy_attack_ended():
+	all_flashes_off()
 
 
 @rpc("any_peer")

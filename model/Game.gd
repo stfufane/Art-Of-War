@@ -13,6 +13,7 @@ signal is_support_available(bool)
 
 signal no_support_played
 signal attack_validated
+signal attack_cancelled
 signal archer_attacked(card: Card)
 signal card_killed(card: Card)
 signal battlefield_card_switched(card: Card, to: Card.BoardArea)
@@ -163,6 +164,7 @@ func process_attack_block(attack_blocked: bool, is_rpc: bool = true) -> void:
 		if is_rpc:
 			attack_validated.emit()
 		else:
+			attack_cancelled.emit()
 			add_event.emit("are", "unable to play the attack, it has been blocked")
 
 	_attack_info.clear()
@@ -190,11 +192,15 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 				CardType.UnitType.Archer:
 					start_state(State.Name.ARCHER_ATTACK)
 				CardType.UnitType.King: # King means no pending support, attack block in progress instead
-					process_attack_block(false, true)
+					process_attack_block(false)
 		else:
-			add_event.emit("are", "unable to play the support, it has been blocked.")
-			# Start a new action
-			start_state(State.Name.ACTION_CHOICE)
+			if _pending_support == CardType.UnitType.King:
+				# We couldn't block the enemy support during an attack, the attack is cancelled
+				process_attack_block(false, false)
+			else:
+				add_event.emit("are", "unable to play the support, it has been blocked.")
+				# Start a new action
+				start_state(State.Name.ACTION_CHOICE)
 
 	_pending_support = CardType.UnitType.King # Reset the pending support
 
