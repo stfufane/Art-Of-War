@@ -68,6 +68,10 @@ var _attack_bonus: int = 0
 
 var _pending_support: CardType.UnitType = CardType.UnitType.King
 
+# Count the number of killed units on both sides because it can be used to decide who wins at the end.
+var _dead_units: int = 0
+var _dead_enemies: int = 0
+
 
 # The local multiplayer server port
 const PORT = 1234
@@ -223,6 +227,11 @@ func get_attack_info() -> Dictionary:
 	return _attack_info
 
 
+func add_dead_enemy() -> void:
+	_dead_enemies += 1
+	add_dead_unit.rpc()
+
+
 #################################################################################
 # Network actions that are called to reflect local actions on the enemy board  ##
 #################################################################################
@@ -235,3 +244,8 @@ func set_enemy_state(state: State.Name) -> void:
 @rpc("any_peer")
 func set_enemy_turn() -> void:
 	_my_turn = false
+
+
+@rpc("any_peer")
+func add_dead_unit() -> void:
+	_dead_units += 1

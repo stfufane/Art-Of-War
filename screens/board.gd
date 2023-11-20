@@ -130,6 +130,7 @@ func handle_card_damage(target: Card, damage: int) -> void:
 		Game.add_event.emit("have", "captured the " + str(target._type))
 		increase_kingdom_population(target._unit_type)
 	else:
+		Game.add_dead_enemy()
 		Game.add_event.emit("have", "killed the " + str(target._type))
 
 	# If it did not survive, the card is removed from the battlefield anyway

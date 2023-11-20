@@ -309,6 +309,7 @@ func remove_card(placeholder_name: String):
 	placeholder.remove_card()
 	move_card_behind(placeholder, false)
 
+
 @rpc("any_peer")
 func enemy_card_attacking(placeholder_name: String, target_placeholder_name: String):
 	var placeholder: CardPlaceholder = _enemy_container.get_node(NodePath(placeholder_name))
