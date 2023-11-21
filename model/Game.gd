@@ -73,9 +73,9 @@ var picked_card: Card = null
 var _attack_info: Dictionary = {} # The state of the ongoing attack, storing the attacker and its target
 var _attack_bonus: int = 0 # Bonus applied to every card attack after a soldier has been used as a support
 
-# King can't be used directly as a support so it's used as a special unit
-# meaning no support is currently going on.
-var _pending_support: CardType.UnitType = CardType.UnitType.King
+# When using a support, we first let the enemy try to block it, so we have to save 
+# what we're currently trying to do
+var _pending_support: CardType = null
 
 # Count the number of killed units on both sides because it can be used to decide who wins at the end.
 var _dead_units: int = 0
@@ -195,7 +195,7 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 	# Otherwise we apply the support effect if the enemy passed (if the call is non-rpc, it means the player passed)
 	if _my_turn:
 		if is_rpc:
-			match _pending_support:
+			match _pending_support.type:
 				CardType.UnitType.Soldier:
 					_attack_bonus += 1
 					add_event.emit("have", "added a +1 bonus on the card attacks for this round.")
@@ -207,7 +207,7 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 				CardType.UnitType.King: # King means no pending support, attack block in progress instead
 					process_attack_block(false)
 		else:
-			if _pending_support == CardType.UnitType.King:
+			if _pending_support == null:
 				# We couldn't block the enemy support during an attack, the attack is cancelled
 				process_attack_block(false, false)
 			else:
@@ -215,10 +215,10 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 				# Start a new action
 				start_state(State.Name.ACTION_CHOICE)
 
-	_pending_support = CardType.UnitType.King # Reset the pending support
+	_pending_support = null # Reset the pending support
 
 
-func enemy_support_block(support_card: CardType.UnitType) -> void:
+func enemy_support_block(support_card: CardType) -> void:
 	add_event.emit("are", "trying to play a " + str(support_card) + " as a support")
 	_pending_support = support_card
 	set_enemy_state.rpc(State.Name.SUPPORT_BLOCK)

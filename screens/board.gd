@@ -81,7 +81,7 @@ func play_support(card: Card) -> void:
 		Game.start_state(State.Name.KING_SUPPORT)
 		return
 
-	Game.enemy_support_block(card._unit_type)
+	Game.enemy_support_block(Game.CardTypes[card._unit_type])
 
 
 func play_attack_block(card: Card) -> void:

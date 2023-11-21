@@ -8,12 +8,12 @@ func _ready():
 
 
 func _on_soldier_button_pressed():
-	Game.enemy_support_block(CardType.UnitType.Soldier)
+	Game.enemy_support_block(Game.CardTypes[CardType.UnitType.Soldier])
 
 
 func _on_archer_button_pressed():
-	Game.enemy_support_block(CardType.UnitType.Archer)
+	Game.enemy_support_block(Game.CardTypes[CardType.UnitType.Archer])
 
 
 func _on_monk_button_pressed():
-	Game.enemy_support_block(CardType.UnitType.Monk)
+	Game.enemy_support_block(Game.CardTypes[CardType.UnitType.Monk])
