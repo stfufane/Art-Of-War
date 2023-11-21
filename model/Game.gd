@@ -1,23 +1,27 @@
 extends Node
 
 
-signal players_ready
-signal reshuffle_deck
+signal players_ready # Both players have joined the game
+signal reshuffle_deck # Re-trigger the card distribution at the beginning
 
-signal instruction_updated(instruction: String)
-signal add_event(aux: String, event: String)
+signal instruction_updated(instruction: String) # Update the text label at the bottom
+signal add_event(aux: String, event: String) # Add a log in the game log panel
 
-signal hand_size_updated(size: int)
-signal is_attack_available(bool)
-signal is_support_available(bool)
+signal hand_size_updated(size: int) # The number of cards in the hand got updated
+signal is_support_available(bool) # Tells if possible to play a support with cards in hand
 
-signal no_support_played
-signal attack_validated
-signal attack_cancelled
-signal archer_attacked(card: Card)
-signal card_killed(card: Card)
-signal battlefield_card_switched(card: Card, to: Card.BoardArea)
-signal first_reserve_card_removed
+signal is_attack_available(bool) # Tells if possible to attack on the current battlefield
+
+signal no_support_played # The player did not try to block the current support and passed
+
+signal attack_validated # The current attack is being applied
+signal attack_cancelled # The current attack is being cancelled
+
+signal archer_attacked(card: Card) # Some damage has been dealt by an archer
+signal card_killed(card: Card) # A card died on the battlefield
+
+signal first_reserve_card_removed # The card most left of the reserve is being picked for recruitment
+signal battlefield_card_switched(card: Card, to: Card.BoardArea) # A card is being moved on the battlefield
 
 
 # When a card is clicked, it will emit a signal depending on where it lies on the board.
@@ -26,6 +30,7 @@ signal battlefield_card_clicked(card: Card)
 signal enemy_battlefield_card_clicked(card: Card)
 
 
+# The list of all available states with their associated texts
 var States: Dictionary = {
 	State.Name.WAITING_FOR_PLAYER: State.new("Waiting for opponent", false),
 	State.Name.RESHUFFLE: State.new("Need to reshuffle your hand ?", true),
@@ -44,6 +49,8 @@ var States: Dictionary = {
 	State.Name.FINISH_TURN: State.new("Finish turn", false),
 }
 
+
+# All the types of units that can be played with their respective properties
 var CardTypes: Dictionary = {
 	CardType.UnitType.King: CardType.new(CardType.UnitType.King, "King", 1, 5, 4, [Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)]),
 	CardType.UnitType.Soldier: CardType.new(CardType.UnitType.Soldier, "Soldier", 0, 2, 1, [Vector2(0, 1)]),
@@ -54,7 +61,7 @@ var CardTypes: Dictionary = {
 }
 
 
-const CARD_SCENE: PackedScene = preload("res://scenes/card.tscn")
+const CARD_SCENE: PackedScene = preload("res://scenes/card.tscn") # The template to create a card
 
 # Input map constant
 const LEFT_CLICK: String = "left_click"
@@ -63,9 +70,11 @@ var _current_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var previous_state: State.Name = State.Name.WAITING_FOR_PLAYER
 var picked_card: Card = null
 
-var _attack_info: Dictionary = {}
-var _attack_bonus: int = 0
+var _attack_info: Dictionary = {} # The state of the ongoing attack, storing the attacker and its target
+var _attack_bonus: int = 0 # Bonus applied to every card attack after a soldier has been used as a support
 
+# King can't be used directly as a support so it's used as a special unit
+# meaning no support is currently going on.
 var _pending_support: CardType.UnitType = CardType.UnitType.King
 
 # Count the number of killed units on both sides because it can be used to decide who wins at the end.
