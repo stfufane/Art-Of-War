@@ -11,6 +11,7 @@ extends Node
 
 func _ready():
 	Game.hand_card_clicked.connect(_hand_card_clicked)
+	Game.reserve_card_clicked.connect(_reserve_card_clicked)
 	Game.no_support_played.connect(_no_support_played)
 	Game.attack_validated.connect(_validate_attack)
 	Game.archer_attacked.connect(_archer_attacked)
@@ -28,7 +29,8 @@ func setup() -> void:
 	
 
 func start_action() -> void:
-	Game.is_support_available.emit(_hand.has_support_cards() and _reserve.size() < 5)
+	Game.is_support_available = _hand.has_support_cards() and _reserve.size() < 5
+	_reserve.stop_all_flashes()
 
 
 func init_recruit_turn() -> void:
@@ -39,11 +41,12 @@ func init_recruit_turn() -> void:
 		return
 	
 	# Automatically pick the first card from the reserve
-	Game.instruction_updated.emit("The first card from your reserve has been picked")
-	card_selected(_reserve.get_first_card(), _reserve)
+	Game.instruction_updated.emit("You can pick the card most left of the reserve")
+	_reserve.get_first_card().start_flash()
 
 
 func card_selected(card: Card, from: CardsControl) -> void:
+	Game.set_can_go_back(false)
 	from.switch_card(card, Game.picked_card)
 	
 	Game.picked_card = card
@@ -168,6 +171,13 @@ func _hand_card_clicked(card: Card) -> void:
 			play_support_block(card)
 		State.Name.FINISH_TURN:
 			finish_turn(card)
+
+
+func _reserve_card_clicked(_card: Card) -> void:
+	if Game.get_state() == State.Name.RECRUIT:
+		var first_reserve_card: Card = _reserve.get_first_card()
+		first_reserve_card.stop_flash()
+		card_selected(first_reserve_card, _reserve)
 
 
 func _no_support_played() -> void:

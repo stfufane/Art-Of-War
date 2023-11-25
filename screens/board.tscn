@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://chegm7x5sl8rx"]
+[gd_scene load_steps=16 format=3 uid="uid://chegm7x5sl8rx"]
 
 [ext_resource type="Script" path="res://screens/board.gd" id="1_ccqse"]
 [ext_resource type="PackedScene" uid="uid://dcwtowpudpdv2" path="res://scenes/battlefield.tscn" id="2_mg76x"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://d3b4vyxt86l1o" path="res://menus/king_support_menu.tscn" id="11_1m8jw"]
 [ext_resource type="PackedScene" uid="uid://ui02fd5tsqrv" path="res://menus/end_turn_menu.tscn" id="12_iu3ad"]
 [ext_resource type="PackedScene" uid="uid://b2qsf61v6ub01" path="res://menus/support_menu.tscn" id="13_oqk1y"]
+[ext_resource type="Script" path="res://menus/GoBackButton.gd" id="15_inpa3"]
 
 [node name="Board" type="Node"]
 script = ExtResource("1_ccqse")
@@ -123,3 +124,14 @@ visible = false
 
 [node name="SupportMenu" parent="CanvasLayer" instance=ExtResource("13_oqk1y")]
 visible = false
+
+[node name="GoBackButton" type="Button" parent="CanvasLayer"]
+visible = false
+offset_left = 8.0
+offset_top = 680.0
+offset_right = 126.0
+offset_bottom = 711.0
+text = "Back to action"
+script = ExtResource("15_inpa3")
+
+[connection signal="pressed" from="CanvasLayer/GoBackButton" to="CanvasLayer/GoBackButton" method="_on_pressed"]

@@ -129,6 +129,8 @@ func _on_gui_input(event: InputEvent) -> void:
 	match _board_area:
 		BoardArea.Hand:
 			Game.hand_card_clicked.emit(self)
+		BoardArea.Reserve:
+			Game.reserve_card_clicked.emit(self)
 		BoardArea.Battlefield:
 			Game.battlefield_card_clicked.emit(self)
 		BoardArea.EnemyBattlefield:

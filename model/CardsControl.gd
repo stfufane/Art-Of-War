@@ -50,6 +50,11 @@ func switch_card(drawn_card: Card, picked_up_card: Card) -> void:
 	remove_card(drawn_card)
 
 
+func stop_all_flashes() -> void:
+	for card in _cards:
+		card.stop_flash()
+
+
 func is_empty() -> bool:
 	return _cards.is_empty()
 

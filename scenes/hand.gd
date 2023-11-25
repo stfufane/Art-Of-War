@@ -10,6 +10,7 @@ func _ready() -> void:
 
 	# Automatically draw a card at the start of a turn.
 	Game.States[State.Name.START_TURN].started.connect(start_turn)
+	Game.States[State.Name.ACTION_CHOICE].started.connect(start_action)
 	Game.States[State.Name.SUPPORT].started.connect(flash_support_cards)
 	Game.States[State.Name.ATTACK_BLOCK].started.connect(flash_attack_block_cards)
 	Game.States[State.Name.SUPPORT_BLOCK].started.connect(flash_support_block_cards)
@@ -41,6 +42,10 @@ func start_turn() -> void:
 	# Draw a card at the start of the turn and go directly to the next state.
 	draw_card()
 	Game.start_state(State.Name.ACTION_CHOICE)
+	
+
+func start_action() -> void:
+	stop_all_flashes()
 
 
 func draw_card() -> void:
@@ -51,11 +56,6 @@ func draw_card() -> void:
 func is_deck_empty() -> bool:
 	return _deck.is_empty()
 
-
-func stop_all_flashes() -> void:
-	for card in _cards:
-		card.stop_flash()
-		
 
 func has_support_cards() -> bool:
 	for card in _cards:

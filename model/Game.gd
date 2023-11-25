@@ -5,12 +5,10 @@ signal players_ready # Both players have joined the game
 signal reshuffle_deck # Re-trigger the card distribution at the beginning
 
 signal instruction_updated(instruction: String) # Update the text label at the bottom
+signal can_go_back(bool) # Tells the go back button to hide
 signal add_event(aux: String, event: String) # Add a log in the game log panel
 
 signal hand_size_updated(size: int) # The number of cards in the hand got updated
-signal is_support_available(bool) # Tells if possible to play a support with cards in hand
-
-signal is_attack_available(bool) # Tells if possible to attack on the current battlefield
 
 signal no_support_played # The player did not try to block the current support and passed
 
@@ -23,9 +21,11 @@ signal card_killed(card: Card) # A card died on the battlefield
 signal first_reserve_card_removed # The card most left of the reserve is being picked for recruitment
 signal battlefield_card_switched(card: Card, to: Card.BoardArea) # A card is being moved on the battlefield
 
+signal update_action_menu # A condition has changed and may have enabled/disabled an action from the menu
 
 # When a card is clicked, it will emit a signal depending on where it lies on the board.
 signal hand_card_clicked(card: Card)
+signal reserve_card_clicked(card: Card)
 signal battlefield_card_clicked(card: Card)
 signal enemy_battlefield_card_clicked(card: Card)
 
@@ -92,6 +92,38 @@ var first_player: bool = false
 # Useful when having having a support loop to know who is actually playing.
 var _my_turn: bool = false
 
+# Handle a way to get back to the action choice menu in case of misclick
+var _can_go_back: bool = false
+
+# Follow what we've done in the current turn to toggle possible actions
+var has_attacked: bool = false :
+	set(attacked):
+		has_attacked = attacked
+		update_action_menu.emit()
+	get:
+		return has_attacked
+
+var has_recruited: bool = false :
+	set(recruited):
+		has_recruited = recruited
+		update_action_menu.emit()
+	get:
+		return has_recruited
+
+var is_attack_available: bool = false :
+	set(available):
+		is_attack_available = available
+		update_action_menu.emit()
+	get:
+		return is_attack_available
+
+var is_support_available: bool = false :
+	set(available):
+		is_support_available = available
+		update_action_menu.emit()
+	get:
+		return is_support_available
+
 
 func start_server() -> void:
 	enet_peer.create_server(PORT, 2)
@@ -117,6 +149,7 @@ func setup(_player_id: int) -> void:
 
 	# When the turn starts, pass _my_turn to true and pass it to false for the enemy.
 	States[State.Name.START_TURN].started.connect(start_turn)
+	States[State.Name.ACTION_CHOICE].ended.connect(func(): _can_go_back = true)
 
 
 func create_card_instance(unit_type: CardType.UnitType) -> Card:
@@ -127,16 +160,19 @@ func create_card_instance(unit_type: CardType.UnitType) -> Card:
 
 func start_turn() -> void:
 	_my_turn = true
+	has_attacked = false
+	has_recruited = false
 	_attack_bonus = 0
 	set_enemy_turn.rpc()
 
 
-func start_state(state: State.Name) -> void:
+func start_state(state: State.Name, going_back: bool = false) -> void:
 	previous_state = _current_state
 	_current_state = state
 	instruction_updated.emit(States[state].instruction)
 
-	States[previous_state].ended.emit()
+	if !going_back:
+		States[previous_state].ended.emit()
 
 	# Avoid sending RPCs to the server when the server is the one calling this function.
 	if state != State.Name.WAITING_FOR_PLAYER:
@@ -153,6 +189,14 @@ func end_state() -> void:
 		set_enemy_state.rpc(_current_state)
 	else:
 		set_enemy_state.rpc(State.get_next_state(_current_state))
+
+
+# After choosing an action, a button will appear to have the option to go back.
+func go_back_to_action_choice() -> void:
+	if !_can_go_back:
+		return
+	
+	start_state(previous_state, true)
 
 
 # After attacking, the enemy can play a support card to block the attack.
@@ -239,6 +283,11 @@ func get_attack_info() -> Dictionary:
 func add_dead_enemy() -> void:
 	_dead_enemies += 1
 	add_dead_unit.rpc()
+
+
+func set_can_go_back(enabled: bool) -> void:
+	_can_go_back = enabled
+	can_go_back.emit(enabled)
 
 
 #################################################################################

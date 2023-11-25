@@ -5,6 +5,7 @@ extends PanelContainer
 
 
 func _ready():
+	Game.States[State.Name.ACTION_CHOICE].started.connect(hide)
 	Game.States[State.Name.FINISH_TURN].started.connect(show)
 	Game.States[State.Name.FINISH_TURN].ended.connect(hide)
 	Game.hand_size_updated.connect(set_pass_enabled)

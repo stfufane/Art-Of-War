@@ -35,7 +35,7 @@ func setup() -> void:
 
 
 func start_action() -> void:
-	Game.is_attack_available.emit(is_attack_available())
+	Game.is_attack_available = is_attack_available()
 	_moved_card = null
 
 
@@ -129,6 +129,7 @@ func validate_picked_card_added(clicked_placeholder: CardPlaceholder, clicked_ca
 		Game.end_state()
 	else:
 		# You can still play a support if you want but not attack neither recruit again.
+		Game.has_recruited = true
 		Game.start_state(State.Name.ACTION_CHOICE)
 
 
@@ -192,11 +193,13 @@ func _card_clicked(clicked_card: Card) -> void:
 
 	match Game.get_state():
 		State.Name.ATTACK:
+			Game.set_can_go_back(false)
 			if _attacking_card != null:
 				_attacking_card.stop_flash()
 
 			if clicked_card == _attacking_card:
 				_attacking_card = null
+				Game.set_can_go_back(true)
 				return
 
 			_attacking_card = clicked_card
@@ -247,6 +250,7 @@ func _enemy_card_clicked(clicked_card: Card):
 			
 			# Check that the card is within reach of the attacking card
 			_attacking_card.attack()
+			Game.has_attacked = true
 			var attack_placeholder: CardPlaceholder = _attacking_card.get_parent()
 			var enemy_placeholder: CardPlaceholder = clicked_card.get_parent()
 			enemy_card_attacking.rpc(attack_placeholder.name, enemy_placeholder.name) # Notify the opponent that the card is attacking
