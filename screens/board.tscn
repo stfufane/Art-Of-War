@@ -133,5 +133,3 @@ offset_right = 126.0
 offset_bottom = 711.0
 text = "Back to action"
 script = ExtResource("15_inpa3")
-
-[connection signal="pressed" from="CanvasLayer/GoBackButton" to="CanvasLayer/GoBackButton" method="_on_pressed"]

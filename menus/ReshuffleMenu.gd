@@ -7,6 +7,9 @@ extends PanelContainer
 var nb_reshuffle: int = 3
 
 func _ready():
+	reshuffle_button.pressed.connect(_on_reshuffle_button_pressed)
+	play_button.pressed.connect(_on_play_button_pressed)
+	
 	Game.States[State.Name.RESHUFFLE].started.connect(show)
 	Game.States[State.Name.RESHUFFLE].ended.connect(hide)
 	update_reshuffle_button()

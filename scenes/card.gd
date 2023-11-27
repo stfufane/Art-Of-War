@@ -38,6 +38,7 @@ var _hurt: bool = false
 
 
 func _ready() -> void:
+	gui_input.connect(_on_gui_input)
 	base_color = _rect.color
 	_label.text = _type.name
 	_hp = _type.defense

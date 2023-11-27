@@ -17,6 +17,7 @@ var is_highlighting: bool = false
 
 
 func _ready():
+	gui_input.connect(_on_gui_input)
 	base_color = $ColorRect.color
 	label.text = label_text
 

@@ -33,6 +33,3 @@ text = "Yes"
 [node name="PlayButton" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Play"
-
-[connection signal="pressed" from="MarginContainer/VBoxContainer/ReshuffleButton" to="." method="_on_reshuffle_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]

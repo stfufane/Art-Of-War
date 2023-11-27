@@ -41,7 +41,3 @@ text = "Archer"
 [node name="MonkButton" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Monk"
-
-[connection signal="pressed" from="MarginContainer/VBoxContainer/SoldierButton" to="." method="_on_soldier_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/ArcherButton" to="." method="_on_archer_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/MonkButton" to="." method="_on_monk_button_pressed"]

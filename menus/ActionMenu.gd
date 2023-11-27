@@ -4,9 +4,15 @@ extends PanelContainer
 @onready var recruit_button: Button = $MarginContainer/VBoxContainer/RecruitButton
 @onready var attack_button:  Button = $MarginContainer/VBoxContainer/AttackButton
 @onready var support_button: Button = $MarginContainer/VBoxContainer/SupportButton
+@onready var end_turn_button: Button = $MarginContainer/VBoxContainer/EndTurnButton
 
 
 func _ready():
+	recruit_button.pressed.connect(_on_recruit_button_pressed)
+	attack_button.pressed.connect(_on_attack_button_pressed)
+	support_button.pressed.connect(_on_support_button_pressed)
+	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
+	
 	Game.States[State.Name.ACTION_CHOICE].started.connect(show)
 	Game.update_action_menu.connect(update_menu)
 

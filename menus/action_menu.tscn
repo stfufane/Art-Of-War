@@ -45,8 +45,3 @@ text = "Attack"
 [node name="EndTurnButton" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "End Turn"
-
-[connection signal="pressed" from="MarginContainer/VBoxContainer/RecruitButton" to="." method="_on_recruit_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/SupportButton" to="." method="_on_support_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/AttackButton" to="." method="_on_attack_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]
