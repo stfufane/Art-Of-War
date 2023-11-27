@@ -236,9 +236,15 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 		start_state(State.Name.SUPPORT_BLOCK)
 		return
 	
+	if !_my_turn:
+		return
+		
 	# Otherwise we apply the support effect if the enemy passed (if the call is non-rpc, it means the player passed)
-	if _my_turn:
-		if is_rpc:
+	if is_rpc:
+		if _pending_support == null:
+			# We couldn't block the enemy support during an attack, the attack is cancelled
+			process_attack_block(false)
+		else:
 			match _pending_support.type:
 				CardType.UnitType.Soldier:
 					_attack_bonus += 1
@@ -248,16 +254,14 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 					start_state(State.Name.MOVE_UNIT)
 				CardType.UnitType.Archer:
 					start_state(State.Name.ARCHER_ATTACK)
-				CardType.UnitType.King: # King means no pending support, attack block in progress instead
-					process_attack_block(false)
+	else:
+		if _pending_support == null:
+			# We couldn't block the enemy support during an attack, the attack is cancelled
+			process_attack_block(false, false)
 		else:
-			if _pending_support == null:
-				# We couldn't block the enemy support during an attack, the attack is cancelled
-				process_attack_block(false, false)
-			else:
-				add_event.emit("are", "unable to play the support, it has been blocked.")
-				# Start a new action
-				start_state(State.Name.ACTION_CHOICE)
+			add_event.emit("are", "unable to play the support, it has been blocked.")
+			# Start a new action
+			start_state(State.Name.ACTION_CHOICE)
 
 	_pending_support = null # Reset the pending support
 
