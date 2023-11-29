@@ -2,16 +2,19 @@ class_name Board
 extends Node
 
 
-@onready var _reserve: CardsControl = $Reserve
-@onready var enemy_reserve: CardsControl = $EnemyReserve
-@onready var kingdom: Kingdom = $Kingdom
-@onready var enemy_kingdom: Kingdom = $EnemyKingdom
-@onready var _hand: Hand = $Hand
+@onready var _battlefield: Battlefield = $Battlefield as Battlefield
+@onready var _reserve: CardsControl = $Reserve as CardsControl
+@onready var _enemy_reserve: CardsControl = $EnemyReserve as CardsControl
+@onready var _kingdom: Kingdom = $Kingdom as Kingdom
+@onready var _enemy_kingdom: Kingdom = $EnemyKingdom as Kingdom
+@onready var _hand: Hand = $Hand as Hand
 
 
 func _ready():
 	Game.hand_card_clicked.connect(_hand_card_clicked)
 	Game.reserve_card_clicked.connect(_reserve_card_clicked)
+	Game.kingdom_card_clicked.connect(_kingdom_card_clicked)
+	
 	Game.no_support_played.connect(_no_support_played)
 	Game.attack_validated.connect(_validate_attack)
 	Game.archer_attacked.connect(_archer_attacked)
@@ -21,14 +24,15 @@ func _ready():
 	Game.States[State.Name.ACTION_CHOICE].started.connect(start_action)
 	Game.States[State.Name.INIT_BATTLEFIELD].started.connect(setup)
 	Game.States[State.Name.RECRUIT].started.connect(init_recruit_turn)
+	Game.States[State.Name.CONSCRIPTION].started.connect(init_conscription)
 
 
 func setup() -> void:
 	# First card of the deck is put in the kingdom
 	increase_kingdom_population(_hand._deck.pop_back())
-	
 
-func start_action() -> void:
+
+func start_action() -> void:	
 	Game.is_support_available = _hand.has_support_cards() and _reserve.size() < 5
 	_reserve.stop_all_flashes()
 
@@ -45,8 +49,20 @@ func init_recruit_turn() -> void:
 	_reserve.get_first_card().start_flash()
 
 
+func init_conscription() -> void:
+	# Conscription is a special recruitment state where you have to recruit 2 units.
+	# If you have 2 or more units in your reserve, you must recruit the first 2.
+	# If you have 1 unit in your reserve, you must recruit it + 1 from your kingdom
+	# If the reserve is empty, you must recruit 2 units from your kingdom.
+	# If both your kingdom and reserve are empty, you lose.
+	# Here we just check if we have lost.
+	if _reserve.is_empty() and _kingdom.is_empty():
+		Game.start_state(State.Name.GAME_OVER)
+		pass
+
+
 func card_selected(card: Card, from: CardsControl) -> void:
-	Game.set_can_go_back(false)
+	Game.can_go_back = false
 	from.switch_card(card, Game.picked_card)
 	
 	Game.picked_card = card
@@ -113,7 +129,7 @@ func increase_kingdom_population(unit_type: CardType.UnitType) -> bool:
 	# Can't add the king to the kingdom
 	if unit_type == CardType.UnitType.King:
 		return false
-	kingdom.increase_population(unit_type)
+	_kingdom.increase_population(unit_type)
 	add_card_to_enemy_kingdom.rpc(unit_type)
 	return true
 
@@ -141,8 +157,15 @@ func handle_card_damage(target: Card, damage: int) -> void:
 	
 	# If the target was a king, the game is over
 	if target._unit_type == CardType.UnitType.King:
-		# TODO: handle game over
+		Game.start_state(State.Name.GAME_OVER)
 		return
+	
+	if _battlefield.has_enemy_units():
+		# We can just do the next action
+		Game.start_state(State.Name.ACTION_CHOICE)
+	else:
+		# The enemy has no more units on his battlefield, he must recruit 2 units.
+		Game.set_enemy_state.rpc(State.Name.CONSCRIPTION)
 
 
 func finish_turn(card: Card) -> void:
@@ -174,11 +197,29 @@ func _hand_card_clicked(card: Card) -> void:
 
 
 func _reserve_card_clicked(_card: Card) -> void:
-	if Game.get_state() == State.Name.RECRUIT:
+	if Game.get_state() == State.Name.RECRUIT or Game.get_state() == State.Name.CONSCRIPTION:
 		var first_reserve_card: Card = _reserve.get_first_card()
 		first_reserve_card.stop_flash()
 		card_selected(first_reserve_card, _reserve)
 
+
+func _kingdom_card_clicked(card: Card) -> void:
+	if Game.get_state() != State.Name.CONSCRIPTION:
+		return
+	
+	if not _reserve.is_empty():
+		return
+	
+	if _kingdom.get_unit_count(card._unit_type) == 0:
+		return
+	
+	# We need to create a card instance from the type that was clicked in the kingdom.
+	Game.picked_card = Game.create_card_instance(card._unit_type)
+	add_child(Game.picked_card)
+	Game.picked_card.set_board_area(Card.BoardArea.Picked)
+	
+	# Remove one unit from that type.
+	_kingdom.decrease_population(card._unit_type)
 
 func _no_support_played() -> void:
 	_hand.stop_all_flashes()
@@ -235,15 +276,15 @@ func _card_removed_from_reserve() -> void:
 #################################################################################
 @rpc("any_peer")
 func add_card_to_enemy_reserve(unit_type: CardType.UnitType):
-	enemy_reserve.add_card(Game.create_card_instance(unit_type))
+	_enemy_reserve.add_card(Game.create_card_instance(unit_type))
 
 @rpc("any_peer")
 func remove_first_card_from_enemy_reserve():
-	enemy_reserve.remove_first_card()
+	_enemy_reserve.remove_first_card()
 
 @rpc("any_peer")
 func add_card_to_enemy_kingdom(unit_type: CardType.UnitType):
-	enemy_kingdom.increase_population(unit_type)
+	_enemy_kingdom.increase_population(unit_type)
 
 @rpc("any_peer")
 func attack_was_blocked(blocked: bool):

@@ -19,7 +19,9 @@ enum Name {
 	SUPPORT_BLOCK,
 	ATTACK,
 	ATTACK_BLOCK,
+	CONSCRIPTION,
 	FINISH_TURN,
+	GAME_OVER
 }
 
 var instruction: String

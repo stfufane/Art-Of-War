@@ -59,6 +59,13 @@ func all_flashes_off() -> void:
 			enemy_placeholder.get_current_card().stop_flash()
 
 
+func has_enemy_units() -> bool:
+	for placeholder in _enemy_container.get_children():
+		if placeholder.has_card():
+			return true
+	return false
+
+
 # Check if a placeholder is available for a card to be placed on it
 func placeholder_available(placeholder: CardPlaceholder) -> bool:
 	# First line is always available if there's no card already
@@ -112,7 +119,8 @@ func validate_picked_card_added(clicked_placeholder: CardPlaceholder, clicked_ca
 	if Game.picked_card._picked_from == Card.BoardArea.Reserve:
 		Game.first_reserve_card_removed.emit()
 
-	if clicked_card != null:
+	# You can switch card with one of the battlefield except during conscription
+	if clicked_card != null and Game.get_state() != State.Name.CONSCRIPTION:
 		# Put back the clicked card to the reserve or the hand.
 		Game.battlefield_card_switched.emit(clicked_card, Game.picked_card._picked_from)
 
@@ -125,12 +133,16 @@ func validate_picked_card_added(clicked_placeholder: CardPlaceholder, clicked_ca
 	set_enemy_card.rpc(clicked_placeholder.get_current_card()._unit_type, clicked_placeholder.name, clicked_placeholder.get_current_card()._engaged)
 
 	# Go to the next state
-	if Game.get_state() == State.Name.INIT_BATTLEFIELD:
-		Game.end_state()
-	else:
-		# You can still play a support if you want but not attack neither recruit again.
-		Game.has_recruited = true
-		Game.start_state(State.Name.ACTION_CHOICE)
+	match Game.get_state():
+		State.Name.INIT_BATTLEFIELD:
+			Game.end_state()
+		State.Name.RECRUIT:
+			# You can still play a support if you want but not attack neither recruit again.
+			Game.has_recruited = true
+			Game.start_state(State.Name.ACTION_CHOICE)
+		State.Name.CONSCRIPTION:
+			# The state will change when two units are recruited.
+			Game.conscripted_units += 1
 
 
 func move_card_behind(placeholder: CardPlaceholder, enemy: bool) -> void:
@@ -149,7 +161,7 @@ func _mouse_entered(placeholder_hovered: CardPlaceholder) -> void:
 		return
 	
 	match Game.get_state():
-		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT, State.Name.MOVE_UNIT:
+		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT, State.Name.MOVE_UNIT, State.Name.CONSCRIPTION:
 			if placeholder_available(placeholder_hovered):
 				placeholder_hovered.set_text("Place card here")
 			else:
@@ -163,7 +175,7 @@ func _mouse_exited(placeholder_hovered: CardPlaceholder) -> void:
 # Click on a placeholder to put a card on it
 func _placeholder_clicked(clicked_placeholder: CardPlaceholder) -> void:
 	match Game.get_state():
-		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT:
+		State.Name.INIT_BATTLEFIELD, State.Name.RECRUIT, State.Name.CONSCRIPTION:
 			# We can't put a card if there's already one there or if there's no card in hand
 			if Game.picked_card != null and placeholder_available(clicked_placeholder):
 				validate_picked_card_added(clicked_placeholder)
@@ -193,13 +205,13 @@ func _card_clicked(clicked_card: Card) -> void:
 
 	match Game.get_state():
 		State.Name.ATTACK:
-			Game.set_can_go_back(false)
+			Game.can_go_back = false
 			if _attacking_card != null:
 				_attacking_card.stop_flash()
 
 			if clicked_card == _attacking_card:
 				_attacking_card = null
-				Game.set_can_go_back(true)
+				Game.can_go_back = true
 				return
 
 			_attacking_card = clicked_card
@@ -213,7 +225,7 @@ func _card_clicked(clicked_card: Card) -> void:
 					if card_coords + coords == enemy.coords:
 						enemy.toggle_highlight()
 
-		State.Name.RECRUIT:
+		State.Name.RECRUIT, State.Name.CONSCRIPTION:
 			if Game.picked_card != null:
 				validate_picked_card_added(clicked_placeholder, clicked_card)
 
@@ -275,7 +287,7 @@ func _attack_ended() -> void:
 
 
 func _enemy_card_killed(killed_card: Card) -> void:
-	var placeholder: CardPlaceholder = killed_card.get_parent()
+	var placeholder: CardPlaceholder = killed_card.get_parent() as CardPlaceholder
 	placeholder.remove_card()
 	# Check if there was a card in the row behind and move it forward if it's the case
 	move_card_behind(placeholder, true)

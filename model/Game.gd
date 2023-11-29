@@ -5,7 +5,7 @@ signal players_ready # Both players have joined the game
 signal reshuffle_deck # Re-trigger the card distribution at the beginning
 
 signal instruction_updated(instruction: String) # Update the text label at the bottom
-signal can_go_back(bool) # Tells the go back button to hide
+signal go_back_enabled(bool) # Tells the go back button to hide
 signal add_event(aux: String, event: String) # Add a log in the game log panel
 
 signal hand_size_updated(size: int) # The number of cards in the hand got updated
@@ -26,6 +26,7 @@ signal update_action_menu # A condition has changed and may have enabled/disable
 # When a card is clicked, it will emit a signal depending on where it lies on the board.
 signal hand_card_clicked(card: Card)
 signal reserve_card_clicked(card: Card)
+signal kingdom_card_clicked(card: Card)
 signal battlefield_card_clicked(card: Card)
 signal enemy_battlefield_card_clicked(card: Card)
 
@@ -46,7 +47,9 @@ var States: Dictionary = {
 	State.Name.SUPPORT_BLOCK: State.new("You can block the enemy support by using a wizard or a king", false),
 	State.Name.ATTACK: State.new("Attack a unit on the enemy battlefield", false),
 	State.Name.ATTACK_BLOCK: State.new("You can block the enemy attack by using a guard or a king", false),
+	State.Name.CONSCRIPTION: State.new("You must recruit 2 units to repopulate the battlefield", false),
 	State.Name.FINISH_TURN: State.new("Finish turn", false),
+	State.Name.GAME_OVER: State.new("Game Over :)", true)
 }
 
 
@@ -81,7 +84,6 @@ var _pending_support: CardType = null
 var _dead_units: int = 0
 var _dead_enemies: int = 0
 
-
 # The local multiplayer server port
 const PORT = 1234
 var enet_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
@@ -93,36 +95,38 @@ var first_player: bool = false
 var _my_turn: bool = false
 
 # Handle a way to get back to the action choice menu in case of misclick
-var _can_go_back: bool = false
+var can_go_back: bool = false :
+	set(enabled):
+		can_go_back = enabled
+		go_back_enabled.emit(enabled)
 
 # Follow what we've done in the current turn to toggle possible actions
 var has_attacked: bool = false :
 	set(attacked):
 		has_attacked = attacked
 		update_action_menu.emit()
-	get:
-		return has_attacked
 
 var has_recruited: bool = false :
 	set(recruited):
 		has_recruited = recruited
 		update_action_menu.emit()
-	get:
-		return has_recruited
 
 var is_attack_available: bool = false :
 	set(available):
 		is_attack_available = available
 		update_action_menu.emit()
-	get:
-		return is_attack_available
 
 var is_support_available: bool = false :
 	set(available):
 		is_support_available = available
 		update_action_menu.emit()
-	get:
-		return is_support_available
+
+var conscripted_units: int = 0 :
+	set(nb):
+		conscripted_units = nb
+		if conscripted_units == 2:
+			conscription_done()
+			conscripted_units = 0 # Reset the counter
 
 
 func start_server() -> void:
@@ -149,7 +153,7 @@ func setup(_player_id: int) -> void:
 
 	# When the turn starts, pass _my_turn to true and pass it to false for the enemy.
 	States[State.Name.START_TURN].started.connect(start_turn)
-	States[State.Name.ACTION_CHOICE].ended.connect(func(): _can_go_back = true)
+	States[State.Name.ACTION_CHOICE].ended.connect(func(): can_go_back = true)
 
 
 func create_card_instance(unit_type: CardType.UnitType) -> Card:
@@ -176,7 +180,10 @@ func start_state(state: State.Name, going_back: bool = false) -> void:
 
 	# Avoid sending RPCs to the server when the server is the one calling this function.
 	if state != State.Name.WAITING_FOR_PLAYER:
-		set_enemy_state.rpc(State.Name.WAITING_FOR_PLAYER)
+		if state == State.Name.GAME_OVER:
+			set_enemy_state.rpc(State.Name.GAME_OVER)
+		else:
+			set_enemy_state.rpc(State.Name.WAITING_FOR_PLAYER)
 
 	States[state].started.emit()
 
@@ -193,7 +200,7 @@ func end_state() -> void:
 
 # After choosing an action, a button will appear to have the option to go back.
 func go_back_to_action_choice() -> void:
-	if !_can_go_back:
+	if !can_go_back:
 		return
 	
 	start_state(previous_state, true)
@@ -220,14 +227,14 @@ func process_attack_block(attack_blocked: bool, is_rpc: bool = true) -> void:
 	if _my_turn:
 		if is_rpc:
 			attack_validated.emit()
+			# The following action will depend of the result of the attack
 		else:
 			attack_cancelled.emit()
 			add_event.emit("are", "unable to play the attack, it has been blocked")
+			# We can then choose an other action.
+			start_state(State.Name.ACTION_CHOICE)
 
 	_attack_info.clear()
-	
-	# We can then choose an other action.
-	start_state(State.Name.ACTION_CHOICE)
 
 
 func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
@@ -272,6 +279,10 @@ func enemy_support_block(support_card: CardType) -> void:
 	set_enemy_state.rpc(State.Name.SUPPORT_BLOCK)
 
 
+# After conscription has been done, the first player can resume his turn.
+func conscription_done() -> void:
+	set_enemy_state.rpc(State.Name.ACTION_CHOICE)
+
 #################################################################################
 # Getters
 #################################################################################
@@ -287,11 +298,6 @@ func get_attack_info() -> Dictionary:
 func add_dead_enemy() -> void:
 	_dead_enemies += 1
 	add_dead_unit.rpc()
-
-
-func set_can_go_back(enabled: bool) -> void:
-	_can_go_back = enabled
-	can_go_back.emit(enabled)
 
 
 #################################################################################

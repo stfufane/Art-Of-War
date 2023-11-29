@@ -6,7 +6,7 @@ func _ready():
 	pressed.connect(_on_pressed)
 	
 	# Define when this should show or hide
-	Game.can_go_back.connect(show_hide)
+	Game.go_back_enabled.connect(show_hide)
 	Game.States[State.Name.ACTION_CHOICE].started.connect(hide)
 	Game.States[State.Name.ACTION_CHOICE].ended.connect(show)
 	Game.States[State.Name.FINISH_TURN].ended.connect(hide)

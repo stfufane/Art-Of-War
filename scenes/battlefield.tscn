@@ -62,7 +62,7 @@ offset_left = 385.0
 offset_top = 192.0
 offset_right = 577.0
 offset_bottom = 384.0
-board_area = 7
+board_area = 8
 coords = Vector2(2, 0)
 
 [node name="CardPlaceholder2" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
@@ -70,26 +70,26 @@ offset_left = 192.0
 offset_top = 192.0
 offset_right = 384.0
 offset_bottom = 384.0
-board_area = 7
+board_area = 8
 coords = Vector2(1, 0)
 
 [node name="CardPlaceholder3" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
 offset_top = 192.0
 offset_bottom = 384.0
-board_area = 7
+board_area = 8
 
 [node name="CardPlaceholder4" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
 offset_left = 385.0
 offset_right = 577.0
-board_area = 7
+board_area = 8
 coords = Vector2(2, 1)
 
 [node name="CardPlaceholder5" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
 offset_left = 192.0
 offset_right = 384.0
-board_area = 7
+board_area = 8
 coords = Vector2(1, 1)
 
 [node name="CardPlaceholder6" parent="EnemyContainer" groups=["enemy_cards"] instance=ExtResource("1_0btqk")]
-board_area = 7
+board_area = 8
 coords = Vector2(0, 1)

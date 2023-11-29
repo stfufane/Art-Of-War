@@ -19,6 +19,7 @@ enum BoardArea {
 	Reserve,
 	EnemyReserve,
 	Kingdom,
+	EnemyKingdom,
 	Battlefield,
 	EnemyBattlefield
 }
@@ -132,6 +133,8 @@ func _on_gui_input(event: InputEvent) -> void:
 			Game.hand_card_clicked.emit(self)
 		BoardArea.Reserve:
 			Game.reserve_card_clicked.emit(self)
+		BoardArea.Kingdom:
+			Game.kingdom_card_clicked.emit(self)
 		BoardArea.Battlefield:
 			Game.battlefield_card_clicked.emit(self)
 		BoardArea.EnemyBattlefield:
