@@ -2,9 +2,8 @@ class_name Card
 extends Control
 
 
-@export  var _unit_type : CardType.UnitType
+@export  var unit : CardUnit
 
-@onready var _type: CardType = Game.CardTypes[_unit_type]
 @onready var _label: Label = $Container/CardName
 @onready var _image: Sprite2D = $CardImage
 @onready var _rect = $ColorRect
@@ -28,7 +27,7 @@ var base_color: Color
 var highlight_color: Color = Color.DARK_MAGENTA
 
 # The global location of the card on the board
-var _board_area: BoardArea = BoardArea.Nowhere 
+var _board_area: BoardArea = BoardArea.Nowhere
 var _picked_from: BoardArea = BoardArea.Nowhere
 
 var _engaged: bool = false
@@ -41,9 +40,9 @@ var _hurt: bool = false
 func _ready() -> void:
 	gui_input.connect(_on_gui_input)
 	base_color = _rect.color
-	_label.text = _type.name
-	_hp = _type.defense
-	var image = load("res://images/cards/" + _type.name + ".jpg")
+	_label.text = unit.name
+	_hp = unit.defense
+	var image = load("res://images/cards/" + unit.name + ".jpg")
 	_image.texture = image
 
 
@@ -64,29 +63,25 @@ func get_board_area() -> BoardArea:
 	return _board_area
 
 
-func set_unit_type(type: CardType.UnitType) -> void:
-	_unit_type = type
-
-
 func set_nb_units(nb_units: int) -> void:
 	$Container/NbUnits.text = str(nb_units)
 
 
 func disengage() -> void:
 	_engaged = false
-	_hp = _type.defense
+	_hp = unit.defense
 	_hurt = false
 	rotation_degrees = 0 if _board_area == BoardArea.Battlefield else 180
 
 
 func engage() -> void:
 	_engaged = true
-	_hp = _type.defense_engaged
+	_hp = unit.defense_engaged
 	rotation_degrees = -90 if _board_area == BoardArea.Battlefield else 90
 
 
 func get_attack_range() -> PackedVector2Array:
-	return _type.attack_range
+	return unit.attack_range
 
 
 func attack() -> void:

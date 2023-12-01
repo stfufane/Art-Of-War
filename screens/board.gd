@@ -14,7 +14,7 @@ func _ready():
 	Game.hand_card_clicked.connect(_hand_card_clicked)
 	Game.reserve_card_clicked.connect(_reserve_card_clicked)
 	Game.kingdom_card_clicked.connect(_kingdom_card_clicked)
-	
+
 	Game.no_support_played.connect(_no_support_played)
 	Game.attack_validated.connect(_validate_attack)
 	Game.archer_attacked.connect(_archer_attacked)
@@ -32,7 +32,7 @@ func setup() -> void:
 	increase_kingdom_population(_hand._deck.pop_back())
 
 
-func start_action() -> void:	
+func start_action() -> void:
 	Game.is_support_available = _hand.has_support_cards() and _reserve.size() < 5
 	_reserve.stop_all_flashes()
 
@@ -43,7 +43,7 @@ func init_recruit_turn() -> void:
 	if _reserve.is_empty():
 		Game.instruction_updated.emit("Pick a card from your hand")
 		return
-	
+
 	# Automatically pick the first card from the reserve
 	Game.instruction_updated.emit("You can pick the card most left of the reserve")
 	_reserve.get_first_card().start_flash()
@@ -64,7 +64,7 @@ func init_conscription() -> void:
 func card_selected(card: Card, from: CardsControl) -> void:
 	Game.can_go_back = false
 	from.switch_card(card, Game.picked_card)
-	
+
 	Game.picked_card = card
 	add_child(Game.picked_card)
 	Game.picked_card.set_board_area(Card.BoardArea.Picked)
@@ -73,9 +73,9 @@ func card_selected(card: Card, from: CardsControl) -> void:
 func add_card_to_reserve(card: Card, from: CardsControl = null) -> void:
 	if from != null:
 		from.remove_card(card)
-	Game.add_event.emit("have", "added a " + str(card._type) + " to the reserve")
+	Game.add_log.emit("have", "added a " + card.unit.name + " to the reserve")
 	_reserve.add_card(card)
-	add_card_to_enemy_reserve.rpc(card._unit_type)
+	add_card_to_enemy_reserve.rpc(card.unit.type)
 
 
 func recruit_from_hand(card: Card) -> void:
@@ -87,47 +87,47 @@ func recruit_from_hand(card: Card) -> void:
 
 func play_support(card: Card) -> void:
 	# Wizards and guards can only be played to counter the enemy's support
-	if card._unit_type == CardType.UnitType.Wizard or card._unit_type == CardType.UnitType.Guard:
+	if card.unit.type == CardUnit.UnitType.Wizard or card.unit.type == CardUnit.UnitType.Guard:
 		return
-	
+
 	# Play a support from the hand
 	_hand.stop_all_flashes()
 	add_card_to_reserve(card, _hand)
-	
-	if card._unit_type == CardType.UnitType.King:
+
+	if card.unit.type == CardUnit.UnitType.King:
 		# If the king is played as a support, it's a special case
 		# The player can choose as which type of card he wants to play it
 		Game.start_state(State.Name.KING_SUPPORT)
 		return
 
-	Game.enemy_support_block(Game.CardTypes[card._unit_type])
+	Game.enemy_support_block(card.unit.type)
 
 
 func play_attack_block(card: Card) -> void:
 	# The player can block the enemy attack if he has a guard or a king in hand.
-	if card._unit_type != CardType.UnitType.Guard and card._unit_type != CardType.UnitType.King:
+	if card.unit.type != CardUnit.UnitType.Guard and card.unit.type != CardUnit.UnitType.King:
 		return
-	
+
 	_hand.stop_all_flashes()
 	add_card_to_reserve(card, _hand)
-	Game.add_event.emit("are", "blocking the attack with a " + str(card._type))
+	Game.add_log.emit("are", "blocking the attack with a " + card.unit.name)
 	attack_was_blocked.rpc(true)
 
 
 func play_support_block(card: Card) -> void:
 	# The player can block the enemy support if he has a wizard or a king in hand.
-	if card._unit_type != CardType.UnitType.Wizard and card._unit_type != CardType.UnitType.King:
+	if card.unit.type != CardUnit.UnitType.Wizard and card.unit.type != CardUnit.UnitType.King:
 		return
 
 	_hand.stop_all_flashes()
 	add_card_to_reserve(card, _hand)
-	Game.add_event.emit("are", "blocking the support with a " + str(card._type))
+	Game.add_log.emit("are", "blocking the support with a " + card.unit.name)
 	support_was_blocked.rpc(true)
 
 
-func increase_kingdom_population(unit_type: CardType.UnitType) -> bool:
+func increase_kingdom_population(unit_type: CardUnit.UnitType) -> bool:
 	# Can't add the king to the kingdom
-	if unit_type == CardType.UnitType.King:
+	if unit_type == CardUnit.UnitType.King:
 		return false
 	_kingdom.increase_population(unit_type)
 	add_card_to_enemy_kingdom.rpc(unit_type)
@@ -139,27 +139,28 @@ func handle_card_damage(target: Card, damage: int) -> void:
 
 	# if the target still has hp, it's just hurt, the game continues
 	if target._hp > 0:
-		Game.add_event.emit("have", "hurt the " + str(target._type) + 
+		Game.add_log.emit("have", "hurt the " + target.unit.name +
 			", it now has " + str(target._hp) + " hp.")
+		Game.start_state(State.Name.ACTION_CHOICE)
 		return
 
 	# if the target has exactly 0 hp and was not hurt, it's captured and added to my kingdom
 	# When used as a support, the archer cannot capture a card, it just kills it
 	if target._hp == 0 and !target._hurt and Game.get_state() != State.Name.ARCHER_ATTACK:
-		Game.add_event.emit("have", "captured the " + str(target._type))
-		increase_kingdom_population(target._unit_type)
+		Game.add_log.emit("have", "captured the " + target.unit.name)
+		increase_kingdom_population(target.unit.type)
 	else:
 		Game.add_dead_enemy()
-		Game.add_event.emit("have", "killed the " + str(target._type))
+		Game.add_log.emit("have", "killed the " + target.unit.name)
 
 	# If it did not survive, the card is removed from the battlefield anyway
 	Game.card_killed.emit(target)
-	
+
 	# If the target was a king, the game is over
-	if target._unit_type == CardType.UnitType.King:
+	if target.unit.type == CardUnit.UnitType.King:
 		Game.start_state(State.Name.GAME_OVER)
 		return
-	
+
 	if _battlefield.has_enemy_units():
 		# We can just do the next action
 		Game.start_state(State.Name.ACTION_CHOICE)
@@ -169,8 +170,8 @@ func handle_card_damage(target: Card, damage: int) -> void:
 
 
 func finish_turn(card: Card) -> void:
-	if increase_kingdom_population(card._unit_type):
-		Game.add_event.emit("have", "added a " + str(card._type) + " to the kingdom")
+	if increase_kingdom_population(card.unit.type):
+		Game.add_log.emit("have", "added a " + card.unit.name + " to the kingdom")
 		_hand.remove_card(card)
 		Game.end_state()
 
@@ -206,20 +207,20 @@ func _reserve_card_clicked(_card: Card) -> void:
 func _kingdom_card_clicked(card: Card) -> void:
 	if Game.get_state() != State.Name.CONSCRIPTION:
 		return
-	
+
 	if not _reserve.is_empty():
 		return
-	
-	if _kingdom.get_unit_count(card._unit_type) == 0:
+
+	if _kingdom.get_unit_count(card.unit.type) == 0:
 		return
-	
+
 	# We need to create a card instance from the type that was clicked in the kingdom.
-	Game.picked_card = Game.create_card_instance(card._unit_type)
+	Game.picked_card = Game.create_card_instance(card.unit.type)
 	add_child(Game.picked_card)
 	Game.picked_card.set_board_area(Card.BoardArea.Picked)
-	
+
 	# Remove one unit from that type.
-	_kingdom.decrease_population(card._unit_type)
+	_kingdom.decrease_population(card.unit.type)
 
 func _no_support_played() -> void:
 	_hand.stop_all_flashes()
@@ -241,11 +242,11 @@ func _no_support_played() -> void:
 func _validate_attack() -> void:
 	var attack_info: Dictionary = Game.get_attack_info()
 	attack_info.attacking_card.stop_flash()
-	var attacking_card: CardType = attack_info.attacking_card._type
+	var attacking_card: CardUnit = attack_info.attacking_card.unit
 	var attack_damage = attacking_card.attack
-	
+
 	# Soldier has a special attack that depends on the number of cards in hand
-	if attack_info.attacking_card._unit_type == CardType.UnitType.Soldier:
+	if attack_info.attacking_card.unit.type == CardUnit.UnitType.Soldier:
 		attack_damage = _hand.size()
 	# Apply the potential attack bonus from the soldier support
 	attack_damage += Game._attack_bonus
@@ -275,7 +276,7 @@ func _card_removed_from_reserve() -> void:
 # Network actions that are called to reflect local actions on the enemy board  ##
 #################################################################################
 @rpc("any_peer")
-func add_card_to_enemy_reserve(unit_type: CardType.UnitType):
+func add_card_to_enemy_reserve(unit_type: CardUnit.UnitType):
 	_enemy_reserve.add_card(Game.create_card_instance(unit_type))
 
 @rpc("any_peer")
@@ -283,7 +284,7 @@ func remove_first_card_from_enemy_reserve():
 	_enemy_reserve.remove_first_card()
 
 @rpc("any_peer")
-func add_card_to_enemy_kingdom(unit_type: CardType.UnitType):
+func add_card_to_enemy_kingdom(unit_type: CardUnit.UnitType):
 	_enemy_kingdom.increase_population(unit_type)
 
 @rpc("any_peer")

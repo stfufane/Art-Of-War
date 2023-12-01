@@ -6,7 +6,7 @@ signal reshuffle_deck # Re-trigger the card distribution at the beginning
 
 signal instruction_updated(instruction: String) # Update the text label at the bottom
 signal go_back_enabled(bool) # Tells the go back button to hide
-signal add_event(aux: String, event: String) # Add a log in the game log panel
+signal add_log(aux: String, event: String) # Add a log in the game log panel
 
 signal hand_size_updated(size: int) # The number of cards in the hand got updated
 
@@ -52,17 +52,14 @@ var States: Dictionary = {
 	State.Name.GAME_OVER: State.new("Game Over :)", true)
 }
 
-
-# All the types of units that can be played with their respective properties
-var CardTypes: Dictionary = {
-	CardType.UnitType.King: CardType.new(CardType.UnitType.King, "King", 1, 5, 4, [Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)]),
-	CardType.UnitType.Soldier: CardType.new(CardType.UnitType.Soldier, "Soldier", 0, 2, 1, [Vector2(0, 1)]),
-	CardType.UnitType.Archer: CardType.new(CardType.UnitType.Archer, "Archer", 1, 2, 1, [Vector2(-2, 1), Vector2(2, 1), Vector2(-1, 2), Vector2(1, 2)]),
-	CardType.UnitType.Guard: CardType.new(CardType.UnitType.Guard, "Guard", 1, 3, 2, [Vector2(0, 1)]),
-	CardType.UnitType.Wizard: CardType.new(CardType.UnitType.Wizard, "Wizard", 1, 2, 1, [Vector2(0, 1), Vector2(0, 2), Vector2(0, 3)]),
-	CardType.UnitType.Monk: CardType.new(CardType.UnitType.Monk, "Monk", 1, 2, 2, [Vector2(-1, 1), Vector2(1, 1), Vector2(-2, 2), Vector2(2, 2)])
+const UNITS: Dictionary = {
+	CardUnit.UnitType.King: preload("res://model/cards/king.tres"),
+	CardUnit.UnitType.Soldier: preload("res://model/cards/soldier.tres"),
+	CardUnit.UnitType.Guard: preload("res://model/cards/guard.tres"),
+	CardUnit.UnitType.Wizard: preload("res://model/cards/wizard.tres"),
+	CardUnit.UnitType.Monk: preload("res://model/cards/monk.tres"),
+	CardUnit.UnitType.Archer: preload("res://model/cards/archer.tres")
 }
-
 
 const CARD_SCENE: PackedScene = preload("res://scenes/card.tscn") # The template to create a card
 
@@ -76,9 +73,9 @@ var picked_card: Card = null
 var _attack_info: Dictionary = {} # The state of the ongoing attack, storing the attacker and its target
 var _attack_bonus: int = 0 # Bonus applied to every card attack after a soldier has been used as a support
 
-# When using a support, we first let the enemy try to block it, so we have to save 
+# When using a support, we first let the enemy try to block it, so we have to save
 # what we're currently trying to do
-var _pending_support: CardType = null
+var _pending_support: Dictionary = {}
 
 # Count the number of killed units on both sides because it can be used to decide who wins at the end.
 var _dead_units: int = 0
@@ -156,9 +153,9 @@ func setup(_player_id: int) -> void:
 	States[State.Name.ACTION_CHOICE].ended.connect(func(): can_go_back = true)
 
 
-func create_card_instance(unit_type: CardType.UnitType) -> Card:
+func create_card_instance(unit_type: CardUnit.UnitType) -> Card:
 	var card_instance = CARD_SCENE.instantiate()
-	card_instance.set_unit_type(unit_type)
+	card_instance.unit = UNITS[unit_type]
 	return card_instance
 
 
@@ -202,7 +199,7 @@ func end_state() -> void:
 func go_back_to_action_choice() -> void:
 	if !can_go_back:
 		return
-	
+
 	start_state(previous_state, true)
 
 
@@ -230,7 +227,7 @@ func process_attack_block(attack_blocked: bool, is_rpc: bool = true) -> void:
 			# The following action will depend of the result of the attack
 		else:
 			attack_cancelled.emit()
-			add_event.emit("are", "unable to play the attack, it has been blocked")
+			add_log.emit("are", "unable to play the attack, it has been blocked")
 			# We can then choose an other action.
 			start_state(State.Name.ACTION_CHOICE)
 
@@ -242,40 +239,40 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 	if support_blocked:
 		start_state(State.Name.SUPPORT_BLOCK)
 		return
-	
+
 	if !_my_turn:
 		return
-		
+
 	# Otherwise we apply the support effect if the enemy passed (if the call is non-rpc, it means the player passed)
 	if is_rpc:
-		if _pending_support == null:
+		if _pending_support.is_empty():
 			# We couldn't block the enemy support during an attack, the attack is cancelled
 			process_attack_block(false)
 		else:
 			match _pending_support.type:
-				CardType.UnitType.Soldier:
+				CardUnit.UnitType.Soldier:
 					_attack_bonus += 1
-					add_event.emit("have", "added a +1 bonus on the card attacks for this round.")
+					add_log.emit("have", "added a +1 bonus on the card attacks for this round.")
 					start_state(State.Name.ACTION_CHOICE)
-				CardType.UnitType.Monk:
+				CardUnit.UnitType.Monk:
 					start_state(State.Name.MOVE_UNIT)
-				CardType.UnitType.Archer:
+				CardUnit.UnitType.Archer:
 					start_state(State.Name.ARCHER_ATTACK)
 	else:
-		if _pending_support == null:
+		if _pending_support.is_empty():
 			# We couldn't block the enemy support during an attack, the attack is cancelled
 			process_attack_block(false, false)
 		else:
-			add_event.emit("are", "unable to play the support, it has been blocked.")
+			add_log.emit("are", "unable to play the support, it has been blocked.")
 			# Start a new action
 			start_state(State.Name.ACTION_CHOICE)
 
-	_pending_support = null # Reset the pending support
+	_pending_support.clear() # Reset the pending support
 
 
-func enemy_support_block(support_card: CardType) -> void:
-	add_event.emit("are", "trying to play a " + str(support_card) + " as a support")
-	_pending_support = support_card
+func enemy_support_block(support_type: CardUnit.UnitType) -> void:
+	add_log.emit("are", "trying to play a " + UNITS[support_type].name + " as a support")
+	_pending_support = { "type": support_type }
 	set_enemy_state.rpc(State.Name.SUPPORT_BLOCK)
 
 

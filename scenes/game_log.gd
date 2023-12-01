@@ -5,7 +5,7 @@ extends PanelContainer
 
 
 func _ready():
-	Game.add_event.connect(update_text)
+	Game.add_log.connect(update_text)
 
 
 func update_text(aux: String, text: String) -> void:

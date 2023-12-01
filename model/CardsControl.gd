@@ -29,15 +29,15 @@ func remove_first_card() -> void:
 
 
 func clear() -> void:
-	for card in _cards:
+	for card: Card in _cards:
 		_card_container.remove_child(card)
 		card.queue_free()
 	_cards.clear()
 
 
-func remove_card_type(type: CardType.UnitType) -> void:
-	for card in _cards:
-		if card._unit_type == type:
+func remove_card_type(type: CardUnit.UnitType) -> void:
+	for card: Card in _cards:
+		if card.unit.type == type:
 			remove_card(card)
 			return
 
@@ -51,7 +51,7 @@ func switch_card(drawn_card: Card, picked_up_card: Card) -> void:
 
 
 func stop_all_flashes() -> void:
-	for card in _cards:
+	for card: Card in _cards:
 		card.stop_flash()
 
 

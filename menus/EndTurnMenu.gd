@@ -6,7 +6,7 @@ extends PanelContainer
 
 func _ready():
 	pass_button.pressed.connect(_on_pass_button_pressed)
-	
+
 	Game.States[State.Name.ACTION_CHOICE].started.connect(hide)
 	Game.States[State.Name.FINISH_TURN].started.connect(show)
 	Game.States[State.Name.FINISH_TURN].ended.connect(hide)

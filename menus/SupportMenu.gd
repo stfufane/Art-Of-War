@@ -7,7 +7,7 @@ extends PanelContainer
 
 func _ready():
 	pass_support_button.pressed.connect(_on_pass_support_button_pressed)
-	
+
 	# Display the menu when the support state is started
 	Game.States[State.Name.SUPPORT_BLOCK].started.connect(show)
 	Game.States[State.Name.ATTACK_BLOCK].started.connect(show)

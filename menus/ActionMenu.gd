@@ -12,7 +12,7 @@ func _ready():
 	attack_button.pressed.connect(_on_attack_button_pressed)
 	support_button.pressed.connect(_on_support_button_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
-	
+
 	Game.States[State.Name.ACTION_CHOICE].started.connect(show)
 	Game.update_action_menu.connect(update_menu)
 

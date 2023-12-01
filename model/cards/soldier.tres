@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CardUnit" load_steps=2 format=3 uid="uid://det8ahuai5hxw"]
+
+[ext_resource type="Script" path="res://model/CardUnit.gd" id="1_4ji0t"]
+
+[resource]
+script = ExtResource("1_4ji0t")
+type = 1
+name = "Soldier"
+attack = 0
+defense = 2
+defense_engaged = 1
+attack_range = PackedVector2Array(0, 1)
