@@ -205,6 +205,9 @@ func _card_clicked(clicked_card: Card) -> void:
 
 	match Game.get_state():
 		State.Name.ATTACK:
+			if clicked_card._engaged:
+				return
+			
 			Game.can_go_back = false
 			if _attacking_card != null:
 				_attacking_card.stop_flash()
