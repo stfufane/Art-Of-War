@@ -25,6 +25,7 @@ func _ready():
 	Game.States[State.Name.INIT_BATTLEFIELD].started.connect(setup)
 	Game.States[State.Name.RECRUIT].started.connect(init_recruit_turn)
 	Game.States[State.Name.CONSCRIPTION].started.connect(init_conscription)
+	Game.States[State.Name.FINISH_TURN].ended.connect(check_game_end)
 
 
 func setup() -> void:
@@ -57,9 +58,34 @@ func init_conscription() -> void:
 	# If both your kingdom and reserve are empty, you lose.
 	# Here we just check if we have lost.
 	if _reserve.is_empty() and _kingdom.is_empty():
+		Game.game_end = Game.GameEnd.LOSE
 		Game.start_state(State.Name.GAME_OVER)
 		pass
 
+
+func check_game_end() -> void:
+	# The game ends when the second player has played his last turn
+	if Game.first_player or not _hand.is_deck_empty():
+		return
+
+	# Compare the kingdom populations, and if they're equal, compare the number of dead.
+	var total_population = _kingdom.get_total_population()
+	var enemy_total_population = _enemy_kingdom.get_total_population()
+	if total_population > enemy_total_population:
+		Game.game_end = Game.GameEnd.WIN
+	elif total_population < enemy_total_population:
+		Game.game_end = Game.GameEnd.LOSE
+	else:
+		# Check the number of dead units
+		if Game._dead_units < Game._dead_enemies:
+			Game.game_end = Game.GameEnd.WIN
+		elif Game._dead_units > Game._dead_enemies:
+			Game.game_end = Game.GameEnd.LOSE
+		else:
+			Game.game_end = Game.GameEnd.TIE
+
+	# Declare the game is over
+	Game.start_state(State.Name.GAME_OVER)
 
 func card_selected(card: Card, from: CardsControl) -> void:
 	Game.can_go_back = false
@@ -159,6 +185,7 @@ func handle_card_damage(target: Card, damage: int) -> void:
 	# If the target was a king, the game is over
 	if target.unit.type == CardUnit.UnitType.King:
 		Game.start_state(State.Name.GAME_OVER)
+		Game.game_end = Game.GameEnd.WIN
 		return
 
 	if _battlefield.has_enemy_units():
@@ -173,7 +200,31 @@ func finish_turn(card: Card) -> void:
 	if increase_kingdom_population(card.unit.type):
 		Game.add_log.emit("have", "added a " + card.unit.name + " to the kingdom")
 		_hand.remove_card(card)
-		Game.end_state()
+		if not check_kingdom_victory():
+			Game.end_state()
+
+
+func check_kingdom_victory() -> bool:
+	# For each type of unit, check who has the biggest population
+	var population_over_enemy: int = 0
+	var population_under_enemy: int = 0
+	for unit: CardUnit.UnitType in [CardUnit.UnitType.Soldier,
+									CardUnit.UnitType.Archer,
+									CardUnit.UnitType.Wizard,
+									CardUnit.UnitType.Guard,
+									CardUnit.UnitType.Monk]:
+		var unit_count: int = _kingdom.get_unit_count(unit)
+		var enemy_unit_count: int = _enemy_kingdom.get_unit_count(unit)
+		if unit_count > enemy_unit_count:
+			population_over_enemy += 1
+		elif unit_count < enemy_unit_count:
+			population_under_enemy += 1
+	if population_over_enemy >= 4 or population_under_enemy >= 4:
+		Game.game_end = Game.GameEnd.WIN if population_over_enemy >= 4 else Game.GameEnd.LOSE
+		Game.start_state(State.Name.GAME_OVER)
+		return true
+
+	return false
 
 ###########
 # Signals #

@@ -42,6 +42,13 @@ func get_unit_count(type: CardUnit.UnitType) -> int:
 	return _cards[type]
 
 
+func get_total_population() -> int:
+	var total = 0
+	for card: Card in _card_container.get_children():
+		total += _cards[card.unit.type]
+	return total
+
+
 func is_empty() -> bool:
 	for card: Card in _card_container.get_children():
 		if _cards[card.unit.type] > 0:

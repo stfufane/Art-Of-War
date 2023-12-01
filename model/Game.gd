@@ -61,6 +61,13 @@ const UNITS: Dictionary = {
 	CardUnit.UnitType.Archer: preload("res://model/cards/archer.tres")
 }
 
+enum GameEnd {
+	UNDECIDED,
+	WIN,
+	LOSE,
+	TIE
+}
+
 const CARD_SCENE: PackedScene = preload("res://scenes/card.tscn") # The template to create a card
 
 # Input map constant
@@ -90,6 +97,9 @@ var first_player: bool = false
 
 # Useful when having having a support loop to know who is actually playing.
 var _my_turn: bool = false
+
+var game_end: GameEnd = GameEnd.UNDECIDED :
+	set = set_game_end
 
 # Handle a way to get back to the action choice menu in case of misclick
 var can_go_back: bool = false :
@@ -168,12 +178,12 @@ func start_turn() -> void:
 
 
 func start_state(state: State.Name, going_back: bool = false) -> void:
+	if !going_back:
+		States[_current_state].ended.emit()
+
 	previous_state = _current_state
 	_current_state = state
 	instruction_updated.emit(States[state].instruction)
-
-	if !going_back:
-		States[previous_state].ended.emit()
 
 	# Avoid sending RPCs to the server when the server is the one calling this function.
 	if state != State.Name.WAITING_FOR_PLAYER:
@@ -280,6 +290,23 @@ func enemy_support_block(support_type: CardUnit.UnitType) -> void:
 func conscription_done() -> void:
 	set_enemy_state.rpc(State.Name.ACTION_CHOICE)
 
+
+func set_game_end(end) -> void:
+	# Avoid infinite loop
+	if game_end != GameEnd.UNDECIDED:
+		return
+
+	game_end = end
+	match game_end:
+		GameEnd.WIN:
+			set_other_game_end.rpc(GameEnd.LOSE)
+			add_log.emit("have", "won")
+		GameEnd.LOSE:
+			set_other_game_end.rpc(GameEnd.WIN)
+			add_log.emit("have", "lost")
+		GameEnd.TIE:
+			set_other_game_end.rpc(GameEnd.TIE)
+
 #################################################################################
 # Getters
 #################################################################################
@@ -314,3 +341,8 @@ func set_enemy_turn() -> void:
 @rpc("any_peer")
 func add_dead_unit() -> void:
 	_dead_units += 1
+
+
+@rpc("any_peer")
+func set_other_game_end(end: GameEnd) -> void:
+	game_end = end
