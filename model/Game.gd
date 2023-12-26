@@ -68,6 +68,10 @@ enum GameEnd {
 	TIE
 }
 
+var peer_id: int = 0
+var enemy_id: int = 0
+var first_player: bool = false
+
 const CARD_SCENE: PackedScene = preload("res://scenes/card.tscn") # The template to create a card
 
 # Input map constant
@@ -87,13 +91,6 @@ var _pending_support: Dictionary = {}
 # Count the number of killed units on both sides because it can be used to decide who wins at the end.
 var _dead_units: int = 0
 var _dead_enemies: int = 0
-
-# The local multiplayer server port
-const PORT = 1234
-var enet_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
-
-var peer_id: int = 0
-var first_player: bool = false
 
 # Useful when having having a support loop to know who is actually playing.
 var _my_turn: bool = false
@@ -136,22 +133,9 @@ var conscripted_units: int = 0 :
 			conscripted_units = 0 # Reset the counter
 
 
-func start_server() -> void:
-	enet_peer.create_server(PORT, 2)
-	multiplayer.multiplayer_peer = enet_peer
-	peer_id = multiplayer.get_unique_id()
-	first_player = true
-	multiplayer.peer_connected.connect(setup)
-
-
-func join_server() -> void:
-	enet_peer.create_client("localhost", PORT)
-	multiplayer.multiplayer_peer = enet_peer
-	peer_id = multiplayer.get_unique_id()
-	multiplayer.peer_connected.connect(setup)
-
-
-func setup(_player_id: int) -> void:
+# Setup can be called by server only when 2 players have joined.
+func setup() -> void:
+	print("Setup Player ", peer_id)
 	players_ready.emit()
 	if first_player:
 		start_state(State.Name.RESHUFFLE)
@@ -174,7 +158,7 @@ func start_turn() -> void:
 	has_attacked = false
 	has_recruited = false
 	_attack_bonus = 0
-	set_enemy_turn.rpc()
+	set_enemy_turn.rpc_id(enemy_id)
 
 
 func start_state(state: State.Name, going_back: bool = false) -> void:
@@ -188,9 +172,9 @@ func start_state(state: State.Name, going_back: bool = false) -> void:
 	# Avoid sending RPCs to the server when the server is the one calling this function.
 	if state != State.Name.WAITING_FOR_PLAYER:
 		if state == State.Name.GAME_OVER:
-			set_enemy_state.rpc(State.Name.GAME_OVER)
+			set_enemy_state.rpc_id(enemy_id, State.Name.GAME_OVER)
 		else:
-			set_enemy_state.rpc(State.Name.WAITING_FOR_PLAYER)
+			set_enemy_state.rpc_id(enemy_id, State.Name.WAITING_FOR_PLAYER)
 
 	States[state].started.emit()
 
@@ -200,9 +184,9 @@ func start_state(state: State.Name, going_back: bool = false) -> void:
 # In both cases the current player waits.
 func end_state() -> void:
 	if first_player and States[_current_state].happens_once:
-		set_enemy_state.rpc(_current_state)
+		set_enemy_state.rpc_id(enemy_id, _current_state)
 	else:
-		set_enemy_state.rpc(State.get_next_state(_current_state))
+		set_enemy_state.rpc_id(enemy_id, State.get_next_state(_current_state))
 
 
 # After choosing an action, a button will appear to have the option to go back.
@@ -220,7 +204,7 @@ func enemy_attack_block(attacking_card: Card, enemy_placeholder: CardPlaceholder
 		"attacking_card": attacking_card,
 		"enemy_placeholder": enemy_placeholder
 	}
-	set_enemy_state.rpc(State.Name.ATTACK_BLOCK)
+	set_enemy_state.rpc_id(enemy_id, State.Name.ATTACK_BLOCK)
 
 
 func process_attack_block(attack_blocked: bool, is_rpc: bool = true) -> void:
@@ -283,12 +267,12 @@ func process_support_block(support_blocked: bool, is_rpc: bool = true) -> void:
 func enemy_support_block(support_type: CardUnit.UnitType) -> void:
 	add_log.emit("are", "trying to play a " + UNITS[support_type].name + " as a support")
 	_pending_support = { "type": support_type }
-	set_enemy_state.rpc(State.Name.SUPPORT_BLOCK)
+	set_enemy_state.rpc_id(enemy_id, State.Name.SUPPORT_BLOCK)
 
 
 # After conscription has been done, the first player can resume his turn.
 func conscription_done() -> void:
-	set_enemy_state.rpc(State.Name.ACTION_CHOICE)
+	set_enemy_state.rpc_id(enemy_id, State.Name.ACTION_CHOICE)
 
 
 func set_game_end(end) -> void:
@@ -299,13 +283,13 @@ func set_game_end(end) -> void:
 	game_end = end
 	match game_end:
 		GameEnd.WIN:
-			set_other_game_end.rpc(GameEnd.LOSE)
+			set_other_game_end.rpc_id(enemy_id, GameEnd.LOSE)
 			add_log.emit("have", "won")
 		GameEnd.LOSE:
-			set_other_game_end.rpc(GameEnd.WIN)
+			set_other_game_end.rpc_id(enemy_id, GameEnd.WIN)
 			add_log.emit("have", "lost")
 		GameEnd.TIE:
-			set_other_game_end.rpc(GameEnd.TIE)
+			set_other_game_end.rpc_id(enemy_id, GameEnd.TIE)
 
 #################################################################################
 # Getters
@@ -321,7 +305,7 @@ func get_attack_info() -> Dictionary:
 
 func add_dead_enemy() -> void:
 	_dead_enemies += 1
-	add_dead_unit.rpc()
+	add_dead_unit.rpc_id(enemy_id)
 
 
 #################################################################################

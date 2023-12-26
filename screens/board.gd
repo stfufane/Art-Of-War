@@ -27,6 +27,9 @@ func _ready():
 	Game.States[State.Name.CONSCRIPTION].started.connect(init_conscription)
 	Game.States[State.Name.FINISH_TURN].ended.connect(check_game_end)
 
+	# The scene is loaded, the game can start
+	Game.setup()
+
 
 func setup() -> void:
 	# First card of the deck is put in the kingdom
@@ -101,7 +104,7 @@ func add_card_to_reserve(card: Card, from: CardsControl = null) -> void:
 		from.remove_card(card)
 	Game.add_log.emit("have", "added a " + card.unit.name + " to the reserve")
 	_reserve.add_card(card)
-	add_card_to_enemy_reserve.rpc(card.unit.type)
+	add_card_to_enemy_reserve.rpc_id(Game.enemy_id, card.unit.type)
 
 
 func recruit_from_hand(card: Card) -> void:
@@ -137,7 +140,7 @@ func play_attack_block(card: Card) -> void:
 	_hand.stop_all_flashes()
 	add_card_to_reserve(card, _hand)
 	Game.add_log.emit("are", "blocking the attack with a " + card.unit.name)
-	attack_was_blocked.rpc(true)
+	attack_was_blocked.rpc_id(Game.enemy_id, true)
 
 
 func play_support_block(card: Card) -> void:
@@ -148,7 +151,7 @@ func play_support_block(card: Card) -> void:
 	_hand.stop_all_flashes()
 	add_card_to_reserve(card, _hand)
 	Game.add_log.emit("are", "blocking the support with a " + card.unit.name)
-	support_was_blocked.rpc(true)
+	support_was_blocked.rpc_id(Game.enemy_id, true)
 
 
 func increase_kingdom_population(unit_type: CardUnit.UnitType) -> bool:
@@ -156,7 +159,7 @@ func increase_kingdom_population(unit_type: CardUnit.UnitType) -> bool:
 	if unit_type == CardUnit.UnitType.King:
 		return false
 	_kingdom.increase_population(unit_type)
-	add_card_to_enemy_kingdom.rpc(unit_type)
+	add_card_to_enemy_kingdom.rpc_id(Game.enemy_id, unit_type)
 	return true
 
 
@@ -193,7 +196,7 @@ func handle_card_damage(target: Card, damage: int) -> void:
 		Game.start_state(State.Name.ACTION_CHOICE)
 	else:
 		# The enemy has no more units on his battlefield, he must recruit 2 units.
-		Game.set_enemy_state.rpc(State.Name.CONSCRIPTION)
+		Game.set_enemy_state.rpc_id(Game.enemy_id, State.Name.CONSCRIPTION)
 
 
 func finish_turn(card: Card) -> void:
@@ -282,12 +285,12 @@ func _no_support_played() -> void:
 			if Game._my_turn:
 				Game.process_attack_block(false, false)
 			else:
-				attack_was_blocked.rpc(false)
+				attack_was_blocked.rpc_id(Game.enemy_id, false)
 		State.Name.SUPPORT_BLOCK:
 			if Game._my_turn:
 				Game.process_support_block(false, false)
 			else:
-				support_was_blocked.rpc(false)
+				support_was_blocked.rpc_id(Game.enemy_id, false)
 
 
 func _validate_attack() -> void:
@@ -321,7 +324,7 @@ func _card_back_from_battlefield(card: Card, to: Card.BoardArea) -> void:
 
 
 func _card_removed_from_reserve() -> void:
-	remove_first_card_from_enemy_reserve.rpc()
+	remove_first_card_from_enemy_reserve.rpc_id(Game.enemy_id)
 
 #################################################################################
 # Network actions that are called to reflect local actions on the enemy board  ##

@@ -42,7 +42,7 @@ func start_action() -> void:
 func disengage_cards() -> void:
 	for placeholder in _player_container.get_children():
 		placeholder.disengage_card()
-		disengage_enemy_card.rpc(placeholder.name)
+		disengage_enemy_card.rpc_id(Game.enemy_id, placeholder.name)
 
 
 func all_highlights_off() -> void:
@@ -130,7 +130,7 @@ func validate_picked_card_added(clicked_placeholder: CardPlaceholder, clicked_ca
 	Game.picked_card = null
 
 	# Notify the opponent so it adds the card to his battlefield
-	set_enemy_card.rpc(clicked_placeholder.get_current_card().unit.type, clicked_placeholder.name, clicked_placeholder.get_current_card()._engaged)
+	set_enemy_card.rpc_id(Game.enemy_id, clicked_placeholder.get_current_card().unit.type, clicked_placeholder.name, clicked_placeholder.get_current_card()._engaged)
 
 	# Go to the next state
 	match Game.get_state():
@@ -189,12 +189,12 @@ func _placeholder_clicked(clicked_placeholder: CardPlaceholder) -> void:
 			move_card_behind(moved_from, false)
 
 			# Remove the card remotely on the enemy battlefield
-			remove_enemy_card.rpc(moved_from.name)
+			remove_enemy_card.rpc_id(Game.enemy_id, moved_from.name)
 			# Move the card to the new placeholder
 			clicked_placeholder.set_card(_moved_card)
 			Game.add_log.emit("have", "moved a " + _moved_card.unit.name + " on the battlefield")
 			# And notify the enemy with the new card's position
-			set_enemy_card.rpc(_moved_card.unit.type, clicked_placeholder.name, _moved_card._engaged)
+			set_enemy_card.rpc_id(Game.enemy_id, _moved_card.unit.type, clicked_placeholder.name, _moved_card._engaged)
 			Game.start_state(State.Name.ACTION_CHOICE)
 
 
@@ -250,9 +250,9 @@ func _card_clicked(clicked_card: Card) -> void:
 			Game.add_log.emit("have", "switched the " + _moved_card.unit.name +
 				" with the " + clicked_card.unit.name)
 			moved_placeholder.set_card(clicked_card)
-			set_enemy_card.rpc(clicked_card.unit.type, moved_placeholder.name, clicked_card._engaged)
+			set_enemy_card.rpc_id(Game.enemy_id, clicked_card.unit.type, moved_placeholder.name, clicked_card._engaged)
 			clicked_placeholder.set_card(_moved_card)
-			set_enemy_card.rpc(_moved_card.unit.type, clicked_placeholder.name, _moved_card._engaged)
+			set_enemy_card.rpc_id(Game.enemy_id, _moved_card.unit.type, clicked_placeholder.name, _moved_card._engaged)
 			_moved_card.stop_flash()
 			Game.start_state(State.Name.ACTION_CHOICE)
 
@@ -268,7 +268,7 @@ func _enemy_card_clicked(clicked_card: Card):
 			Game.has_attacked = true
 			var attack_placeholder: CardPlaceholder = _attacking_card.get_parent()
 			var enemy_placeholder: CardPlaceholder = clicked_card.get_parent()
-			enemy_card_attacking.rpc(attack_placeholder.name, enemy_placeholder.name) # Notify the opponent that the card is attacking
+			enemy_card_attacking.rpc_id(Game.enemy_id, attack_placeholder.name, enemy_placeholder.name) # Notify the opponent that the card is attacking
 			var enemy_coords: Vector2 = enemy_placeholder.coords
 			var attacking_card_coords: Vector2 = attack_placeholder.coords
 			for coords in _attacking_card.get_attack_range():
@@ -286,7 +286,7 @@ func _enemy_card_clicked(clicked_card: Card):
 
 
 func _attack_ended() -> void:
-	enemy_attack_ended.rpc()
+	enemy_attack_ended.rpc_id(Game.enemy_id)
 
 
 func _enemy_card_killed(killed_card: Card) -> void:
@@ -296,7 +296,7 @@ func _enemy_card_killed(killed_card: Card) -> void:
 	move_card_behind(placeholder, true)
 
 	# Reflect the change on the enemy's board
-	remove_card.rpc(placeholder.name)
+	remove_card.rpc_id(Game.enemy_id, placeholder.name)
 
 
 ###

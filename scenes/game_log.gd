@@ -11,7 +11,7 @@ func _ready():
 func update_text(aux: String, text: String) -> void:
 	content.newline()
 	content.append_text("You " + aux + " " + text)
-	add_line.rpc(aux, text)
+	add_line.rpc_id(Game.enemy_id, aux, text)
 
 
 @rpc("any_peer")

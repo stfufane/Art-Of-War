@@ -3,13 +3,16 @@
 [ext_resource type="Script" path="res://menus/MainMenu.gd" id="1_ubvle"]
 
 [node name="MainMenu" type="PanelContainer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 376.0
-offset_top = 294.0
-offset_right = -376.0
-offset_bottom = -296.0
+custom_minimum_size = Vector2(256, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -63.0
+offset_top = -61.5
+offset_right = 63.0
+offset_bottom = 61.5
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ubvle")
@@ -23,6 +26,7 @@ theme_override_constants/margin_bottom = 15
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
+size_flags_vertical = 4
 
 [node name="GameTitle" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -31,8 +35,18 @@ horizontal_alignment = 1
 
 [node name="StartButton" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+disabled = true
 text = "Start Game"
 
 [node name="JoinButton" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+disabled = true
 text = "Join Game"
+
+[node name="StartServerButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Start Server"
+
+[node name="JoinServerButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Connect to Server"

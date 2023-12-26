@@ -1,0 +1,7 @@
+[gd_resource type="JSON" format=3 uid="uid://w6eubwsw0ghs"]
+
+[resource]
+data = {
+"dev": true,
+"server": "localhost"
+}
