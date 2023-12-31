@@ -17,17 +17,51 @@ func _ready():
 	if DisplayServer.get_name() == "headless":
 		start_server()
 
+	multiplayer.connected_to_server.connect(_on_connection_success)
+	multiplayer.connection_failed.connect(_on_connection_failed)
+	multiplayer.peer_connected.connect(_on_peer_connected)
+
 
 func start_server() -> void:
 	print("Starting the server")
-	enet_peer.create_server(PORT, 16)
-	multiplayer.peer_connected.connect(_on_connection_ok)
+	var server_error = enet_peer.create_server(PORT, 16)
+	if server_error:
+		print("Failed to create server", server_error);
+		return
 
 	multiplayer.multiplayer_peer = enet_peer
-	print("Server id = " + str(multiplayer.get_unique_id()))
 
 
-@rpc("any_peer", "reliable")
+func join_server() -> void:
+	print("Trying to connect to server")
+	var client_error = enet_peer.create_client(server, PORT)
+	# Small trick to detect that we actually connected to the server and catch the error otherwise.
+	enet_peer.get_peer(1).set_timeout(0, 0, 5000)
+	if client_error:
+		print("Connection to the server failed : ", client_error)
+		enet_peer.close();
+		return
+	multiplayer.multiplayer_peer = enet_peer
+
+
+func _on_peer_connected(peer_id: int) -> void:
+	print(str(peer_id) + " joined the server")
+	if peer_id > 1:
+		add_player(peer_id)
+
+
+func _on_connection_success() -> void:
+	print("Connected to server")
+	# TODO emit signal to UI
+	Game.peer_id = multiplayer.get_unique_id()
+
+
+func _on_connection_failed() -> void:
+	print("Connection failed")
+	# TODO emit signal to UI
+	enet_peer.close();
+
+
 func add_player(peer_id) -> void:
 	print(peer_id, " added to the server")
 	clients.push_back(peer_id)
@@ -58,11 +92,14 @@ func join_party() -> void:
 		return
 
 	# Find the index of the first available party to join
-	var party_to_join: Party
+	var party_to_join: Party = null
 	for party: Party in parties:
 		if party.status == Party.Status.CREATED:
 			party_to_join = party
 			break
+
+	if party_to_join == null:
+		return
 
 	var player = multiplayer.get_remote_sender_id()
 	print(str(player) + " wants to join a party")
@@ -75,29 +112,6 @@ func join_party() -> void:
 	print("Starting party for player " + str(player))
 	start_party.rpc_id(player, false, first_player)
 
-
-func join_server() -> void:
-	print("Trying to connect to server")
-	var client_error = enet_peer.create_client(server, PORT)
-	multiplayer.peer_connected.connect(_on_connection_ok)
-	if client_error:
-		# TODO: connection_failed signal
-		print("Connection to the server failed : ", client_error)
-		return
-
-	multiplayer.multiplayer_peer = enet_peer
-
-
-func _on_connection_ok(peer_id: int) -> void:
-	if multiplayer.is_server():
-		# TODO: server_started signal
-		print("The server started")
-		return
-
-	multiplayer.peer_connected.disconnect(_on_connection_ok)
-	Game.peer_id = multiplayer.get_unique_id()
-	print(str(Game.peer_id) + " joined the server")
-	add_player.rpc_id(1, Game.peer_id) # Tell the server to register the player
 
 @rpc
 func start_party(first: bool, enemy_id: int) -> void:
