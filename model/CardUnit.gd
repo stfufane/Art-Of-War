@@ -1,5 +1,4 @@
-class_name CardUnit
-extends Resource
+class_name CardUnit extends Resource
 
 enum UnitType {
 	King,

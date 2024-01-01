@@ -1,5 +1,4 @@
-class_name State
-extends Object
+class_name State extends Object
 
 signal started
 signal ended

@@ -1,5 +1,12 @@
 extends Node
 
+signal connection_success
+signal connection_failed
+
+signal party_created(id: String)
+signal no_party_found
+signal party_cancelled
+
 const BOARD_SCENE: PackedScene = preload("res://screens/board.tscn")
 
 @onready var config: Dictionary = ResourceLoader.load("res://config.tres", "JSON").get_data()
@@ -10,8 +17,12 @@ const BOARD_SCENE: PackedScene = preload("res://screens/board.tscn")
 const PORT = 3134
 var enet_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 
+# Stored by the server
 var clients: Array[int] = []
 var parties: Array[Party] = []
+
+# Stored by the client
+var party_id: String = ""
 
 func _ready():
 	if DisplayServer.get_name() == "headless":
@@ -19,7 +30,6 @@ func _ready():
 
 	multiplayer.connected_to_server.connect(_on_connection_success)
 	multiplayer.connection_failed.connect(_on_connection_failed)
-	multiplayer.peer_connected.connect(_on_peer_connected)
 
 
 func start_server() -> void:
@@ -30,6 +40,13 @@ func start_server() -> void:
 		return
 
 	multiplayer.multiplayer_peer = enet_peer
+	multiplayer.peer_connected.connect(_on_peer_connected)
+
+
+func _on_peer_connected(peer_id: int) -> void:
+	print(str(peer_id) + " joined the server")
+	if peer_id > 1:
+		add_player(peer_id)
 
 
 func join_server() -> void:
@@ -39,26 +56,21 @@ func join_server() -> void:
 	enet_peer.get_peer(1).set_timeout(0, 0, 5000)
 	if client_error:
 		print("Connection to the server failed : ", client_error)
+		connection_failed.emit()
 		enet_peer.close();
 		return
 	multiplayer.multiplayer_peer = enet_peer
 
 
-func _on_peer_connected(peer_id: int) -> void:
-	print(str(peer_id) + " joined the server")
-	if peer_id > 1:
-		add_player(peer_id)
-
-
 func _on_connection_success() -> void:
 	print("Connected to server")
-	# TODO emit signal to UI
+	connection_success.emit()
 	Game.peer_id = multiplayer.get_unique_id()
 
 
 func _on_connection_failed() -> void:
 	print("Connection failed")
-	# TODO emit signal to UI
+	connection_failed.emit()
 	enet_peer.close();
 
 
@@ -76,33 +88,39 @@ func create_party() -> void:
 	var player = multiplayer.get_remote_sender_id()
 	print(str(player) + " wants to create a party")
 	var party: Party = Party.new();
-	party.id = player
 	party.add_player(player)
 	parties.push_back(party)
+	print("Created party: ", party.id)
+	notify_party_created.rpc_id(player, party.id)
+
+
+@rpc
+func notify_party_created(id: String) -> void:
+	party_id = id
+	party_created.emit(party_id)
 
 
 @rpc("any_peer")
-func join_party() -> void:
+func join_party(id: String) -> void:
 	# Only the server can handle parties
 	if not multiplayer.is_server():
 		return
 
-	# Cannot join if there are no parties
-	if parties.is_empty() or parties.all(func(p: Party): return p.status != Party.Status.CREATED):
-		return
+	var player = multiplayer.get_remote_sender_id()
+	print(str(player) + " wants to join party " + id)
 
 	# Find the index of the first available party to join
 	var party_to_join: Party = null
 	for party: Party in parties:
-		if party.status == Party.Status.CREATED:
+		if party.status == Party.Status.CREATED and party.id == id:
 			party_to_join = party
 			break
 
 	if party_to_join == null:
+		party_not_found.rpc_id(player)
 		return
 
-	var player = multiplayer.get_remote_sender_id()
-	print(str(player) + " wants to join a party")
+	print(str(player) + " is joining party " + id)
 	party_to_join.add_player(player)
 
 	# Start the game for the two players and declare their respective enemy ids.
@@ -111,6 +129,35 @@ func join_party() -> void:
 	start_party.rpc_id(first_player, true, player)
 	print("Starting party for player " + str(player))
 	start_party.rpc_id(player, false, first_player)
+
+
+@rpc
+func party_not_found():
+	no_party_found.emit()
+
+
+func cancel_party() -> void:
+	print("cancel party", party_id)
+	remove_party.rpc_id(1, party_id)
+	party_id = ""
+	party_cancelled.emit()
+
+
+@rpc("any_peer")
+func remove_party(id: String) -> void:
+	print("remove_party")
+	print(parties)
+	var party_to_remove: Party = null
+	for party: Party in parties:
+		if party.id == id:
+			party_to_remove = party
+			break
+
+	if party_to_remove != null:
+		parties.erase(party_to_remove)
+
+	print("party removed")
+	print(parties)
 
 
 @rpc

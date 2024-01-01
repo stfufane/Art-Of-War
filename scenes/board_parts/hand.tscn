@@ -1,17 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://vm1jd1gw330s"]
+[gd_scene load_steps=2 format=3 uid="uid://6tknyk37omdy"]
 
-[ext_resource type="Script" path="res://model/CardsControl.gd" id="1_bqraf"]
+[ext_resource type="Script" path="res://scenes/board_parts/hand.gd" id="1_p8ass"]
 
-[node name="Reserve" type="Control"]
-custom_minimum_size = Vector2(960, 192)
+[node name="PlayerHand" type="Control"]
+custom_minimum_size = Vector2(1152, 192)
 layout_mode = 3
 anchors_preset = 0
-offset_right = 960.0
+offset_right = 1152.0
 offset_bottom = 192.0
-script = ExtResource("1_bqraf")
-board_area = 3
+size_flags_horizontal = 0
+script = ExtResource("1_p8ass")
+board_area = 1
 
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

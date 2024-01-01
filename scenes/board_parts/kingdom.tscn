@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dwehldueqyfq5"]
 
-[ext_resource type="Script" path="res://scenes/kingdom.gd" id="1_p1w8l"]
+[ext_resource type="Script" path="res://scenes/board_parts/kingdom.gd" id="1_p1w8l"]
 
 [node name="Kingdom" type="Control"]
 layout_mode = 3

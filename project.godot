@@ -11,15 +11,15 @@ config_version=5
 [application]
 
 config/name="Art of war"
-run/main_scene="res://scenes/lobby.tscn"
+run/main_scene="res://screens/lobby.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [autoload]
 
-Game="*res://model/Game.gd"
-Network="*res://model/Network.gd"
+Game="*res://autoloads/Game.gd"
+Network="*res://autoloads/Network.gd"
 
 [display]
 

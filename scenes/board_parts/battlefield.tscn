@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dcwtowpudpdv2"]
 
 [ext_resource type="PackedScene" uid="uid://ccscfsp22jrsp" path="res://scenes/card_placeholder.tscn" id="1_0btqk"]
-[ext_resource type="Script" path="res://scenes/battlefield.gd" id="1_snmx6"]
+[ext_resource type="Script" path="res://scenes/board_parts/battlefield.gd" id="1_snmx6"]
 
 [node name="Battlefield" type="Control"]
 layout_mode = 3

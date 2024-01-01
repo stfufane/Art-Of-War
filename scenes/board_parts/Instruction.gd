@@ -1,5 +1,4 @@
-class_name Instruction
-extends Label
+class_name Instruction extends Label
 
 
 func _ready():

@@ -67,6 +67,6 @@ func highlight_off() -> void:
 	$ColorRect.color = base_color
 
 
-func _on_gui_input(event:InputEvent):
+func _on_gui_input(event: InputEvent):
 	if event.is_action_pressed(Game.LEFT_CLICK):
 		card_placeholder_clicked.emit(self)

@@ -1,5 +1,4 @@
-class_name SupportMenu
-extends PanelContainer
+class_name SupportMenu extends PanelContainer
 
 
 @onready var pass_support_button: Button = $MarginContainer/VBoxContainer/PassButton
