@@ -23,12 +23,24 @@ func _ready():
 	Network.no_party_found.connect(_on_party_not_found)
 	Network.party_cancelled.connect(show)
 
-	# For remote server, hide the server buttons.
+	# We come from an earlier game and the screen just reloaded,
+	# so we don't want to show the server buttons
+	# and we can still host or join a game
+	if Network.connected:
+		start_server_button.hide()
+		join_server_button.hide()
+		start_button.disabled = false
+		join_button.disabled = false
+
+	# An error has been set on the network before going back to the lobby.
+	if Network.error_message != "":
+		show_status(Network.error_message)
+		Network.error_message = ""
+
+	# When using the remote server, hide the server buttons.
 	if Network.server != "localhost":
 		start_server_button.hide()
 		join_server_button.hide()
-		# Automatically connect to server
-		Network.join_server()
 
 
 func _client_connected():
@@ -49,11 +61,6 @@ func _on_party_created(_party_id: String):
 	hide()
 
 
-func _server_disconnected():
-	start_button.disabled = true
-	join_button.disabled = true
-
-
 func _on_start_button_pressed():
 	Network.create_party.rpc_id(1)
 
@@ -63,7 +70,6 @@ func _on_join_button_pressed():
 	var party_id: String = party_id_textbox.text
 	if party_id == "":
 		show_status("You must enter a party ID")
-
 		return
 
 	Network.join_party.rpc_id(1, party_id)
@@ -73,9 +79,13 @@ func _on_party_not_found():
 	show_status("No party found with this ID")
 
 
-
 func _on_start_server_button_pressed():
-	Network.start_server()
+	if Network.connected:
+		Network.stop_server()
+		start_server_button.text = "Start Server"
+	else:
+		Network.start_server()
+		start_server_button.text = "Stop Server"
 
 
 func _on_join_server_button_pressed():

@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dto5wc7ddjj1a"]
+[gd_scene load_steps=4 format=3 uid="uid://dto5wc7ddjj1a"]
 
 [ext_resource type="PackedScene" uid="uid://cv8lqsflk2em" path="res://menus/main_menu.tscn" id="1_aq3en"]
+[ext_resource type="Script" path="res://screens/lobby.gd" id="1_xqk1s"]
 [ext_resource type="PackedScene" uid="uid://crni38li25kow" path="res://menus/waiting_menu.tscn" id="2_grmsr"]
 
 [node name="Lobby" type="Control"]
@@ -10,6 +11,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_xqk1s")
 
 [node name="MainMenu" parent="." instance=ExtResource("1_aq3en")]
 custom_minimum_size = Vector2(0, 0)
