@@ -26,7 +26,7 @@ the two other that will connect to the server and be able to create a game or jo
 
 In "prod" mode, you need to indicate the IP of the remote server instead of localhost. The client will automatically try to connect to it.
 
-TODO : Manage connection failure and server disconnection.
+If you're interested, I wrote an entire [wiki article](https://github.com/stfufane/Art-Of-War/wiki/Server-and-deployment-documentation) on how I hosted the game and automated deployment. 
 
 ## License
 
