@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Unit" load_steps=2 format=3 uid="uid://c2dghikpwx1ya"]
+
+[ext_resource type="Script" path="res://scripts/resources/Unit.gd" id="1_ndgov"]
+
+[resource]
+resource_name = "Soldier"
+script = ExtResource("1_ndgov")
+type = 1
+name = "Soldier"
+attack = 0
+defense = 2
+defense_engaged = 1
+attack_range = PackedVector2Array()

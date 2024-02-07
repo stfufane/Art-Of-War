@@ -1,8 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dto5wc7ddjj1a"]
+[gd_scene load_steps=4 format=3 uid="uid://55ms7farec55"]
 
-[ext_resource type="PackedScene" uid="uid://cv8lqsflk2em" path="res://menus/main_menu.tscn" id="1_aq3en"]
-[ext_resource type="Script" path="res://screens/lobby.gd" id="1_xqk1s"]
-[ext_resource type="PackedScene" uid="uid://crni38li25kow" path="res://menus/waiting_menu.tscn" id="2_grmsr"]
+[ext_resource type="PackedScene" uid="uid://cc0osc8mgosst" path="res://scenes/menus/MainMenu.tscn" id="1_5ketb"]
+[ext_resource type="Script" path="res://scripts/screens/Lobby.gd" id="1_72u8o"]
+[ext_resource type="PackedScene" uid="uid://cb36f58b35nwp" path="res://scenes/menus/HostMenu.tscn" id="2_twrai"]
 
 [node name="Lobby" type="Control"]
 layout_mode = 3
@@ -11,20 +11,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_xqk1s")
+script = ExtResource("1_72u8o")
 
-[node name="MainMenu" parent="." instance=ExtResource("1_aq3en")]
-custom_minimum_size = Vector2(0, 0)
+[node name="MainMenu" parent="." instance=ExtResource("1_5ketb")]
 layout_mode = 1
-offset_left = -128.0
-offset_top = -91.0
-offset_right = 128.0
-offset_bottom = 91.0
 
-[node name="WaitingMenu" parent="." instance=ExtResource("2_grmsr")]
+[node name="HostMenu" parent="." instance=ExtResource("2_twrai")]
 visible = false
 layout_mode = 1
-offset_left = -128.0
+offset_left = -192.0
 offset_top = -93.5
-offset_right = 128.0
+offset_right = 192.0
 offset_bottom = 93.5

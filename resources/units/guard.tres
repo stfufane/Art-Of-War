@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Unit" load_steps=2 format=3 uid="uid://dtlbn1h00vl15"]
+
+[ext_resource type="Script" path="res://scripts/resources/Unit.gd" id="1_ljmum"]
+
+[resource]
+resource_name = "Guard"
+script = ExtResource("1_ljmum")
+type = 2
+name = "Guard"
+attack = 1
+defense = 3
+defense_engaged = 2
+attack_range = PackedVector2Array()

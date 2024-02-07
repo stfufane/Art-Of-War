@@ -1,0 +1,76 @@
+[gd_scene load_steps=4 format=3 uid="uid://4xuy7wjmcpu8"]
+
+[ext_resource type="Script" path="res://scripts/scenes/Hand.gd" id="1_oyfmt"]
+[ext_resource type="Texture2D" uid="uid://t70abbdmuja1" path="res://resources/graphics/elementCircle.png" id="2_6grt8"]
+[ext_resource type="Texture2D" uid="uid://ddfspy6y531eo" path="res://resources/graphics/elementCross.png" id="3_1i5wa"]
+
+[node name="Hand" type="Node2D"]
+scale = Vector2(2, 2)
+script = ExtResource("1_oyfmt")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+texture_filter = 2
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_6grt8")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect2" type="TextureRect" parent="."]
+texture_filter = 2
+offset_top = 40.0
+offset_right = 40.0
+offset_bottom = 80.0
+texture = ExtResource("2_6grt8")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect3" type="TextureRect" parent="."]
+texture_filter = 2
+offset_top = 80.0
+offset_right = 40.0
+offset_bottom = 120.0
+texture = ExtResource("2_6grt8")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect4" type="TextureRect" parent="."]
+texture_filter = 2
+offset_top = 120.0
+offset_right = 40.0
+offset_bottom = 160.0
+texture = ExtResource("2_6grt8")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect5" type="TextureRect" parent="."]
+texture_filter = 2
+offset_top = 160.0
+offset_right = 40.0
+offset_bottom = 200.0
+texture = ExtResource("2_6grt8")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect6" type="TextureRect" parent="."]
+texture_filter = 2
+offset_top = 200.0
+offset_right = 40.0
+offset_bottom = 240.0
+texture = ExtResource("3_1i5wa")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="UnitsContainer" type="VBoxContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 240.0
+theme_override_constants/separation = 0
+
+[node name="Button" type="Button" parent="."]
+visible = false
+offset_left = 96.0
+offset_top = 88.0
+offset_right = 137.0
+offset_bottom = 119.0
+scale = Vector2(0.5, 0.5)
+text = "Test"

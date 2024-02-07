@@ -10,21 +10,21 @@ config_version=5
 
 [application]
 
-config/name="Art of war"
-run/main_scene="res://screens/lobby.tscn"
-config/features=PackedStringArray("4.2", "GL Compatibility")
-boot_splash/show_image=false
+config/name="Art Of War"
+run/main_scene="res://screens/Lobby.tscn"
+config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
-Game="*res://autoloads/Game.gd"
-Network="*res://autoloads/Network.gd"
+Events="*res://scripts/autoloads/Events.gd"
+Network="*res://scripts/autoloads/Network.gd"
+StateManager="*res://scripts/autoloads/StateManager.gd"
+GameManager="*res://scripts/autoloads/GameManager.gd"
+GameServer="*res://scripts/autoloads/GameServer.gd"
 
 [display]
 
-window/size/viewport_width=960
-window/size/viewport_height=720
 window/stretch/mode="canvas_items"
 
 [input]
@@ -37,4 +37,4 @@ left_click={
 
 [rendering]
 
-renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=0

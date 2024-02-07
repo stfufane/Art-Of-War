@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Unit" load_steps=2 format=3 uid="uid://2twarv3h6kom"]
+
+[ext_resource type="Script" path="res://scripts/resources/Unit.gd" id="1_q587j"]
+
+[resource]
+resource_name = "Wizard"
+script = ExtResource("1_q587j")
+type = 3
+name = "Wizard"
+attack = 1
+defense = 2
+defense_engaged = 1
+attack_range = PackedVector2Array()

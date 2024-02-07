@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://wudfgd30ka7g"]
+
+[ext_resource type="Texture2D" uid="uid://dnemanqlk17wv" path="res://resources/graphics/elementSquare.png" id="1_x4x4d"]
+[ext_resource type="Script" path="res://scripts/scenes/BattleTile.gd" id="2_aqmyw"]
+
+[node name="BattleTile" type="TextureRect"]
+texture_filter = 2
+texture = ExtResource("1_x4x4d")
+stretch_mode = 4
+script = ExtResource("2_aqmyw")
+
+[node name="UnitSprite" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 52.0
+offset_bottom = 52.0

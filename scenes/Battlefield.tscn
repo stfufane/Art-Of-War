@@ -1,0 +1,121 @@
+[gd_scene load_steps=3 format=3 uid="uid://bbeygppwy0ath"]
+
+[ext_resource type="Script" path="res://scripts/scenes/Battlefield.gd" id="1_k2n5b"]
+[ext_resource type="PackedScene" uid="uid://wudfgd30ka7g" path="res://scenes/BattleTile.tscn" id="2_rvu1o"]
+
+[node name="Battlefield" type="Node2D"]
+script = ExtResource("1_k2n5b")
+
+[node name="Units" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 128.0
+offset_bottom = 192.0
+
+[node name="BattleTile" parent="Units" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_left = 64.0
+offset_right = 128.0
+offset_bottom = 64.0
+coords = Vector2(1, 2.08165e-12)
+
+[node name="BattleTile2" parent="Units" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_left = 64.0
+offset_top = 64.0
+offset_right = 128.0
+offset_bottom = 128.0
+coords = Vector2(1, 1)
+id = 1
+
+[node name="BattleTile3" parent="Units" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_left = 64.0
+offset_top = 128.0
+offset_right = 128.0
+offset_bottom = 192.0
+coords = Vector2(1, 2)
+id = 2
+
+[node name="BattleTile4" parent="Units" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_right = 64.0
+offset_bottom = 64.0
+id = 3
+
+[node name="BattleTile5" parent="Units" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_top = 64.0
+offset_right = 64.0
+offset_bottom = 128.0
+coords = Vector2(2.08165e-12, 1)
+id = 4
+
+[node name="BattleTile6" parent="Units" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_top = 128.0
+offset_right = 64.0
+offset_bottom = 192.0
+coords = Vector2(2.08165e-12, 2)
+id = 5
+
+[node name="EnemyUnits" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 160.0
+offset_right = 288.0
+offset_bottom = 192.0
+
+[node name="BattleTile" parent="EnemyUnits" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_top = 128.0
+offset_right = 64.0
+offset_bottom = 192.0
+coords = Vector2(2, 2)
+side = 1
+
+[node name="BattleTile2" parent="EnemyUnits" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_top = 64.0
+offset_right = 64.0
+offset_bottom = 128.0
+coords = Vector2(2, 1)
+id = 1
+side = 1
+
+[node name="BattleTile3" parent="EnemyUnits" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_right = 64.0
+offset_bottom = 64.0
+coords = Vector2(2, 2.08165e-12)
+id = 2
+side = 1
+
+[node name="BattleTile4" parent="EnemyUnits" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_left = 64.0
+offset_top = 128.0
+offset_right = 128.0
+offset_bottom = 192.0
+coords = Vector2(3, 2)
+id = 3
+side = 1
+
+[node name="BattleTile5" parent="EnemyUnits" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_left = 64.0
+offset_top = 64.0
+offset_right = 128.0
+offset_bottom = 128.0
+coords = Vector2(3, 1)
+id = 4
+side = 1
+
+[node name="BattleTile6" parent="EnemyUnits" instance=ExtResource("2_rvu1o")]
+layout_mode = 2
+offset_left = 64.0
+offset_right = 128.0
+offset_bottom = 64.0
+coords = Vector2(3, 2.08165e-12)
+id = 5
+side = 1

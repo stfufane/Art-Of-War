@@ -1,0 +1,60 @@
+[gd_scene load_steps=3 format=3 uid="uid://c65kfclvveb3r"]
+
+[ext_resource type="Script" path="res://scripts/scenes/Reserve.gd" id="1_ns6wg"]
+[ext_resource type="Texture2D" uid="uid://t70abbdmuja1" path="res://resources/graphics/elementCircle.png" id="2_wtecy"]
+
+[node name="Reserve" type="Node2D"]
+scale = Vector2(2, 2)
+script = ExtResource("1_ns6wg")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+texture_filter = 2
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_wtecy")
+expand_mode = 1
+
+[node name="TextureRect2" type="TextureRect" parent="."]
+texture_filter = 2
+offset_top = 40.0
+offset_right = 40.0
+offset_bottom = 80.0
+texture = ExtResource("2_wtecy")
+expand_mode = 1
+
+[node name="TextureRect3" type="TextureRect" parent="."]
+texture_filter = 2
+offset_top = 80.0
+offset_right = 40.0
+offset_bottom = 120.0
+texture = ExtResource("2_wtecy")
+expand_mode = 1
+
+[node name="TextureRect4" type="TextureRect" parent="."]
+texture_filter = 2
+offset_top = 120.0
+offset_right = 40.0
+offset_bottom = 160.0
+texture = ExtResource("2_wtecy")
+expand_mode = 1
+
+[node name="TextureRect5" type="TextureRect" parent="."]
+texture_filter = 2
+offset_top = 160.0
+offset_right = 40.0
+offset_bottom = 200.0
+texture = ExtResource("2_wtecy")
+expand_mode = 1
+
+[node name="UnitsContainer" type="VBoxContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 200.0
+theme_override_constants/separation = 0
+
+[node name="Button" type="Button" parent="."]
+visible = false
+offset_left = 88.0
+offset_top = 80.0
+offset_right = 129.0
+offset_bottom = 111.0
+text = "Test"

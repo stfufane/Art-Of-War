@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://dvykd43r2q2rm"]
+
+[ext_resource type="Script" path="res://scripts/scenes/ReserveUnit.gd" id="1_2ugjq"]
+[ext_resource type="PackedScene" uid="uid://bv1xv58l2a42u" path="res://scenes/characters/TiltableUnit.tscn" id="2_kmv4f"]
+
+[node name="ReserveUnit" type="Control"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_2ugjq")
+
+[node name="TiltableUnit" parent="." instance=ExtResource("2_kmv4f")]
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 38.0
+offset_bottom = 38.0

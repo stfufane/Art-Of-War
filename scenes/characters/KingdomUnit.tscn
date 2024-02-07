@@ -1,0 +1,75 @@
+[gd_scene load_steps=8 format=3 uid="uid://bp4ut36apw8b2"]
+
+[ext_resource type="Script" path="res://scripts/scenes/KingdomUnit.gd" id="1_n4jup"]
+[ext_resource type="Resource" uid="uid://dtlbn1h00vl15" path="res://resources/units/guard.tres" id="2_esqu1"]
+[ext_resource type="Texture2D" uid="uid://cusf7bwt6kov5" path="res://resources/sprites/Guard.png" id="2_j1t7g"]
+[ext_resource type="Texture2D" uid="uid://ctas0gyh05iu5" path="res://resources/graphics/crown.png" id="3_44t33"]
+
+[sub_resource type="Animation" id="Animation_vtldt"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_mo362"]
+resource_name = "flash"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(5, 1, 1, 1), Color(1, 1, 5, 1), Color(1, 5, 1, 1), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_mqdxg"]
+_data = {
+"RESET": SubResource("Animation_vtldt"),
+"flash": SubResource("Animation_mo362")
+}
+
+[node name="KingdomUnit" type="Control"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_n4jup")
+unit_type = ExtResource("2_esqu1")
+
+[node name="Sprite" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 30.0
+offset_bottom = 30.0
+texture = ExtResource("2_j1t7g")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite"]
+libraries = {
+"": SubResource("AnimationLibrary_mqdxg")
+}
+
+[node name="Crown" type="TextureRect" parent="."]
+visible = false
+modulate = Color(1, 1, 0.0784314, 1)
+layout_mode = 0
+offset_left = 32.0
+offset_top = 8.0
+offset_right = 160.0
+offset_bottom = 136.0
+scale = Vector2(0.125, 0.125)
+texture = ExtResource("3_44t33")
+stretch_mode = 4

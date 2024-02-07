@@ -1,0 +1,66 @@
+[gd_scene load_steps=3 format=3 uid="uid://cc0osc8mgosst"]
+
+[ext_resource type="StyleBox" uid="uid://e5bltd1uh6qj" path="res://resources/themes/MenuFrame.tres" id="1_2dk4e"]
+[ext_resource type="Script" path="res://scripts/menus/MainMenu.gd" id="1_oqife"]
+
+[node name="MainMenu" type="PanelContainer"]
+self_modulate = Color(1, 1, 1, 0.780392)
+custom_minimum_size = Vector2(384, 2.08165e-12)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -192.0
+offset_top = -143.0
+offset_right = 192.0
+offset_bottom = 143.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = ExtResource("1_2dk4e")
+script = ExtResource("1_oqife")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 45
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 45
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Title" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Art Of War"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HostButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Host Game"
+
+[node name="JoinButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Join Game"
+
+[node name="PartyId" type="TextEdit" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(2.08165e-12, 36)
+layout_mode = 2
+placeholder_text = "Party ID"
+
+[node name="StartServerButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Start Server"
+
+[node name="JoinServerButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Join Server"
+
+[node name="ConnectionStatus" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+horizontal_alignment = 1

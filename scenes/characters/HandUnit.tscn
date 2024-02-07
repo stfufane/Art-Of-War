@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://b3f4872sl4kwl"]
+
+[ext_resource type="Script" path="res://scripts/scenes/HandUnit.gd" id="1_fb8hu"]
+[ext_resource type="PackedScene" uid="uid://bv1xv58l2a42u" path="res://scenes/characters/TiltableUnit.tscn" id="2_6txsr"]
+
+[node name="HandUnit" type="Control"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_fb8hu")
+
+[node name="TiltableUnit" parent="." instance=ExtResource("2_6txsr")]
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 2.0
+offset_bottom = 2.0
