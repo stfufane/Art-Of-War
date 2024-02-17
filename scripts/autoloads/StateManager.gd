@@ -22,23 +22,23 @@ enum EState {
 
 ## The list of all available states with their associated texts
 var States: Dictionary = {
-	EState.WAITING_FOR_PLAYER: State.new("Waiting for opponent", false),
-	EState.RESHUFFLE: State.new("Need to reshuffle your hand ?", true),
-	EState.INIT_BATTLEFIELD: State.new("Init battlefield", true),
-	EState.INIT_RESERVE: State.new("Init reserve", true),
-	EState.START_TURN: State.new("Start turn", false),
-	EState.ACTION_CHOICE: State.new("Action choice", false),
-	EState.RECRUIT: State.new("Recruit a unit", false),
-	EState.SUPPORT: State.new("Play a support by adding it to your reserve", false),
-	EState.KING_SUPPORT: State.new("Choose what unit your king is playing as", false),
-	EState.MOVE_UNIT: State.new("Move a unit on the battlefield", false),
-	EState.ARCHER_ATTACK: State.new("Choose a target to hit with your archer", false),
-	EState.SUPPORT_BLOCK: State.new("You can block the enemy support by using a wizard or a king", false),
-	EState.ATTACK: State.new("Attack a unit on the enemy battlefield", false),
-	EState.ATTACK_BLOCK: State.new("You can block the enemy attack by using a guard or a king", false),
-	EState.CONSCRIPTION: State.new("You must recruit 2 units to repopulate the battlefield", false),
-	EState.FINISH_TURN: State.new("Finish turn", false),
-	EState.GAME_OVER: State.new("Game Over :)", true)
+	EState.WAITING_FOR_PLAYER: State.new("Waiting for opponent"),
+	EState.RESHUFFLE: State.new("Need to reshuffle your hand ?"),
+	EState.INIT_BATTLEFIELD: State.new("Init battlefield"),
+	EState.INIT_RESERVE: State.new("Init reserve"),
+	EState.START_TURN: State.new("Start turn"),
+	EState.ACTION_CHOICE: State.new("Action choice"),
+	EState.RECRUIT: State.new("Recruit a unit"),
+	EState.SUPPORT: State.new("Play a support by adding it to your reserve"),
+	EState.KING_SUPPORT: State.new("Choose what unit your king is playing as"),
+	EState.MOVE_UNIT: State.new("Move a unit on the battlefield"),
+	EState.ARCHER_ATTACK: State.new("Choose a target to hit with your archer"),
+	EState.SUPPORT_BLOCK: State.new("You can block the enemy support by using a wizard or a king"),
+	EState.ATTACK: State.new("Attack a unit on the enemy battlefield"),
+	EState.ATTACK_BLOCK: State.new("You can block the enemy attack by using a guard or a king"),
+	EState.CONSCRIPTION: State.new("You must recruit 2 units to repopulate the battlefield"),
+	EState.FINISH_TURN: State.new("Finish turn"),
+	EState.GAME_OVER: State.new("Game Over :)")
 }
 
 var current_state: EState = EState.WAITING_FOR_PLAYER

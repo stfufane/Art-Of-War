@@ -13,6 +13,8 @@ signal party_cancelled
 const BOARD_SCREEN: PackedScene = preload("res://screens/Board.tscn")
 const LOBBY_SCREEN: PackedScene = preload("res://screens/Lobby.tscn")
 const LEFT_CLICK: String = "left_click" ## Input map constant
+ 
+const FLASH_SHADER: Shader = preload("res://resources/shaders/flash.gdshader")
 
 const UNIT_RESOURCES: Dictionary = {
 	Unit.EUnitType.King: preload("res://resources/units/king.tres") as Unit,
@@ -30,8 +32,13 @@ var error_message: String = ""
 var selected_hand_unit: HandUnit = null
 var selected_reserve_unit: ReserveUnit = null
 
-## init with dummy values for local testing
+## Units available in hand (init with dummy values for local testing)
 var units: Array[Unit.EUnitType] = [Unit.EUnitType.Soldier, Unit.EUnitType.Wizard, Unit.EUnitType.Archer]
+
+## Units available in the reserve
+var reserve: Array[Unit.EUnitType] = []
+## Same for the enemy reserve
+var enemy_reserve: Array[Unit.EUnitType] = []
 
 
 #region RPC Party events called by the server
@@ -94,5 +101,17 @@ func update_battlefield(id: int, unit: Unit.EUnitType) -> void:
 @rpc 
 func update_enemy_battlefield(id: int, unit: Unit.EUnitType) -> void:
 	Events.update_enemy_battlefield.emit(id, unit)
+
+
+@rpc
+func update_reserve(new_units: Array) -> void:
+	reserve.assign(new_units)
+	Events.reserve_updated.emit()
+
+
+@rpc
+func update_enemy_reserve(new_units: Array) -> void:
+	enemy_reserve.assign(new_units)
+	Events.enemy_reserve_updated.emit()
 
 #endregion

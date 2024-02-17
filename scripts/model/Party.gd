@@ -71,6 +71,11 @@ static func generate_id() -> String:
 	return random_id
 
 
+func init_kingdoms() -> void:
+	for player: Player in players.values():
+		player.init_kingdom()
+
+
 ## Compares the two players' kingdoms to see which units are winning on both sides
 func update_kingdom_status() -> void:
 	for unit_type: Unit.EUnitType in Unit.EUnitType.values():

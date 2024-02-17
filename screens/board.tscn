@@ -132,6 +132,7 @@ scale = Vector2(1.5, 1.5)
 [node name="EnemyReserve" parent="." instance=ExtResource("11_x1o1o")]
 position = Vector2(790, 164)
 scale = Vector2(1.5, 1.5)
+side = 1
 
 [node name="Battlefield" parent="." instance=ExtResource("11_nw44b")]
 position = Vector2(449, 164)

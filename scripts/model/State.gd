@@ -5,12 +5,11 @@ signal ended
 
 
 var instruction: String
-var happens_once: bool
 
 
-func _init(i: String, h_o: bool) -> void:
+func _init(i: String) -> void:
 	instruction = i
-	happens_once = h_o
+
 
 # These are the automatic states that are started when calling end_state
 # However, it's possible that a state is started manually in a middle of an other state,

@@ -16,7 +16,11 @@ class_name Board extends Node2D
 
 func _ready() -> void:
 	print("Loaded the board, ready to play")
-	StateManager.States[StateManager.EState.RESHUFFLE].ended.connect(_on_reshuffle_ended)
+	StateManager.get_state(StateManager.EState.RESHUFFLE).ended.connect(_on_reshuffle_ended)
+	Events.toggle_battlefield_flash.connect(_toggle_flash_battlefield)
+	Events.reserve_updated.connect(reserve.update)
+	Events.enemy_reserve_updated.connect(enemy_reserve.update)
+	
 	kingdom.hide()
 	battlefield.hide()
 	hand.hide()

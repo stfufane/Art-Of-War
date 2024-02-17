@@ -9,7 +9,8 @@ class_name Action extends Object
 enum Code {
 	RESHUFFLE_HAND,
 	VALIDATE_HAND,
-	SET_BATTLEFIELD_UNIT
+	SET_BATTLEFIELD_UNIT,
+	ADD_RESERVE_UNIT
 }
 
 
