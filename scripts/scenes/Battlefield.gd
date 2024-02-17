@@ -1,10 +1,10 @@
 class_name Battlefield extends Node2D
 
-enum ESide { Player, Enemy }
+enum ESide { PLAYER, ENEMY }
 
 
-@onready var units: Control = $Units
-@onready var enemy_units: Control = $EnemyUnits
+@onready var units := $Units as Control
+@onready var enemy_units := $EnemyUnits as Control
 
 
 func _ready() -> void:
@@ -13,15 +13,16 @@ func _ready() -> void:
 	Events.update_enemy_battlefield.connect(_on_enemy_battlefield_updated)
 
 
-func _on_battlefield_updated(tile_id: int, unit: Unit.EUnitType):
-	for tile: BattleTile in units.get_children():
+func _on_battlefield_updated(tile_id: int, unit: Unit.EUnitType) -> void:
+	Events.toggle_battlefield_flash.emit(false)
+	for tile in units.get_children() as Array[BattleTile]:
 		if tile.id == tile_id:
 			tile.set_unit(unit)
 			return
 
 
-func _on_enemy_battlefield_updated(tile_id: int, unit: Unit.EUnitType):
-	for tile: BattleTile in enemy_units.get_children():
+func _on_enemy_battlefield_updated(tile_id: int, unit: Unit.EUnitType) -> void:
+	for tile in enemy_units.get_children() as Array[BattleTile]:
 		if tile.id == tile_id:
 			tile.set_unit(unit)
 			return
@@ -35,6 +36,6 @@ func _on_tile_clicked(tile: BattleTile) -> void:
 	
 	match StateManager.current_state:
 		StateManager.EState.INIT_BATTLEFIELD:
-			if tile.unit == null and tile.side == ESide.Player and GameManager.selected_hand_unit != null:
+			if tile.unit == null and tile.side == ESide.PLAYER and GameManager.selected_hand_unit != null:
 				GameServer.run_action.rpc_id(1, Action.Code.SET_BATTLEFIELD_UNIT, 
 					{"tile_id":tile.id, "unit_type": GameManager.selected_hand_unit.unit.type})

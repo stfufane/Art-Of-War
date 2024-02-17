@@ -6,7 +6,7 @@ class_name HostMenu extends PanelContainer
 @onready var copy_button: Button = $MarginContainer/VBoxContainer/HSplitContainer/CopyButton
 
 
-func _ready():
+func _ready() -> void:
 	GameManager.party_created.connect(_on_party_created)
 	cancel_button.pressed.connect(_on_cancel_button_pressed)
 	copy_button.gui_input.connect(_on_copy_icon_clicked)

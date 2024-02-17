@@ -15,12 +15,12 @@ const LOBBY_SCREEN: PackedScene = preload("res://screens/Lobby.tscn")
 const LEFT_CLICK: String = "left_click" ## Input map constant
 
 const UNIT_RESOURCES: Dictionary = {
-	Unit.EUnitType.King: preload("res://resources/units/king.tres"),
-	Unit.EUnitType.Soldier: preload("res://resources/units/soldier.tres"),
-	Unit.EUnitType.Guard: preload("res://resources/units/guard.tres"),
-	Unit.EUnitType.Wizard: preload("res://resources/units/wizard.tres"),
-	Unit.EUnitType.Monk: preload("res://resources/units/monk.tres"),
-	Unit.EUnitType.Archer: preload("res://resources/units/archer.tres")
+	Unit.EUnitType.King: preload("res://resources/units/king.tres") as Unit,
+	Unit.EUnitType.Soldier: preload("res://resources/units/soldier.tres") as Unit,
+	Unit.EUnitType.Guard: preload("res://resources/units/guard.tres") as Unit,
+	Unit.EUnitType.Wizard: preload("res://resources/units/wizard.tres") as Unit,
+	Unit.EUnitType.Monk: preload("res://resources/units/monk.tres") as Unit,
+	Unit.EUnitType.Archer: preload("res://resources/units/archer.tres") as Unit
 }
 
 ## Used to display a message in the lobby
@@ -49,7 +49,7 @@ func notify_party_created(id: String) -> void:
 
 
 @rpc
-func party_not_found():
+func party_not_found() -> void:
 	no_party_found.emit()
 
 
@@ -63,7 +63,7 @@ func notify_party_stopped() -> void:
 #region RPC Game actions called by the server
 
 @rpc
-func start_game(initial_units: Array):
+func start_game(initial_units: Array) -> void:
 	units.assign(initial_units)
 	# The scene ready method of the board will trigger game setup
 	get_tree().change_scene_to_packed(BOARD_SCREEN)

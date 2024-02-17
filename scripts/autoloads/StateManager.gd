@@ -43,9 +43,15 @@ var States: Dictionary = {
 
 var current_state: EState = EState.WAITING_FOR_PLAYER
 
+
+func get_state(state: EState) -> State:
+	assert(States.has(state), EState.keys()[state] + " is not registered in the list of states.")
+	return States.get(state) as State
+
+
 ## Triggered by the server at the start of an action
 @rpc
 func set_state(state: EState) -> void:
-	States[current_state].ended.emit()
+	get_state(current_state).ended.emit()
 	current_state = state
-	States[current_state].started.emit()
+	get_state(current_state).started.emit()

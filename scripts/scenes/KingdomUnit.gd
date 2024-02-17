@@ -33,16 +33,16 @@ var status: EStatus = EStatus.Equal:
 		crown.show()
 
 
-@onready var sprite: TextureRect = $Sprite ## The character sprite
-@onready var crown: TextureRect = $Crown ## A little crown icon for the status
-@onready var animation: AnimationPlayer = $Sprite/AnimationPlayer 
+@onready var sprite := $Sprite as TextureRect ## The character sprite
+@onready var crown := $Crown as TextureRect ## A little crown icon for the status
+@onready var animation := $Sprite/AnimationPlayer as AnimationPlayer
 
 
-func _ready():
-	var image = load("res://resources/sprites/" + unit_type.name + ".png")
+func _ready() -> void:
+	var image: CompressedTexture2D = load("res://resources/sprites/" + unit_type.name + ".png")
 	sprite.texture = image
 
 
 ## Triggers a little flash animation of the sprite
-func flash():
+func flash() -> void:
 	animation.queue("flash")

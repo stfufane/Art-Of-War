@@ -8,7 +8,7 @@ var instruction: String
 var happens_once: bool
 
 
-func _init(i: String, h_o: bool):
+func _init(i: String, h_o: bool) -> void:
 	instruction = i
 	happens_once = h_o
 

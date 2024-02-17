@@ -5,7 +5,7 @@ signal connection_failed
 
 
 @onready var config: Dictionary = ResourceLoader.load("res://config.tres", "JSON").get_data()
-@onready var dev = config.get("dev", true)
+@onready var dev: bool = config.get("dev", true)
 @onready var server: String = config.get("server", "localhost")
 
 var connected: bool = false
@@ -19,7 +19,7 @@ var enet_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 
 func start_server() -> void:
 	print("Starting the server")
-	var server_error = enet_peer.create_server(PORT, 16)
+	var server_error := enet_peer.create_server(PORT, 16)
 	if server_error:
 		prints("Failed to create server", server_error);
 		return
@@ -60,7 +60,7 @@ func join_server() -> void:
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 
 	print("Trying to connect to server")
-	var client_error = enet_peer.create_client(server, PORT)
+	var client_error := enet_peer.create_client(server, PORT)
 	# Small trick to detect that we actually connected to the server and catch the error otherwise.
 	enet_peer.get_peer(1).set_timeout(0, 0, 5000)
 	if client_error:

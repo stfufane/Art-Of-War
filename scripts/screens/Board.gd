@@ -1,12 +1,17 @@
 class_name Board extends Node2D
 
-@onready var camera: Camera2D = $Camera2D
-@onready var shuffle_hand: ShuffleHand = $CanvasLayer/ShuffleHand
-@onready var kingdom: Kingdom = $Kingdom
-@onready var battlefield: Battlefield = $Battlefield
-@onready var hand: Hand = $Hand
-@onready var reserve: Reserve = $Reserve
-@onready var enemy_reserve: Reserve = $EnemyReserve
+@onready var camera := $Camera2D as Camera2D
+@onready var shuffle_hand := $CanvasLayer/ShuffleHand as ShuffleHand
+@onready var kingdom := $Kingdom as Kingdom
+@onready var battlefield := $Battlefield as Battlefield
+@onready var hand := $Hand as Hand
+@onready var reserve := $Reserve as Reserve
+@onready var enemy_reserve := $EnemyReserve as Reserve
+
+# Sprites over the units that represent each zone.
+@onready var banner := $Background/Banner as Sprite2D
+@onready var castle := $Background/Castle as Sprite2D
+@onready var tent := $Background/Tent as Sprite2D
 
 
 func _ready() -> void:
@@ -30,9 +35,19 @@ func display_elements() -> void:
 	enemy_reserve.show()
 
 
-func _on_reshuffle_ended():
-	var tween = create_tween()
+func _on_reshuffle_ended() -> void:
+	var tween := create_tween()
 	tween.tween_property(shuffle_hand, "position", Vector2(shuffle_hand.position.x, 800), 0.6).set_trans(Tween.TRANS_QUAD)
 	tween.tween_callback(display_elements)
+	_toggle_flash_battlefield(true)
 
 
+# TODO: Generic method to flash any sprite
+func _toggle_flash_battlefield(state: bool) -> void:
+	if state:
+		if banner.material != null:
+			return
+		banner.material = ShaderMaterial.new()
+		banner.material.shader = GameManager.FLASH_SHADER
+	else:
+		banner.material = null

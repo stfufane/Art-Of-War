@@ -12,8 +12,8 @@ var tilted: bool = false
 
 
 func _ready() -> void:
-	mouse_entered.connect(func(): if not tilted: animation.play("hovered"))
-	mouse_exited.connect(func(): if not tilted: animation.stop())
+	mouse_entered.connect(func() -> void: if not tilted: animation.play("hovered"))
+	mouse_exited.connect(func() -> void: if not tilted: animation.stop())
 
 
 func toggle_tilt() -> void:

@@ -40,27 +40,28 @@ var party: Party = null
 var current_state: StateManager.EState = StateManager.EState.WAITING_FOR_PLAYER :
 	set(state):
 		current_state = state
+		print("Player %d state is now %s" % [id, StateManager.EState.keys()[current_state]])
 		StateManager.set_state.rpc_id(id, state)
 
 
-func _init(player_id: int):
+func _init(player_id: int) -> void:
 	id = player_id
 
 
-static func register_actions():
-	var reshuffle_action = Action.new()\
+static func register_actions() -> void:
+	var reshuffle_action := Action.new()\
 		.with_check(func(player: Player) -> bool:
 			return player.current_state == StateManager.EState.RESHUFFLE)\
 		.with_action(func(player: Player, _data: Variant) -> void:
 			player.reshuffle_deck())
 	
-	var validate_hand_action = Action.new()\
+	var validate_hand_action := Action.new()\
 		.with_check(func(player: Player) -> bool:
 			return player.current_state == StateManager.EState.RESHUFFLE)\
 		.with_action(func(player: Player, _data: Variant) -> void:
 			player.validate_hand())
 	
-	var set_battlefield_unit_action = Action.new()\
+	var set_battlefield_unit_action := Action.new()\
 		.with_check(func(player: Player) -> bool:
 			return player.current_state == StateManager.EState.INIT_BATTLEFIELD)\
 		.with_action(func(player: Player, data: Variant) -> void:

@@ -11,9 +11,9 @@ var sprite_size: float = 0.0
 var is_animating: bool = false
 
 
-@onready var hand_units: Control = $HandUnits
-@onready var reshuffle_button: Button = $HBoxContainer/ReshuffleButton
-@onready var play_button: Button = $HBoxContainer/PlayButton
+@onready var hand_units := $HandUnits as Control
+@onready var reshuffle_button := $HBoxContainer/ReshuffleButton as Button
+@onready var play_button := $HBoxContainer/PlayButton as Button
 
 ## for TESTING purposes
 @onready var is_running_locally: bool = get_parent().name == "root"
@@ -33,7 +33,7 @@ func _ready() -> void:
 func animate_falling() -> void:
 	if not hand_units.get_children().is_empty():
 		for texture: TextureRect in hand_units.get_children():
-			var fall_tween = create_tween()
+			var fall_tween := create_tween()
 			fall_tween.tween_property(texture, "position", Vector2(texture.position.x, FAR_BELOW), slide_speed).set_trans(Tween.TRANS_QUAD)
 			fall_tween.tween_callback(texture.queue_free)
 			await get_tree().create_timer(slide_shift).timeout
@@ -48,17 +48,19 @@ func update_hand(reshuffle_attempts: int) -> void:
 		reshuffle_button.disabled = true
 	
 	var unit_idx: int = 0
-	for unit: Unit.EUnitType in GameManager.units.slice(0, 3): # Exclude the king
-		var unit_name: String = GameManager.UNIT_RESOURCES[unit].name
-		var image = load("res://resources/sprites/" + unit_name + ".png")
-		var new_texture = TextureRect.new()
+	for unit in GameManager.units.slice(0, 3) as Array[Unit.EUnitType]: # Exclude the king
+		var unit_resource := GameManager.UNIT_RESOURCES[unit] as Unit
+		assert(unit_resource is Unit, "Did not retrieve a valid unit")
+		var unit_name := unit_resource.name
+		var image: CompressedTexture2D = load("res://resources/sprites/" + unit_name + ".png")
+		var new_texture := TextureRect.new()
 		new_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH
 		new_texture.size = Vector2(sprite_size, sprite_size)
 		new_texture.position = Vector2(unit_idx * sprite_size, FAR_ABOVE)
 		new_texture.texture = image
 		hand_units.add_child(new_texture)
 		unit_idx += 1
-		var tween = create_tween()
+		var tween := create_tween()
 		tween.tween_property(new_texture, "position", Vector2(new_texture.position.x, 0), slide_speed).set_trans(Tween.TRANS_QUAD)
 		await get_tree().create_timer(slide_shift).timeout
 	# Little extra wait before allowing interactions again

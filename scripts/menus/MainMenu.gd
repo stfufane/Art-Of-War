@@ -8,7 +8,7 @@ class_name MainMenu extends PanelContainer
 @onready var connection_status: Label = $MarginContainer/VBoxContainer/ConnectionStatus
 @onready var party_id_textbox: TextEdit = $MarginContainer/VBoxContainer/PartyId
 
-func _ready():
+func _ready() -> void:
 	if DisplayServer.get_name() == "headless":
 		return
 
@@ -44,7 +44,7 @@ func _ready():
 		join_server_button.hide()
 
 
-func _client_connected():
+func _client_connected() -> void:
 	host_button.disabled = false
 	join_button.disabled = false
 	start_server_button.hide()
@@ -54,19 +54,19 @@ func _client_connected():
 	connection_status.hide()
 
 
-func _client_connection_failed():
+func _client_connection_failed() -> void:
 	show_status("Failed to connect to server")
 
 
-func _on_party_created(_party_id: String):
+func _on_party_created(_party_id: String) -> void:
 	hide()
 
 
-func _on_host_button_pressed():
+func _on_host_button_pressed() -> void:
 	GameServer.create_party.rpc_id(1)
 
 
-func _on_join_button_pressed():
+func _on_join_button_pressed() -> void:
 	connection_status.hide()
 	var party_id: String = party_id_textbox.text
 	if party_id.is_empty():
@@ -76,11 +76,11 @@ func _on_join_button_pressed():
 	GameServer.join_party.rpc_id(1, party_id)
 
 
-func _on_party_not_found():
+func _on_party_not_found() -> void:
 	show_status("No party found with this ID")
 
 
-func _on_start_server_button_pressed():
+func _on_start_server_button_pressed() -> void:
 	if Network.connected:
 		Network.stop_server()
 		start_server_button.text = "Start Server"
@@ -89,7 +89,7 @@ func _on_start_server_button_pressed():
 		start_server_button.text = "Stop Server"
 
 
-func _on_join_server_button_pressed():
+func _on_join_server_button_pressed() -> void:
 	connection_status.hide()
 	Network.join_server()
 

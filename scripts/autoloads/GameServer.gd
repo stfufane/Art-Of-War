@@ -42,7 +42,7 @@ func start_party(party_id: String) -> void:
 		player.current_state = StateManager.EState.RESHUFFLE
 
 
-func add_player(peer_id) -> void:
+func add_player(peer_id: int) -> void:
 	print(peer_id, " added to the server")
 	players[peer_id] = Player.new(peer_id)
 
@@ -63,7 +63,7 @@ func get_current_player() -> Player:
 	if not multiplayer.is_server():
 		return null
 	
-	var player_id = multiplayer.get_remote_sender_id()
+	var player_id := multiplayer.get_remote_sender_id()
 	return players[player_id] as Player ## Can return null as well
 
 
@@ -89,7 +89,7 @@ func create_party() -> void:
 	if not multiplayer.is_server():
 		return
 
-	var player_id = multiplayer.get_remote_sender_id()
+	var player_id := multiplayer.get_remote_sender_id()
 	if not players.has(player_id):
 		print("Player ", player_id, " not found")
 		return
@@ -107,7 +107,7 @@ func join_party(id: String) -> void:
 	if not multiplayer.is_server():
 		return
 
-	var player_id = multiplayer.get_remote_sender_id()
+	var player_id := multiplayer.get_remote_sender_id()
 	print("%d wants to join party %s" % [player_id, id])
 
 	if not players.has(player_id):

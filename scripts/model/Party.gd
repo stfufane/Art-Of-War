@@ -73,7 +73,7 @@ static func generate_id() -> String:
 
 ## Compares the two players' kingdoms to see which units are winning on both sides
 func update_kingdom_status() -> void:
-	for unit_type in Unit.EUnitType.values():
+	for unit_type: Unit.EUnitType in Unit.EUnitType.values():
 		if unit_type == Unit.EUnitType.King:
 			continue
 		if first_player.kingdom[unit_type] == second_player.kingdom[unit_type]:
