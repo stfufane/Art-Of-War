@@ -1,6 +1,6 @@
 class_name UnitsHolder extends Node2D
 
-var selected_unit: Control = null
+var selected_unit: ClickableUnit = null
 var default_unit: PackedScene = null
 
 
@@ -27,18 +27,18 @@ func add_unit(type: Unit.EUnitType) -> void:
 	units_container.add_child(new_unit)
 
 
-func remove_unit(unit: Control) -> void:
+func remove_unit(unit: ClickableUnit) -> void:
 	units_container.remove_child(unit)
 	unit.queue_free()
 
 
-func set_selected_unit(unit: Control) -> void:
+func set_selected_unit(unit: ClickableUnit) -> void:
 	selected_unit = unit
 
 
-func toggle_unit_tilt(unit: Control) -> void:
+func toggle_unit_tilt(unit: ClickableUnit) -> void:
 	set_selected_unit(null)
-	for u: Control in units_container.get_children():
+	for u: ClickableUnit in units_container.get_children():
 		if u != unit and u.tiltable.tilted:
 			u.tiltable.untilt()
 	unit.tiltable.toggle_tilt()
@@ -46,7 +46,7 @@ func toggle_unit_tilt(unit: Control) -> void:
 		set_selected_unit(unit)
 
 
-func unit_clicked(unit: Control) -> void:
+func unit_clicked(unit: ClickableUnit) -> void:
 	if get_parent().name == "root":
 		toggle_unit_tilt(unit)
 		return

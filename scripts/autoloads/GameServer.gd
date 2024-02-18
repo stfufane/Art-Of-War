@@ -39,7 +39,7 @@ func start_party(party_id: String) -> void:
 
 	for player: Player in party.players.values():
 		GameManager.start_game.rpc_id(player.id, player.hand)
-		player.current_state = StateManager.EState.RESHUFFLE
+		player.state.current = StateManager.EState.RESHUFFLE
 
 
 func add_player(peer_id: int) -> void:

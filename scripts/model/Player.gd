@@ -2,50 +2,9 @@ class_name Player extends Object
 
 var id: int
 var first: bool = false
-
-var hand_ready: bool = false :
-	set(ready):
-		hand_ready = ready
-		if ready:
-			current_state = StateManager.EState.INIT_BATTLEFIELD
-
-
-var battlefield_ready: bool = false :
-	set(ready):
-		battlefield_ready = ready
-		if ready:
-			current_state = StateManager.EState.INIT_RESERVE
-
-
-var reserve_ready: bool = false :
-	set(ready):
-		reserve_ready = ready
-		if ready:
-			if first:
-				# If the first player is the first to finish, wait for the second player to finish
-				# Otherwise, start the turn
-				if party.second_player.reserve_ready:
-					current_state = StateManager.EState.START_TURN
-					party.init_kingdoms()
-				else:
-					current_state = StateManager.EState.WAITING_FOR_PLAYER
-			else:
-				# Second player always waits, and he finished second, first player can start his turn.
-				current_state = StateManager.EState.WAITING_FOR_PLAYER
-				if party.first_player.reserve_ready:
-					party.first_player.current_state = StateManager.EState.START_TURN
-					party.init_kingdoms()
-
-
-## Every time the state is updated by the server, the client is notified via an RPC call
-var current_state: StateManager.EState = StateManager.EState.WAITING_FOR_PLAYER :
-	set(state):
-		current_state = state
-		print("Player %d (%s) state is now %s" % [id, "first" if first else "second", StateManager.EState.keys()[current_state]])
-		StateManager.set_state.rpc_id(id, state)
-
-
-var has_won: bool = false
+var label: String = "P1" :
+	get: 
+		return "P1" if first else "P2"
 
 var deck: Array[Unit.EUnitType] = []
 var reshuffle_attempts: int = 3
@@ -76,33 +35,36 @@ var battlefield: Dictionary = {}
 var dead_units: int = 0
 var party: Party = null
 
+var state: PlayerState = null
+
 
 func _init(player_id: int) -> void:
 	id = player_id
+	state = PlayerState.new(self)
 
 
 static func register_actions() -> void:
 	var reshuffle_action := Action.new()\
 		.with_check(func(player: Player) -> bool:
-			return player.current_state == StateManager.EState.RESHUFFLE)\
+			return player.state.current == StateManager.EState.RESHUFFLE)\
 		.with_action(func(player: Player, _data: Variant) -> void:
 			player.reshuffle_deck())
 	
 	var validate_hand_action := Action.new()\
 		.with_check(func(player: Player) -> bool:
-			return player.current_state == StateManager.EState.RESHUFFLE)\
+			return player.state.current == StateManager.EState.RESHUFFLE)\
 		.with_action(func(player: Player, _data: Variant) -> void:
 			player.validate_hand())
 	
 	var set_battlefield_unit_action := Action.new()\
 		.with_check(func(player: Player) -> bool:
-			return player.current_state == StateManager.EState.INIT_BATTLEFIELD)\
+			return player.state.current == StateManager.EState.INIT_BATTLEFIELD)\
 		.with_action(func(player: Player, data: Variant) -> void:
 			player.init_battlefield(data))
 	
 	var init_reserve_action := Action.new()\
 		.with_check(func(player: Player) -> bool:
-			return player.current_state == StateManager.EState.INIT_RESERVE)\
+			return player.state.current == StateManager.EState.INIT_RESERVE)\
 		.with_action(func(player: Player, data: Variant) -> void:
 			player.init_reserve(data))
 	
@@ -141,11 +103,11 @@ func reshuffle_deck() -> void:
 func validate_hand() -> void:
 	GameManager.update_hand.rpc_id(id, hand)
 	print("Validate hand for player ", id)
-	hand_ready = true
+	state.hand_ready = true
 
 
 func init_battlefield(data: Dictionary) -> void:
-	if battlefield_ready:
+	if state.battlefield_ready:
 		return
 	
 	var tile_id: int = data["tile_id"]
@@ -163,11 +125,11 @@ func init_battlefield(data: Dictionary) -> void:
 		GameManager.update_enemy_battlefield.rpc_id(party.first_player.id, tile_id, unit_type)
 	
 	# Trigger the state change
-	battlefield_ready = true
+	state.battlefield_ready = true
 
 
 func init_reserve(data: Dictionary) -> void:
-	if reserve_ready:
+	if state.reserve_ready:
 		return
 	
 	var unit_type: Unit.EUnitType = data["unit_type"]
@@ -183,7 +145,7 @@ func init_reserve(data: Dictionary) -> void:
 	else:
 		GameManager.update_enemy_reserve.rpc_id(party.first_player.id, reserve)
 
-	reserve_ready = true
+	state.reserve_ready = true
 
 
 func init_kingdom() -> void:

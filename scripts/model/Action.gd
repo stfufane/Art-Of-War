@@ -40,7 +40,7 @@ func run(data: Variant) -> void:
 		return
 	
 	if check.call(player):
-		print("Player %d running action %s" % [player.id, Code.keys()[code]])
+		print("%s (%d) running action %s" % [player.label, player.id, Code.keys()[code]])
 		action.call(player, data)
 	else:
-		push_warning("Player %d could not run action %s" % [player.id, Code.keys()[code]])
+		push_warning("%s (%d) could not run action %s" % [player.label, player.id, Code.keys()[code]])

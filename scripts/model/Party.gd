@@ -102,9 +102,9 @@ func check_kingdom_status() -> bool:
 	var nb_up: int = first_player_kingdom.count(KingdomUnit.EStatus.Up)
 	var nb_down: int = first_player_kingdom.count(KingdomUnit.EStatus.Down)
 	if nb_up >= 4:
-		first_player.has_won = true
+		first_player.state.has_won = true
 		return true
 	if nb_down >= 4:
-		second_player.has_won = true
+		second_player.state.has_won = true
 		return true
 	return false

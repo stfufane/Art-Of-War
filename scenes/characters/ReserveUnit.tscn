@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dvykd43r2q2rm"]
 
-[ext_resource type="Script" path="res://scripts/scenes/ReserveUnit.gd" id="1_2ugjq"]
+[ext_resource type="Script" path="res://scripts/scenes/units/ReserveUnit.gd" id="1_2ugjq"]
 [ext_resource type="PackedScene" uid="uid://bv1xv58l2a42u" path="res://scenes/characters/TiltableUnit.tscn" id="2_kmv4f"]
 
 [node name="ReserveUnit" type="Control"]
