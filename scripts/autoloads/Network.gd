@@ -25,7 +25,7 @@ func start_server() -> void:
 		return
 
 	connected = true
-	GameServer.register_actions()
+	ActionsManager.register_actions()
 	multiplayer.multiplayer_peer = enet_peer
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)

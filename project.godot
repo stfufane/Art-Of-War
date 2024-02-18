@@ -22,6 +22,7 @@ Network="*res://scripts/autoloads/Network.gd"
 StateManager="*res://scripts/autoloads/StateManager.gd"
 GameManager="*res://scripts/autoloads/GameManager.gd"
 GameServer="*res://scripts/autoloads/GameServer.gd"
+ActionsManager="*res://scripts/autoloads/ActionsManager.gd"
 
 [debug]
 

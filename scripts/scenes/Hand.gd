@@ -44,4 +44,4 @@ func unit_clicked(unit: ClickableUnit) -> void:
 		StateManager.EState.INIT_BATTLEFIELD, StateManager.EState.INIT_RESERVE:
 			toggle_unit_tilt(unit)
 			if StateManager.current_state == StateManager.EState.INIT_RESERVE:
-				GameServer.run_action.rpc_id(1, Action.Code.ADD_RESERVE_UNIT, { "unit_type": unit.unit.type })
+				ActionsManager.run.rpc_id(1, Action.Code.INIT_RESERVE, { "unit_type": unit.unit.type })

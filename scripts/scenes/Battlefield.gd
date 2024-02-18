@@ -37,5 +37,5 @@ func _on_tile_clicked(tile: BattleTile) -> void:
 	match StateManager.current_state:
 		StateManager.EState.INIT_BATTLEFIELD:
 			if tile.unit == null and tile.side == ESide.PLAYER and GameManager.selected_hand_unit != null:
-				GameServer.run_action.rpc_id(1, Action.Code.SET_BATTLEFIELD_UNIT, 
+				ActionsManager.run.rpc_id(1, Action.Code.INIT_BATTLEFIELD, 
 					{"tile_id":tile.id, "unit_type": GameManager.selected_hand_unit.unit.type})

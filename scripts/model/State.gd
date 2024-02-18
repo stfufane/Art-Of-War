@@ -1,4 +1,4 @@
-class_name State extends Object
+class_name State extends RefCounted
 
 signal started
 signal ended

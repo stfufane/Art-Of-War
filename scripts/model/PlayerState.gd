@@ -1,4 +1,4 @@
-class_name PlayerState extends Object
+class_name PlayerState extends RefCounted
 
 var player: Player = null ## Reference to the player holding the state
 
@@ -8,6 +8,7 @@ var current: StateManager.EState = StateManager.EState.WAITING_FOR_PLAYER :
 		current = state
 		print("%s (%d) state is now %s" % [player.label, player.id, StateManager.EState.keys()[current]])
 		StateManager.set_state.rpc_id(player.id, state)
+
 
 var hand_ready: bool = false :
 	set(ready):

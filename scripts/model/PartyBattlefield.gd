@@ -1,4 +1,4 @@
-class_name PartyBattlefield extends Object
+class_name PartyBattlefield extends RefCounted
 
 var party: Party = null
 

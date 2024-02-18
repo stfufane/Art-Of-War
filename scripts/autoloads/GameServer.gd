@@ -1,35 +1,11 @@
 extends Node
-## Defines actions and RPC calls happening server side
-##
-## The in-game actions must be registered here so they can
-## be called from anywhere.
+## Defines RPC calls happening server side to handle parties and players
 
 
 var players: Dictionary = {} ## The list of players : peer_id -> Player
 var parties: Dictionary = {} ## The list of parties : party_id -> Party
 
-## A collection of [Action] objects associated to their [enum Action.Code]
-var actions: Dictionary = {}
-
-
-func register_actions() -> void:
-	if not multiplayer.is_server():
-		return
-	Player.register_actions()
-
-
-func register_action(code: Action.Code, action: Action) -> void:
-	actions[code] = action.with_code(code)
-
-
-@rpc("any_peer")
-func run_action(code: Action.Code, data: Variant = null) -> void:
-	assert(actions.has(code), "Could not find the action with code " + Action.Code.keys()[code] + ", did you register it?")
-	var action := actions.get(code) as Action
-	action.run(data)
-
-
-#region basic methods to manipulate/retrieve party/player
+#region Basic methods to manipulate/retrieve party/player
 ## When starting the party, the server tells both clients to load the board
 ## and they can reshuffle their deck
 func start_party(party_id: String) -> void:
@@ -64,7 +40,7 @@ func get_current_player() -> Player:
 		return null
 	
 	var player_id := multiplayer.get_remote_sender_id()
-	return players[player_id] as Player ## Can return null as well
+	return players[player_id] as Player # Can return null as well
 
 
 func get_player(player_id: int) -> Player:

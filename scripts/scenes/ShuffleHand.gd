@@ -75,10 +75,10 @@ func request_reshuffle() -> void:
 	if is_running_locally:
 		update_hand(3)
 		return
-	GameServer.run_action.rpc_id(1, Action.Code.RESHUFFLE_HAND)
+	ActionsManager.run.rpc_id(1, Action.Code.RESHUFFLE_HAND)
 
 
 func request_play() -> void:
 	if is_animating:
 		return
-	GameServer.run_action.rpc_id(1, Action.Code.VALIDATE_HAND)
+	ActionsManager.run.rpc_id(1, Action.Code.VALIDATE_HAND)

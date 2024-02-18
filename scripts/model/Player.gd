@@ -43,37 +43,6 @@ func _init(player_id: int) -> void:
 	state = PlayerState.new(self)
 
 
-static func register_actions() -> void:
-	var reshuffle_action := Action.new()\
-		.with_check(func(player: Player) -> bool:
-			return player.state.current == StateManager.EState.RESHUFFLE)\
-		.with_action(func(player: Player, _data: Variant) -> void:
-			player.reshuffle_deck())
-	
-	var validate_hand_action := Action.new()\
-		.with_check(func(player: Player) -> bool:
-			return player.state.current == StateManager.EState.RESHUFFLE)\
-		.with_action(func(player: Player, _data: Variant) -> void:
-			player.validate_hand())
-	
-	var set_battlefield_unit_action := Action.new()\
-		.with_check(func(player: Player) -> bool:
-			return player.state.current == StateManager.EState.INIT_BATTLEFIELD)\
-		.with_action(func(player: Player, data: Variant) -> void:
-			player.init_battlefield(data))
-	
-	var init_reserve_action := Action.new()\
-		.with_check(func(player: Player) -> bool:
-			return player.state.current == StateManager.EState.INIT_RESERVE)\
-		.with_action(func(player: Player, data: Variant) -> void:
-			player.init_reserve(data))
-	
-	GameServer.register_action(Action.Code.RESHUFFLE_HAND, reshuffle_action)
-	GameServer.register_action(Action.Code.VALIDATE_HAND, validate_hand_action)
-	GameServer.register_action(Action.Code.SET_BATTLEFIELD_UNIT, set_battlefield_unit_action)
-	GameServer.register_action(Action.Code.ADD_RESERVE_UNIT, init_reserve_action)
-
-
 func init_party() -> void:
 	for _i in range(4):
 		deck.append(Unit.EUnitType.Soldier)
@@ -92,7 +61,6 @@ func reshuffle_deck() -> void:
 	if reshuffle_attempts == 0:
 		return
 	
-	print("Reshuffle hand for player ", id)
 	reshuffle_attempts -= 1
 	deck.clear()
 	hand.clear()
@@ -102,7 +70,6 @@ func reshuffle_deck() -> void:
 
 func validate_hand() -> void:
 	GameManager.update_hand.rpc_id(id, hand)
-	print("Validate hand for player ", id)
 	state.hand_ready = true
 
 

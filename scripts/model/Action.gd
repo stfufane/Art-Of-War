@@ -1,4 +1,4 @@
-class_name Action extends Object
+class_name Action extends RefCounted
 ## Defines a server action that can be called via RPC by a player
 ##
 ## Each action is defined by its unique code and a callback that will
@@ -9,15 +9,14 @@ class_name Action extends Object
 enum Code {
 	RESHUFFLE_HAND,
 	VALIDATE_HAND,
-	SET_BATTLEFIELD_UNIT,
-	ADD_RESERVE_UNIT
+	INIT_BATTLEFIELD,
+	INIT_RESERVE
 }
 
 
 var code: Code
 var check: Callable = func(_player: Player) -> bool: return true
 var action: Callable = func(_player: Player, _data: Variant) -> void: pass
-
 
 func with_code(in_code: Code) -> Action:
 	self.code = in_code
@@ -37,8 +36,9 @@ func with_action(in_action: Callable) -> Action:
 func run(data: Variant) -> void:
 	var player: Player = GameServer.get_current_player()
 	if player == null or player.party == null:
+		push_error("No player or party found to run action %s" % Code.keys()[code])
 		return
-	
+
 	if check.call(player):
 		print("%s (%d) running action %s" % [player.label, player.id, Code.keys()[code]])
 		action.call(player, data)
