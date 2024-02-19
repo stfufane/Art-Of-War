@@ -1,8 +1,5 @@
 class_name Battlefield extends Node2D
 
-enum ESide { PLAYER, ENEMY }
-
-
 @onready var units := $Units as Control
 @onready var enemy_units := $EnemyUnits as Control
 
@@ -36,6 +33,6 @@ func _on_tile_clicked(tile: BattleTile) -> void:
 	
 	match StateManager.current_state:
 		StateManager.EState.INIT_BATTLEFIELD:
-			if tile.unit == null and tile.side == ESide.PLAYER and GameManager.selected_hand_unit != null:
+			if tile.unit == null and tile.side == Board.ESide.PLAYER and GameManager.selected_hand_unit != null:
 				ActionsManager.run.rpc_id(1, Action.Code.INIT_BATTLEFIELD, 
 					{"tile_id":tile.id, "unit_type": GameManager.selected_hand_unit.unit.type})

@@ -3,7 +3,7 @@ class_name BattleTile extends TextureRect
 
 @export var coords: Vector2
 @export var id: int ## To identify the tile and mirror it with the enemy tiles
-@export var side: Battlefield.ESide = Battlefield.ESide.PLAYER
+@export var side: Board.ESide = Board.ESide.PLAYER
 
 var unit: Unit = null
 
@@ -11,7 +11,7 @@ var unit: Unit = null
 
 func _ready() -> void:
 	gui_input.connect(_on_gui_input)
-	if side == Battlefield.ESide.PLAYER:
+	if side == Board.ESide.PLAYER:
 		mouse_entered.connect(func() -> void: self_modulate = Color(5.0, 5.0, 5.0, 1.0))
 		mouse_exited.connect(func() -> void: self_modulate = Color(1.0, 1.0, 1.0, 1.0))
 
@@ -19,7 +19,7 @@ func _ready() -> void:
 func set_unit(unit_type: Unit.EUnitType) -> void:
 	unit = GameManager.UNIT_RESOURCES[unit_type]
 	unit_sprite.texture = load("res://resources/sprites/" + unit.name + ".png")
-	if side == Battlefield.ESide.ENEMY:
+	if side == Board.ESide.ENEMY:
 		unit_sprite.flip_h = true
 
 

@@ -1,5 +1,7 @@
 class_name Board extends Node2D
 
+enum ESide { PLAYER, ENEMY }
+
 @onready var camera := $Camera2D as Camera2D
 @onready var shuffle_hand := $CanvasLayer/ShuffleHand as ShuffleHand
 @onready var kingdom := $Kingdom as Kingdom
@@ -20,7 +22,7 @@ func _ready() -> void:
 	Events.toggle_battlefield_flash.connect(_toggle_flash_battlefield)
 	Events.reserve_updated.connect(reserve.update)
 	Events.enemy_reserve_updated.connect(enemy_reserve.update)
-	
+
 	kingdom.hide()
 	battlefield.hide()
 	hand.hide()

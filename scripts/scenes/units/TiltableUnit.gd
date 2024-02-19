@@ -16,6 +16,10 @@ func _ready() -> void:
 	mouse_exited.connect(func() -> void: if not tilted: animation.stop())
 
 
+func h_flip() -> void:
+	sprite.flip_h = true
+
+
 func toggle_tilt() -> void:
 	if tilted:
 		untilt()
