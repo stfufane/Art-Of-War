@@ -2,6 +2,7 @@ class_name Player extends Object
 
 var id: int
 var first: bool = false
+var opponent: Player = null
 var label: String = "P1" :
 	get: 
 		return "P1" if first else "P2"
@@ -30,8 +31,6 @@ var kingdom_status: Dictionary = {
 	Unit.EUnitType.Archer: KingdomUnit.EStatus.Equal
 }
 
-var battlefield: Dictionary = {}
-
 var dead_units: int = 0
 var party: Party = null
 
@@ -58,9 +57,6 @@ func init_party() -> void:
 
 
 func reshuffle_deck() -> void:
-	if reshuffle_attempts == 0:
-		return
-	
 	reshuffle_attempts -= 1
 	deck.clear()
 	hand.clear()
@@ -74,44 +70,33 @@ func validate_hand() -> void:
 
 
 func init_battlefield(data: Dictionary) -> void:
-	if state.battlefield_ready:
-		return
-	
 	var tile_id: int = data["tile_id"]
 	var unit_type: Unit.EUnitType = data["unit_type"]
-	battlefield[tile_id] = GameManager.UNIT_RESOURCES[unit_type].duplicate()
+	party.battlefield.set_unit(id, tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
 
 	# Remove the selected unit from the hand and send an update the UI
 	hand.erase(unit_type)	
 	GameManager.update_battlefield.rpc_id(id, tile_id, unit_type)
 	
 	# Notify the opponent's UI as well
-	if first:
-		GameManager.update_enemy_battlefield.rpc_id(party.second_player.id, tile_id, unit_type)
-	else:
-		GameManager.update_enemy_battlefield.rpc_id(party.first_player.id, tile_id, unit_type)
+	GameManager.update_enemy_battlefield.rpc_id(opponent.id, tile_id, unit_type)
 	
 	# Trigger the state change
 	state.battlefield_ready = true
 
 
 func init_reserve(data: Dictionary) -> void:
-	if state.reserve_ready:
-		return
-	
 	var unit_type: Unit.EUnitType = data["unit_type"]
 	
 	reserve.append(unit_type)
 	hand.erase(unit_type)
 
+	# Update the UI on both sides.
 	GameManager.update_hand.rpc_id(id, hand)
 	GameManager.update_reserve.rpc_id(id, reserve)
+	GameManager.update_enemy_reserve.rpc_id(opponent.id, reserve)
 
-	if first:
-		GameManager.update_enemy_reserve.rpc_id(party.second_player.id, reserve)
-	else:
-		GameManager.update_enemy_reserve.rpc_id(party.first_player.id, reserve)
-
+	# Trigger the state change
 	state.reserve_ready = true
 
 

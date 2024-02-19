@@ -15,7 +15,7 @@ enum Code {
 
 
 var code: Code
-var check: Callable = func(_player: Player) -> bool: return true
+var check: Callable = func(_player: Player, _data: Variant) -> bool: return true
 var action: Callable = func(_player: Player, _data: Variant) -> void: pass
 
 func with_code(in_code: Code) -> Action:
@@ -39,7 +39,7 @@ func run(data: Variant) -> void:
 		push_error("No player or party found to run action %s" % Code.keys()[code])
 		return
 
-	if check.call(player):
+	if check.call(player, data):
 		print("%s (%d) running action %s" % [player.label, player.id, Code.keys()[code]])
 		action.call(player, data)
 	else:

@@ -20,6 +20,8 @@ var first_player: Player = null
 var second_player: Player = null
 var current_player: int = 0 ## Whose turn is it
 
+var battlefield : PartyBattlefield = null ## The battlefield where the game takes place
+
 
 func _init(player: Player) -> void:
 	player.first = true
@@ -49,6 +51,13 @@ func join(new_player: Player) -> void:
 	print(new_player.id, " is joining party ", id)
 	add_player(new_player)
 	second_player = new_player
+
+	# Initialize the battlefield
+	battlefield = PartyBattlefield.new(self)
+
+	# Reference the opponents for the two players
+	first_player.opponent = second_player
+	second_player.opponent = first_player
 
 	# Start the game for the two players
 	print("Starting party for player ", first_player.id, " and ", second_player.id)
