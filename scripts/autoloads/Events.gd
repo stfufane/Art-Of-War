@@ -17,3 +17,6 @@ signal battle_tile_clicked(tile: BattleTile)
 signal update_kingdom(status: Dictionary)
 signal update_battlefield(tile_id: int, unit: Unit.EUnitType)
 signal update_enemy_battlefield(tile_id: int, unit: Unit.EUnitType)
+
+signal update_instructions(instructions: String)
+signal update_turn_menu # A condition has changed and may have enabled/disabled an action from the menu

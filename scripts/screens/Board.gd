@@ -10,6 +10,9 @@ enum ESide { PLAYER, ENEMY }
 @onready var reserve := $Reserve as Reserve
 @onready var enemy_reserve := $EnemyReserve as Reserve
 
+@onready var turn_menu := $CanvasLayer/TurnMenu as TurnMenu
+@onready var instructions := $CanvasLayer/Instruction as Instruction
+
 # Sprites over the units that represent each zone.
 @onready var banner := $Background/Banner as Sprite2D
 @onready var castle := $Background/Castle as Sprite2D
@@ -28,6 +31,7 @@ func _ready() -> void:
 	hand.hide()
 	reserve.hide()
 	enemy_reserve.hide()
+	turn_menu.hide()
 	shuffle_hand.show()
 	shuffle_hand.update_hand(3)
 

@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3 uid="uid://ddrf8nigaffcl"]
+
+[ext_resource type="Script" path="res://scripts/menus/TurnMenu.gd" id="1_l62vm"]
+
+[node name="TurnMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_l62vm")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+texture_filter = 2
+layout_mode = 2
+
+[node name="RecruitButton" type="Button" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "Recruit"
+
+[node name="AttackButton" type="Button" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "Attack"
+
+[node name="SupportButton" type="Button" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "Support"
+
+[node name="EndTurnButton" type="Button" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "End Turn"
