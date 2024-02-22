@@ -14,6 +14,14 @@ var connected: bool = false
 const PORT = 3134
 var enet_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 
+
+func _ready() -> void:
+	if DisplayServer.get_name() == "headless":
+		start_server()
+	elif server != "localhost":
+		join_server()
+
+
 ######################
 ### SERVER METHODS ###
 
