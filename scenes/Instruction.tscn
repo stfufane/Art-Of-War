@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://chqg8i8ruxuo2"]
+
+[ext_resource type="Script" path="res://scripts/scenes/Instruction.gd" id="1_ddrnb"]
+
+[node name="Instruction" type="Label"]
+texture_filter = 2
+custom_minimum_size = Vector2(640, 0)
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "dfgdlfgkjsldfkghj"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("1_ddrnb")
