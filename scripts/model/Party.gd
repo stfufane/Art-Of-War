@@ -90,24 +90,24 @@ func update_kingdom_status() -> void:
 	for unit_type: Unit.EUnitType in Unit.EUnitType.values():
 		if unit_type == Unit.EUnitType.King:
 			continue
-		if first_player.kingdom[unit_type] == second_player.kingdom[unit_type]:
-			first_player.kingdom_status[unit_type] = KingdomUnit.EStatus.Equal
-			second_player.kingdom_status[unit_type] = KingdomUnit.EStatus.Equal
-		elif first_player.kingdom[unit_type] < second_player.kingdom[unit_type]:
-			first_player.kingdom_status[unit_type] = KingdomUnit.EStatus.Down
-			second_player.kingdom_status[unit_type] = KingdomUnit.EStatus.Up
+		if first_player.kingdom.units[unit_type] == second_player.kingdom.units[unit_type]:
+			first_player.kingdom.status[unit_type] = KingdomUnit.EStatus.Equal
+			second_player.kingdom.status[unit_type] = KingdomUnit.EStatus.Equal
+		elif first_player.kingdom.units[unit_type] < second_player.kingdom.units[unit_type]:
+			first_player.kingdom.status[unit_type] = KingdomUnit.EStatus.Down
+			second_player.kingdom.status[unit_type] = KingdomUnit.EStatus.Up
 		else:
-			first_player.kingdom_status[unit_type] = KingdomUnit.EStatus.Up
-			second_player.kingdom_status[unit_type] = KingdomUnit.EStatus.Down
+			first_player.kingdom.status[unit_type] = KingdomUnit.EStatus.Up
+			second_player.kingdom.status[unit_type] = KingdomUnit.EStatus.Down
 	
 	# Notify the players with the new data 
-	GameManager.update_kingdom.rpc_id(first_player.id, first_player.kingdom_status)
-	GameManager.update_kingdom.rpc_id(second_player.id, second_player.kingdom_status)
+	GameManager.update_kingdom.rpc_id(first_player.id, first_player.kingdom.status)
+	GameManager.update_kingdom.rpc_id(second_player.id, second_player.kingdom.status)
 
 
 ## Checks if one player is victorious based on their kingdom's populations
 func check_kingdom_status() -> bool:
-	var first_player_kingdom: Array[KingdomUnit.EStatus] = first_player.kingdom_status.values()
+	var first_player_kingdom: Array[KingdomUnit.EStatus] = first_player.kingdom.status.values()
 	var nb_up: int = first_player_kingdom.count(KingdomUnit.EStatus.Up)
 	var nb_down: int = first_player_kingdom.count(KingdomUnit.EStatus.Down)
 	if nb_up >= 4:

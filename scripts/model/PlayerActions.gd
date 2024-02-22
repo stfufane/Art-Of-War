@@ -16,7 +16,7 @@ static func check_validate_hand(player: Player, _data: Variant) -> bool:
 
 static func check_init_battlefield(player: Player, data: Variant) -> bool:
 	return player.state.current == StateManager.EState.INIT_BATTLEFIELD \
-		and not player.state.battlefield_ready\
+		and not player.state.battlefield_ready \
 		and player.party.battlefield.can_set_unit(player.id, data)
 
 

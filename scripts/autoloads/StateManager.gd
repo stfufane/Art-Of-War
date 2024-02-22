@@ -5,7 +5,6 @@ enum EState {
 	RESHUFFLE,
 	INIT_BATTLEFIELD,
 	INIT_RESERVE,
-	START_TURN,
 	ACTION_CHOICE,
 	RECRUIT,
 	SUPPORT,
@@ -24,10 +23,9 @@ enum EState {
 var States: Dictionary = {
 	EState.WAITING_FOR_PLAYER: State.new("Waiting for opponent"),
 	EState.RESHUFFLE: State.new("Need to reshuffle your hand ?"),
-	EState.INIT_BATTLEFIELD: State.new("Init battlefield"),
-	EState.INIT_RESERVE: State.new("Init reserve"),
-	EState.START_TURN: State.new("Start turn"),
-	EState.ACTION_CHOICE: State.new("Action choice"),
+	EState.INIT_BATTLEFIELD: State.new("Add a unit on your battlefield"),
+	EState.INIT_RESERVE: State.new("Add a unit to your reserve"),
+	EState.ACTION_CHOICE: State.new("Choose your next action"),
 	EState.RECRUIT: State.new("Recruit a unit"),
 	EState.SUPPORT: State.new("Play a support by adding it to your reserve"),
 	EState.KING_SUPPORT: State.new("Choose what unit your king is playing as"),
@@ -54,4 +52,6 @@ func get_state(state: EState) -> State:
 func set_state(state: EState) -> void:
 	get_state(current_state).ended.emit()
 	current_state = state
-	get_state(current_state).started.emit()
+	var new_state := get_state(current_state)
+	Events.update_instructions.emit(new_state.instruction)
+	new_state.started.emit()

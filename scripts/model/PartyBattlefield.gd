@@ -18,7 +18,6 @@ func can_set_unit(player_id: int, data: Dictionary) -> bool:
 
 func set_unit(player_id: int, tile_id: int, unit: Unit) -> void:
 	player_tiles[player_id].set_unit(tile_id, unit)
-	print(player_tiles[player_id])
 
 
 class UnitTile:

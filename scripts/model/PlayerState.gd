@@ -31,16 +31,16 @@ var reserve_ready: bool = false :
 			if player.first:
 				# If the first player is the first to finish, wait for the second player to finish
 				# Otherwise, start the turn
-				if player.party.second_player.state.reserve_ready:
-					current = StateManager.EState.START_TURN
+				if player.opponent.state.reserve_ready:
+					player.start_turn()
 					player.party.init_kingdoms()
 				else:
 					current = StateManager.EState.WAITING_FOR_PLAYER
 			else:
-				# Second player always waits, and he finished second, first player can start his turn.
+				# Second player always waits, and if he finished second, first player can start his turn.
 				current = StateManager.EState.WAITING_FOR_PLAYER
-				if player.party.first_player.state.reserve_ready:
-					player.party.first_player.state.current = StateManager.EState.START_TURN
+				if player.opponent.state.reserve_ready:
+					player.opponent.start_turn()
 					player.party.init_kingdoms()
 
 

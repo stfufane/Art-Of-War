@@ -12,24 +12,7 @@ var reshuffle_attempts: int = 3
 
 var reserve: Array[Unit.EUnitType] = []
 var hand: Array[Unit.EUnitType] = []
-
-## Store the kingdom in raw number of units
-var kingdom: Dictionary = {
-	Unit.EUnitType.Soldier: 0,
-	Unit.EUnitType.Guard: 0,
-	Unit.EUnitType.Wizard: 0,
-	Unit.EUnitType.Monk: 0,
-	Unit.EUnitType.Archer: 0
-}
-
-## And also relative to the other player
-var kingdom_status: Dictionary = {
-	Unit.EUnitType.Soldier: KingdomUnit.EStatus.Equal,
-	Unit.EUnitType.Guard: KingdomUnit.EStatus.Equal,
-	Unit.EUnitType.Wizard: KingdomUnit.EStatus.Equal,
-	Unit.EUnitType.Monk: KingdomUnit.EStatus.Equal,
-	Unit.EUnitType.Archer: KingdomUnit.EStatus.Equal
-}
+var kingdom := PlayerKingdom.new(self)
 
 var dead_units: int = 0
 var party: Party = null
@@ -102,5 +85,8 @@ func init_reserve(data: Dictionary) -> void:
 
 func init_kingdom() -> void:
 	var unit_type: Unit.EUnitType = deck.pop_back()
-	kingdom[unit_type] = 1
-	party.update_kingdom_status()
+	kingdom.add_unit(unit_type)
+
+
+func start_turn() -> void:
+	pass
