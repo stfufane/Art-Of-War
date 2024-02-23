@@ -6,6 +6,13 @@ class_name BattleTile extends TextureRect
 @export var side: Board.ESide = Board.ESide.PLAYER
 
 var unit: Unit = null
+var unit_engaged: bool = false :
+	set(engaged):
+		unit_engaged = engaged
+		if unit_engaged:
+			self_modulate = Color(1.0, 0.0, 0.0, 1.0)
+		else:
+			self_modulate = Color(1.0, 1.0, 1.0, 1.0)
 
 @onready var unit_sprite := $UnitSprite as TextureRect
 

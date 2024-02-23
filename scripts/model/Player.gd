@@ -3,8 +3,8 @@ class_name Player extends Object
 var id: int
 var first: bool = false
 var opponent: Player = null
-var label: String = "P1" :
-	get: 
+var label: String = "P1":
+	get:
 		return "P1" if first else "P2"
 
 var deck: Array[Unit.EUnitType] = []
@@ -33,7 +33,7 @@ func init_party() -> void:
 		deck.append(Unit.EUnitType.Wizard)
 		deck.append(Unit.EUnitType.Monk)
 	deck.shuffle()
-	
+
 	for _i in range(3):
 		hand.append(deck.pop_back())
 	hand.append(Unit.EUnitType.King)
@@ -58,26 +58,25 @@ func init_battlefield(data: Dictionary) -> void:
 	party.battlefield.set_unit(id, tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
 
 	# Remove the selected unit from the hand and send an update the UI
-	hand.erase(unit_type)	
-	GameManager.update_battlefield.rpc_id(id, tile_id, unit_type)
-	
-	# Notify the opponent's UI as well
-	GameManager.update_enemy_battlefield.rpc_id(opponent.id, tile_id, unit_type)
-	
+	hand.erase(unit_type)
+	GameManager.update_battlefield.rpc_id(id, Board.ESide.PLAYER, tile_id, unit_type)
+	# Update the UI on the opponent's side too
+	GameManager.update_battlefield.rpc_id(opponent.id, Board.ESide.ENEMY, tile_id, unit_type)
+
 	# Trigger the state change
 	state.battlefield_ready = true
 
 
 func init_reserve(data: Dictionary) -> void:
 	var unit_type: Unit.EUnitType = data["unit_type"]
-	
+
 	reserve.append(unit_type)
 	hand.erase(unit_type)
 
 	# Update the UI on both sides.
 	GameManager.update_hand.rpc_id(id, hand)
-	GameManager.update_reserve.rpc_id(id, reserve)
-	GameManager.update_enemy_reserve.rpc_id(opponent.id, reserve)
+	GameManager.update_reserve.rpc_id(id, Board.ESide.PLAYER, reserve)
+	GameManager.update_reserve.rpc_id(opponent.id, Board.ESide.ENEMY, reserve)
 
 	# Trigger the state change
 	state.reserve_ready = true
@@ -89,4 +88,7 @@ func init_kingdom() -> void:
 
 
 func start_turn() -> void:
-	pass
+	party.current_player = id
+	hand.append(deck.pop_back())
+	GameManager.update_hand.rpc_id(id, hand)
+	state.new_turn()

@@ -23,8 +23,7 @@ func _ready() -> void:
 	print("Loaded the board, ready to play")
 	StateManager.get_state(StateManager.EState.RESHUFFLE).ended.connect(_on_reshuffle_ended)
 	Events.toggle_battlefield_flash.connect(_toggle_flash_battlefield)
-	Events.reserve_updated.connect(reserve.update)
-	Events.enemy_reserve_updated.connect(enemy_reserve.update)
+	Events.reserve_updated.connect(_on_reserve_updated)
 
 	kingdom.hide()
 	battlefield.hide()
@@ -50,6 +49,13 @@ func _on_reshuffle_ended() -> void:
 	tween.tween_property(shuffle_hand, "position", Vector2(shuffle_hand.position.x, 800), 0.6).set_trans(Tween.TRANS_QUAD)
 	tween.tween_callback(display_elements)
 	_toggle_flash_battlefield(true)
+
+
+func _on_reserve_updated(side: ESide) -> void:
+	if side == ESide.PLAYER:
+		reserve.update()
+	else:
+		enemy_reserve.update()
 
 
 # TODO: Generic method to flash any sprite

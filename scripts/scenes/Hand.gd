@@ -24,7 +24,11 @@ func set_selected_unit(unit: ClickableUnit) -> void:
 
 
 ## The selected unit has been added to the battlefield, it can be removed
-func _on_unit_added_to_battlefield(_id: int, unit_type: Unit.EUnitType) -> void:
+func _on_unit_added_to_battlefield(side: Board.ESide, _id: int, unit_type: Unit.EUnitType) -> void:
+	# We don't care if the updated battelfield is the enemy's
+	if side == Board.ESide.ENEMY:
+		return
+	
 	# Check that it matches
 	if selected_unit.unit.type == unit_type:
 		selected_unit.queue_free()

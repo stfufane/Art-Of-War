@@ -11,7 +11,7 @@ func _ready() -> void:
 	attack_button.pressed.connect(_on_attack_button_pressed)
 	support_button.pressed.connect(_on_support_button_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
-	StateManager.get_state(StateManager.EState.ACTION_CHOICE).ended.connect(show)
+	StateManager.get_state(StateManager.EState.ACTION_CHOICE).started.connect(show)
 	Events.update_turn_menu.connect(update_menu)
 
 

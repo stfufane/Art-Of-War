@@ -32,19 +32,30 @@ var reserve_ready: bool = false :
 				# If the first player is the first to finish, wait for the second player to finish
 				# Otherwise, start the turn
 				if player.opponent.state.reserve_ready:
-					player.start_turn()
 					player.party.init_kingdoms()
+					player.start_turn()
 				else:
 					current = StateManager.EState.WAITING_FOR_PLAYER
 			else:
 				# Second player always waits, and if he finished second, first player can start his turn.
 				current = StateManager.EState.WAITING_FOR_PLAYER
 				if player.opponent.state.reserve_ready:
-					player.opponent.start_turn()
 					player.party.init_kingdoms()
+					player.opponent.start_turn()
 
+
+var has_attacked: bool = false
+var has_recruited: bool = false
+var attack_bonus: int = 0
 
 var has_won: bool = false
 
 func _init(p: Player) -> void:
 	player = p
+
+
+func new_turn() -> void:
+	has_attacked = false
+	has_recruited = false
+	attack_bonus = 0
+	current = StateManager.EState.ACTION_CHOICE

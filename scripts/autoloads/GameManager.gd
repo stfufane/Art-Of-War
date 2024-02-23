@@ -94,24 +94,18 @@ func update_kingdom(units_status: Dictionary) -> void:
 
 
 @rpc
-func update_battlefield(id: int, unit: Unit.EUnitType) -> void:
-	Events.update_battlefield.emit(id, unit)
-
-
-@rpc 
-func update_enemy_battlefield(id: int, unit: Unit.EUnitType) -> void:
-	Events.update_enemy_battlefield.emit(id, unit)
+func update_battlefield(side: Board.ESide, id: int, unit: Unit.EUnitType) -> void:
+	Events.update_battlefield.emit(side, id, unit)
 
 
 @rpc
-func update_reserve(new_units: Array) -> void:
-	reserve.assign(new_units)
-	Events.reserve_updated.emit()
-
+func update_reserve(side: Board.ESide, new_units: Array) -> void:
+	var reserve_to_update: Array[Unit.EUnitType] = reserve if side == Board.ESide.PLAYER else enemy_reserve
+	reserve_to_update.assign(new_units)
+	Events.reserve_updated.emit(side)
 
 @rpc
-func update_enemy_reserve(new_units: Array) -> void:
-	enemy_reserve.assign(new_units)
-	Events.enemy_reserve_updated.emit()
+func start_turn() -> void:
+	Events.start_turn.emit()
 
 #endregion

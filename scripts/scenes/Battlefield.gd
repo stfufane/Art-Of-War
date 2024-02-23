@@ -7,12 +7,18 @@ class_name Battlefield extends Node2D
 func _ready() -> void:
 	Events.battle_tile_clicked.connect(_on_tile_clicked)
 	Events.update_battlefield.connect(_on_battlefield_updated)
-	Events.update_enemy_battlefield.connect(_on_enemy_battlefield_updated)
+	Events.start_turn.connect(disengage_units)
 
 
-func _on_battlefield_updated(tile_id: int, unit: Unit.EUnitType) -> void:
-	Events.toggle_battlefield_flash.emit(false)
+func disengage_units() -> void:
 	for tile in units.get_children() as Array[BattleTile]:
+		tile.unit_engaged = false
+
+
+func _on_battlefield_updated(side: Board.ESide, tile_id: int, unit: Unit.EUnitType) -> void:
+	Events.toggle_battlefield_flash.emit(false)
+	var units_to_process: Control = units if side == Board.ESide.PLAYER else enemy_units
+	for tile in units_to_process.get_children() as Array[BattleTile]:
 		if tile.id == tile_id:
 			tile.set_unit(unit)
 			return
