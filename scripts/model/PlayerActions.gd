@@ -23,6 +23,22 @@ static func check_init_battlefield(player: Player, data: Variant) -> bool:
 static func check_init_reserve(player: Player, _data: Variant) -> bool:
 	return player.state.current == StateManager.EState.INIT_RESERVE and not player.state.reserve_ready
 
+
+static func check_start_recruit(player: Player, data: Variant) -> bool:
+	return player.party.current_player == player.id and player.can_start_recruit(data)
+
+
+static func check_start_attack(player: Player, data: Variant) -> bool:
+	return player.party.current_player == player.id and player.can_start_attack(data)
+
+
+static func check_start_support(player: Player, data: Variant) -> bool:
+	return player.party.current_player == player.id and player.can_start_support(data)
+
+
+static func check_recruit(player: Player, data: Variant) -> bool:
+	return player.party.current_player == player.id and player.can_recruit(data)
+
 #endregion
 
 #region Actions that are called if the check was ok.
@@ -41,5 +57,21 @@ static func do_init_battlefield(player: Player, data: Variant) -> void:
 
 static func do_init_reserve(player: Player, data: Variant) -> void:
 	player.init_reserve(data)
+
+
+static func do_start_recruit(player: Player, _data: Variant) -> void:
+	player.start_recruit()
+
+
+static func do_start_attack(player: Player, _data: Variant) -> void:
+	player.start_attack()
+
+
+static func do_start_support(player: Player, _data: Variant) -> void:
+	player.start_support()
+
+
+static func do_recruit(player: Player, data: Variant) -> void:
+	player.recruit(data)
 
 #endregion

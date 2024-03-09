@@ -1,6 +1,7 @@
 class_name Board extends Node2D
 
 enum ESide { PLAYER, ENEMY }
+enum EUnitSource { HAND, RESERVE }
 
 @onready var camera := $Camera2D as Camera2D
 @onready var shuffle_hand := $CanvasLayer/ShuffleHand as ShuffleHand
@@ -61,6 +62,13 @@ func _on_reserve_updated(side: ESide) -> void:
 		reserve.update()
 	else:
 		enemy_reserve.update()
+
+
+func _on_recruit_started() -> void:
+	if reserve.is_empty():
+		instructions.text = "Choose a unit from your hand to recruit"
+	else:
+		instructions.text = "Choose a unit from your reserve to recruit"
 
 
 # TODO: Generic method to flash any sprite

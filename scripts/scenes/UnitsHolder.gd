@@ -33,6 +33,10 @@ func remove_unit(unit: ClickableUnit) -> void:
 	unit.queue_free()
 
 
+func is_empty() -> bool:
+	return units_container.get_child_count() == 0
+
+
 func set_selected_unit(unit: ClickableUnit) -> void:
 	selected_unit = unit
 

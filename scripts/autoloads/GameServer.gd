@@ -2,8 +2,8 @@ extends Node
 ## Defines RPC calls happening server side to handle parties and players
 
 
-var players: Dictionary = {} ## The list of players : peer_id -> Player
-var parties: Dictionary = {} ## The list of parties : party_id -> Party
+var players: Dictionary = {} ## The list of players : peer_id -> [Player]
+var parties: Dictionary = {} ## The list of parties : party_id -> [Party]
 
 #region Basic methods to manipulate/retrieve party/player
 ## When starting the party, the server tells both clients to load the board

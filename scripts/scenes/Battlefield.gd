@@ -36,9 +36,39 @@ func _on_tile_clicked(tile: BattleTile) -> void:
 	if get_parent().name == "root":
 		var tile_unit: Unit.EUnitType = GameManager.UNIT_RESOURCES.keys().pick_random()
 		tile.set_unit(tile_unit)
-	
+
 	match StateManager.current_state:
 		StateManager.EState.INIT_BATTLEFIELD:
-			if tile.unit == null and tile.side == Board.ESide.PLAYER and GameManager.selected_hand_unit != null:
-				ActionsManager.run.rpc_id(1, Action.Code.INIT_BATTLEFIELD, 
-					{"tile_id":tile.id, "unit_type": GameManager.selected_hand_unit.unit.type})
+			if (
+				tile.unit == null
+				and tile.side == Board.ESide.PLAYER
+				and GameManager.selected_hand_unit != null
+			):
+				ActionsManager.run.rpc_id(
+					1,
+					Action.Code.INIT_BATTLEFIELD,
+					{"tile_id": tile.id, "unit_type": GameManager.selected_hand_unit.unit.type}
+				)
+
+		StateManager.EState.RECRUIT:
+			if tile.unit == null and tile.side == Board.ESide.PLAYER:
+				if (
+					GameManager.selected_hand_unit == null
+					and GameManager.selected_reserve_unit == null
+				):
+					return
+				var unit_type: Unit.EUnitType = (
+					GameManager.selected_hand_unit.unit.type
+					if GameManager.selected_hand_unit != null
+					else GameManager.selected_reserve_unit.unit.type
+				)
+				var source: Board.EUnitSource = (
+					Board.EUnitSource.HAND
+					if GameManager.selected_hand_unit != null
+					else Board.EUnitSource.RESERVE
+				)
+				ActionsManager.run.rpc_id(
+					1,
+					Action.Code.RECRUIT,
+					{"tile_id": tile.id, "unit_type": unit_type, "source": source}
+				)

@@ -35,3 +35,19 @@ func register_actions() -> void:
 	register_action(Action.Code.INIT_RESERVE, Action.new()\
 		.with_check(PlayerActions.check_init_reserve)\
 		.with_action(PlayerActions.do_init_reserve))
+	
+	register_action(Action.Code.START_RECRUIT, Action.new() \
+		.with_check(PlayerActions.check_start_recruit) \
+		.with_action(PlayerActions.do_start_recruit))
+	
+	register_action(Action.Code.START_ATTACK, Action.new() \
+		.with_check(PlayerActions.check_start_attack) \
+		.with_action(PlayerActions.do_start_attack))
+	
+	register_action(Action.Code.START_SUPPORT, Action.new() \
+		.with_check(PlayerActions.check_start_support) \
+		.with_action(PlayerActions.do_start_support))
+
+	register_action(Action.Code.RECRUIT, Action.new() \
+		.with_check(PlayerActions.check_recruit) \
+		.with_action(PlayerActions.do_recruit))

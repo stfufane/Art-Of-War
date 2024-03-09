@@ -49,3 +49,9 @@ func unit_clicked(unit: ClickableUnit) -> void:
 			toggle_unit_tilt(unit)
 			if StateManager.current_state == StateManager.EState.INIT_RESERVE:
 				ActionsManager.run.rpc_id(1, Action.Code.INIT_RESERVE, { "unit_type": unit.unit.type })
+		
+		StateManager.EState.RECRUIT:
+			# Recruitment must be made from the reserve if it's not empty
+			if not GameManager.reserve.is_empty():
+				pass
+			toggle_unit_tilt(unit)

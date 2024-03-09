@@ -11,6 +11,7 @@ func _init(p: Party) -> void:
 		p.second_player.id: PlayerTiles.new()
 	}
 
+
 func can_set_unit(player_id: int, data: Dictionary) -> bool:
 	var tile_id: int = data["tile_id"]
 	return player_tiles[player_id].can_set_unit(tile_id)
@@ -18,6 +19,11 @@ func can_set_unit(player_id: int, data: Dictionary) -> bool:
 
 func set_unit(player_id: int, tile_id: int, unit: Unit) -> void:
 	player_tiles[player_id].set_unit(tile_id, unit)
+
+
+func reset_units(player_id: int) -> void:
+	for tile in player_tiles[player_id].tiles.values() as Array[UnitTile]:
+		tile.reset_hp()
 
 
 class UnitTile:
@@ -29,6 +35,11 @@ class UnitTile:
 			unit = u
 			if u != null:
 				hp = u.defense
+	var engaged: bool = false :
+		set(e):
+			engaged = e
+			if e:
+				hp = unit.defense_engaged
 
 	func _init(tile_id: int, tile_position: Vector2) -> void:
 		id = tile_id

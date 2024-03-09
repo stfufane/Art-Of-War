@@ -89,6 +89,45 @@ func init_kingdom() -> void:
 
 func start_turn() -> void:
 	party.current_player = id
+	party.battlefield.reset_units(id)
 	hand.append(deck.pop_back())
 	GameManager.update_hand.rpc_id(id, hand)
 	state.new_turn()
+
+
+func start_recruit() -> void:
+	state.current = StateManager.EState.RECRUIT
+
+
+func start_attack() -> void:
+	state.current = StateManager.EState.ATTACK
+
+
+func start_support() -> void:
+	state.current = StateManager.EState.SUPPORT
+
+
+func recruit(data: Dictionary) -> void:
+	var tile_id: int = data["tile_id"]
+	var unit_type: Unit.EUnitType = data["unit_type"]
+	party.battlefield.set_unit(id, tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
+
+
+#region Check actions called from [PlayerActions]
+
+func can_start_recruit(_data: Variant) -> bool:
+	return true
+
+
+func can_start_attack(_data: Variant) -> bool:
+	return true
+
+
+func can_start_support(_data: Variant) -> bool:
+	return true
+
+
+func can_recruit(_data: Variant) -> bool:
+	return true
+
+#endregion
