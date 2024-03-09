@@ -13,10 +13,13 @@ enum ESide { PLAYER, ENEMY }
 @onready var turn_menu := $CanvasLayer/TurnMenu as TurnMenu
 @onready var instructions := $CanvasLayer/Instruction as Instruction
 
+# All the baclground elements
+@onready var background_elements := $Background/BackgroundElements as Node2D
+
 # Sprites over the units that represent each zone.
-@onready var banner := $Background/Banner as Sprite2D
-@onready var castle := $Background/Castle as Sprite2D
-@onready var tent := $Background/Tent as Sprite2D
+@onready var banner := $Background/BackgroundElements/Banner as Sprite2D
+@onready var castle := $Background/BackgroundElements/Castle as Sprite2D
+@onready var tent := $Background/BackgroundElements/Tent as Sprite2D
 
 
 func _ready() -> void:
@@ -25,6 +28,7 @@ func _ready() -> void:
 	Events.toggle_battlefield_flash.connect(_toggle_flash_battlefield)
 	Events.reserve_updated.connect(_on_reserve_updated)
 
+	background_elements.hide()
 	kingdom.hide()
 	battlefield.hide()
 	hand.hide()
@@ -37,6 +41,7 @@ func _ready() -> void:
 
 func display_elements() -> void:
 	shuffle_hand.hide()
+	background_elements.show()
 	kingdom.show()
 	battlefield.show()
 	hand.show()

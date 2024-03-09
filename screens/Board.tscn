@@ -31,88 +31,90 @@ position = Vector2(589, 355)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("2_tj5ik")
 
-[node name="TreePines" type="Sprite2D" parent="Background"]
+[node name="BackgroundElements" type="Node2D" parent="Background"]
+
+[node name="TreePines" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(199.333, -198.667)
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("3_01pxd")
 
-[node name="Vulcano" type="Sprite2D" parent="Background"]
+[node name="Vulcano" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(98.6667, -194)
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("4_skmt6")
 
-[node name="RocksMountain" type="Sprite2D" parent="Background"]
+[node name="RocksMountain" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(332.667, -177.333)
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("5_y5oof")
 
-[node name="RocksMountain2" type="Sprite2D" parent="Background"]
+[node name="RocksMountain2" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(284.667, -132)
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("5_y5oof")
 
-[node name="RocksMountain3" type="Sprite2D" parent="Background"]
+[node name="RocksMountain3" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(258.667, -198.667)
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("5_y5oof")
 
-[node name="TreePines2" type="Sprite2D" parent="Background"]
+[node name="TreePines2" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(332.667, -66)
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("3_01pxd")
 
-[node name="Castle" type="Sprite2D" parent="Background"]
+[node name="Castle" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(-297.333, -178)
 texture = ExtResource("3_7evkv")
 
-[node name="Graveyard" type="Sprite2D" parent="Background"]
+[node name="Graveyard" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(-360.667, -172.667)
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("4_30kf3")
 
-[node name="TowerWatch" type="Sprite2D" parent="Background"]
+[node name="TowerWatch" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(-222, -178)
 texture = ExtResource("5_jmmp5")
 
-[node name="ArrowSmall" type="Sprite2D" parent="Background"]
+[node name="ArrowSmall" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(-110, -108.667)
 rotation = 1.5708
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("9_bd31o")
 
-[node name="Tent" type="Sprite2D" parent="Background"]
+[node name="Tent" type="Sprite2D" parent="Background/BackgroundElements"]
 position = Vector2(-147.333, -171.333)
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("10_r68um")
 
-[node name="Tent2" type="Sprite2D" parent="Background"]
+[node name="Tent2" type="Sprite2D" parent="Background/BackgroundElements"]
 position = Vector2(151.333, -172.667)
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("10_r68um")
 
-[node name="Banner" type="Sprite2D" parent="Background"]
+[node name="Banner" type="Sprite2D" parent="Background/BackgroundElements"]
 self_modulate = Color(2, 3, 20, 1)
 position = Vector2(-50.6667, -156.667)
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("11_lcuf5")
 
-[node name="Banner2" type="Sprite2D" parent="Background"]
+[node name="Banner2" type="Sprite2D" parent="Background/BackgroundElements"]
 self_modulate = Color(12, 2, 1, 1)
 position = Vector2(56, -156)
 scale = Vector2(0.666667, 0.666667)
 texture = ExtResource("11_lcuf5")
 
-[node name="ArrowSmall2" type="Sprite2D" parent="Background"]
+[node name="ArrowSmall2" type="Sprite2D" parent="Background/BackgroundElements"]
 texture_filter = 2
 position = Vector2(115.333, -108.667)
 rotation = -1.5708
