@@ -35,6 +35,10 @@ gdscript/warnings/unsafe_cast=1
 
 window/stretch/mode="canvas_items"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/Asset_Drawer/plugin.cfg")
+
 [input]
 
 left_click={

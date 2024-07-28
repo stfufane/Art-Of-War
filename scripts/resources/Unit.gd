@@ -12,7 +12,7 @@ enum EUnitType {
 }
 
 @export var type: EUnitType
-@export var name: String
+@export var name: StringName
 @export var attack: int
 @export var defense: int
 @export var defense_engaged: int

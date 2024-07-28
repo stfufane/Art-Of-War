@@ -3,28 +3,28 @@ class_name PlayerState extends RefCounted
 var player: Player = null ## Reference to the player holding the state
 
 ## Every time the state is updated by the server, the client is notified via an RPC call
-var current: StateManager.EState = StateManager.EState.WAITING_FOR_PLAYER :
+var current: StateManager.EState = StateManager.EState.WAITING_FOR_PLAYER:
 	set(state):
 		current = state
 		print("%s (%d) state is now %s" % [player.label, player.id, StateManager.EState.keys()[current]])
 		StateManager.set_state.rpc_id(player.id, state)
 
 
-var hand_ready: bool = false :
+var hand_ready: bool = false:
 	set(ready):
 		hand_ready = ready
 		if ready:
 			current = StateManager.EState.INIT_BATTLEFIELD
 
 
-var battlefield_ready: bool = false :
+var battlefield_ready: bool = false:
 	set(ready):
 		battlefield_ready = ready
 		if ready:
 			current = StateManager.EState.INIT_RESERVE
 
 
-var reserve_ready: bool = false :
+var reserve_ready: bool = false:
 	set(ready):
 		reserve_ready = ready
 		if ready:
@@ -58,4 +58,10 @@ func new_turn() -> void:
 	has_attacked = false
 	has_recruited = false
 	attack_bonus = 0
+	current = StateManager.EState.ACTION_CHOICE
+
+
+## After recruiting, we come back to action choice
+func recruit_done() -> void:
+	has_recruited = true
 	current = StateManager.EState.ACTION_CHOICE

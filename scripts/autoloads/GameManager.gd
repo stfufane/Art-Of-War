@@ -12,7 +12,8 @@ signal party_cancelled
 
 const BOARD_SCREEN: PackedScene = preload("res://screens/Board.tscn")
 const LOBBY_SCREEN: PackedScene = preload("res://screens/Lobby.tscn")
-const LEFT_CLICK: String = "left_click" ## Input map constant
+## Input map constant
+const LEFT_CLICK: StringName = &"left_click"
  
 const FLASH_SHADER: Shader = preload("res://resources/shaders/flash.gdshader")
 
@@ -103,6 +104,7 @@ func update_reserve(side: Board.ESide, new_units: Array) -> void:
 	var reserve_to_update: Array[Unit.EUnitType] = reserve if side == Board.ESide.PLAYER else enemy_reserve
 	reserve_to_update.assign(new_units)
 	Events.reserve_updated.emit(side)
+
 
 @rpc
 func start_turn() -> void:

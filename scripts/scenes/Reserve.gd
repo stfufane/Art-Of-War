@@ -17,6 +17,8 @@ func update() -> void:
 	var units: Array[Unit.EUnitType] = GameManager.reserve if side == Board.ESide.PLAYER else GameManager.enemy_reserve
 	for new_unit: Unit.EUnitType in units:
 		add_unit(new_unit, side)
+	
+	set_selected_unit(null)
 
 
 func set_selected_unit(unit: Control) -> void:

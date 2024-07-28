@@ -37,7 +37,9 @@ static func check_start_support(player: Player, data: Variant) -> bool:
 
 
 static func check_recruit(player: Player, data: Variant) -> bool:
-	return player.party.current_player == player.id and player.can_recruit(data)
+	return player.party.current_player == player.id \
+		and player.can_recruit(data) \
+		and player.party.battlefield.can_set_unit(player.id, data)
 
 #endregion
 

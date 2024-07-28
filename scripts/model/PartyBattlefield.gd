@@ -17,8 +17,9 @@ func can_set_unit(player_id: int, data: Dictionary) -> bool:
 	return player_tiles[player_id].can_set_unit(tile_id)
 
 
-func set_unit(player_id: int, tile_id: int, unit: Unit) -> void:
-	player_tiles[player_id].set_unit(tile_id, unit)
+func set_unit(player: Player, tile_id: int, unit: Unit) -> void:
+	player_tiles[player.id].set_unit(tile_id, unit)
+	update_battlefield_ui(player, tile_id, unit.type)
 
 
 func reset_units(player_id: int) -> void:
@@ -26,16 +27,21 @@ func reset_units(player_id: int) -> void:
 		tile.reset_hp()
 
 
+func update_battlefield_ui(player: Player, tile_id: int, unit_type: Unit.EUnitType) -> void:
+	GameManager.update_battlefield.rpc_id(player.id, Board.ESide.PLAYER, tile_id, unit_type)
+	GameManager.update_battlefield.rpc_id(player.opponent.id, Board.ESide.ENEMY, tile_id, unit_type)
+
+
 class UnitTile:
 	var id: int
 	var position: Vector2
 	var hp: int = 0
-	var unit: Unit = null :
+	var unit: Unit = null:
 		set(u):
 			unit = u
 			if u != null:
 				hp = u.defense
-	var engaged: bool = false :
+	var engaged: bool = false:
 		set(e):
 			engaged = e
 			if e:

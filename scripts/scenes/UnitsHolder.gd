@@ -22,7 +22,7 @@ func test() -> void:
 
 ## Instantiate a unit in the container
 func add_unit(type: Unit.EUnitType, side: Board.ESide = Board.ESide.PLAYER) -> void:
-	var new_unit = default_unit.instantiate()
+	var new_unit: ClickableUnit = default_unit.instantiate()
 	new_unit.unit = GameManager.UNIT_RESOURCES[type]
 	new_unit.side = side
 	units_container.add_child(new_unit)

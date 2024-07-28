@@ -12,16 +12,20 @@ enum EStatus {
 	OVER
 }
 
-var id: String = Party.generate_id() ## A random 6 characters id to join a party
-var status: EStatus = EStatus.CREATED ## The current status of the party
+## A random 6 characters id to join a party
+var id: String = Party.generate_id()
+## The current status of the party
+var status: EStatus = EStatus.CREATED
 
-var players: Dictionary = {} ## The 2 players : id -> [Player]
+## The 2 players : id -> [Player]
+var players: Dictionary = {}
 var first_player: Player = null
 var second_player: Player = null
-var current_player: int = 0 ## Whose turn is it
+## Whose turn is it
+var current_player: int = 0
 
-var battlefield : PartyBattlefield = null ## The battlefield where the game takes place
-
+## The battlefield where the game takes place
+var battlefield: PartyBattlefield = null
 
 func _init(player: Player) -> void:
 	player.first = true

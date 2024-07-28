@@ -20,20 +20,20 @@ func run(code: Action.Code, data: Variant = null) -> void:
 
 
 func register_actions() -> void:
-	register_action(Action.Code.RESHUFFLE_HAND, Action.new()\
-		.with_check(PlayerActions.check_reshuffle)\
+	register_action(Action.Code.RESHUFFLE_HAND, Action.new() \
+		.with_check(PlayerActions.check_reshuffle) \
 		.with_action(PlayerActions.do_reshuffle))
 
-	register_action(Action.Code.VALIDATE_HAND, Action.new()\
-		.with_check(PlayerActions.check_validate_hand)\
+	register_action(Action.Code.VALIDATE_HAND, Action.new() \
+		.with_check(PlayerActions.check_validate_hand) \
 		.with_action(PlayerActions.do_validate_hand))
 
-	register_action(Action.Code.INIT_BATTLEFIELD, Action.new()\
-		.with_check(PlayerActions.check_init_battlefield)\
+	register_action(Action.Code.INIT_BATTLEFIELD, Action.new() \
+		.with_check(PlayerActions.check_init_battlefield) \
 		.with_action(PlayerActions.do_init_battlefield))
 
-	register_action(Action.Code.INIT_RESERVE, Action.new()\
-		.with_check(PlayerActions.check_init_reserve)\
+	register_action(Action.Code.INIT_RESERVE, Action.new() \
+		.with_check(PlayerActions.check_init_reserve) \
 		.with_action(PlayerActions.do_init_reserve))
 	
 	register_action(Action.Code.START_RECRUIT, Action.new() \

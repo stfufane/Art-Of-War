@@ -14,7 +14,7 @@ func start_party(party_id: String) -> void:
 		return
 
 	for player: Player in party.players.values():
-		GameManager.start_game.rpc_id(player.id, player.hand)
+		GameManager.start_game.rpc_id(player.id, player.hand.units)
 		player.state.current = StateManager.EState.RESHUFFLE
 
 
@@ -40,8 +40,7 @@ func get_current_player() -> Player:
 		return null
 	
 	var player_id := multiplayer.get_remote_sender_id()
-	return players[player_id] as Player # Can return null as well
-
+	return get_player(player_id)
 
 func get_player(player_id: int) -> Player:
 	return players.get(player_id) as Player
