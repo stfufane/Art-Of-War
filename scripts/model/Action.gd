@@ -22,32 +22,33 @@ enum Code {
 
 
 var code: Code
-var check: Callable = func(_player: Player, _data: Variant) -> bool: return true
-var action: Callable = func(_player: Player, _data: Variant) -> void: pass
+var check: StringName
+var action: StringName
+
 
 func with_code(in_code: Code) -> Action:
 	self.code = in_code
 	return self
 
 
-func with_check(in_check: Callable) -> Action:
+func with_check(in_check: StringName) -> Action:
 	self.check = in_check
 	return self
 
 
-func with_action(in_action: Callable) -> Action:
+func with_action(in_action: StringName) -> Action:
 	self.action = in_action
 	return self
 
 
-func run(data: Variant) -> void:
+func run(args: Array = []) -> void:
 	var player: Player = GameServer.get_current_player()
 	if player == null or player.party == null:
 		push_error("No player or party found to run action %s" % Code.keys()[code])
 		return
 
-	if check.call(player, data):
+	if check.is_empty() or Callable(player, check).callv(args):
 		print("%s (%d) running action %s" % [player.label, player.id, Code.keys()[code]])
-		action.call(player, data)
+		Callable(player, action).callv(args)
 	else:
 		push_warning("%s (%d) could not run action %s" % [player.label, player.id, Code.keys()[code]])

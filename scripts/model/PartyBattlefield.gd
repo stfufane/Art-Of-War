@@ -12,8 +12,7 @@ func _init(p: Party) -> void:
 	}
 
 
-func can_set_unit(player_id: int, data: Dictionary) -> bool:
-	var tile_id: int = data["tile_id"]
+func can_set_unit(player_id: int, tile_id: int) -> bool:
 	return player_tiles[player_id].can_set_unit(tile_id)
 
 

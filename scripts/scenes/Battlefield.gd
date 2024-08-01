@@ -47,7 +47,7 @@ func _on_tile_clicked(tile: BattleTile) -> void:
 				ActionsManager.run.rpc_id(
 					1,
 					Action.Code.INIT_BATTLEFIELD,
-					{"tile_id": tile.id, "unit_type": GameManager.selected_hand_unit.unit.type}
+					[tile.id, GameManager.selected_hand_unit.unit.type]
 				)
 
 		StateManager.EState.RECRUIT:
@@ -70,5 +70,5 @@ func _on_tile_clicked(tile: BattleTile) -> void:
 				ActionsManager.run.rpc_id(
 					1,
 					Action.Code.RECRUIT,
-					{"tile_id": tile.id, "unit_type": unit_type, "source": source}
+					[tile.id, unit_type, source]
 				)
