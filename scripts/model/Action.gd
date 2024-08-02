@@ -25,20 +25,10 @@ var code: Code
 var check: StringName
 var action: StringName
 
-
-func with_code(in_code: Code) -> Action:
-	self.code = in_code
-	return self
-
-
-func with_check(in_check: StringName) -> Action:
-	self.check = in_check
-	return self
-
-
-func with_action(in_action: StringName) -> Action:
-	self.action = in_action
-	return self
+func _init(in_code: Code, in_check: StringName, in_action: StringName) -> void:
+	code = in_code
+	check = in_check
+	action = in_action
 
 
 func run(args: Array = []) -> void:
@@ -47,8 +37,14 @@ func run(args: Array = []) -> void:
 		push_error("No player or party found to run action %s" % Code.keys()[code])
 		return
 
-	if check.is_empty() or Callable(player, check).callv(args):
-		print("%s (%d) running action %s" % [player.label, player.id, Code.keys()[code]])
-		Callable(player, action).callv(args)
-	else:
-		push_warning("%s (%d) could not run action %s" % [player.label, player.id, Code.keys()[code]])
+	if not check.is_empty():
+		var check_callable := Callable(player, check)
+		assert(check_callable.is_valid(), "Could not find the check function %s" % check)
+		if not check_callable.callv(args):
+			push_warning("%s (%d) could not run action %s" % [player.label, player.id, Code.keys()[code]])
+			return
+
+	var action_callable := Callable(player, action)
+	assert(action_callable.is_valid(), "Could not find the action function %s" % action)
+	print("%s (%d) running action %s" % [player.label, player.id, Code.keys()[code]])
+	action_callable.callv(args)
