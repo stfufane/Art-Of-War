@@ -33,6 +33,8 @@ gdscript/warnings/unsafe_cast=1
 
 [display]
 
+window/size/window_width_override=864
+window/size/window_height_override=486
 window/stretch/mode="canvas_items"
 
 [editor_plugins]

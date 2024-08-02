@@ -14,6 +14,9 @@ func remove_unit(type: Unit.EUnitType) -> void:
 	units.erase(type)
 	update_reserve_ui()
 
+func has(unit_type: Unit.EUnitType) -> bool:
+	return units.has(unit_type)
+
 func is_empty() -> bool:
 	return units.is_empty()
 

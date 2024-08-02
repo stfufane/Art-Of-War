@@ -16,6 +16,8 @@ func remove_unit(unit: Unit.EUnitType) -> void:
     units.erase(unit)
     update_hand_ui()
 
+func has(unit_type: Unit.EUnitType) -> bool:
+    return units.has(unit_type)
 
 func clear() -> void:
     units.clear()

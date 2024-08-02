@@ -13,6 +13,7 @@ var reshuffle_attempts: int = 3
 var reserve := PlayerReserve.new(self)
 var hand := PlayerHand.new(self)
 var kingdom := PlayerKingdom.new(self)
+var tiles := PlayerTiles.new(self)
 
 var dead_units: int = 0
 var party: Party = null
@@ -63,11 +64,11 @@ func validate_hand() -> void:
 func check_init_battlefield(tile_id: int, _unit_type: Unit.EUnitType) -> bool:
 	return state.current == StateManager.EState.INIT_BATTLEFIELD \
 		and not state.battlefield_ready \
-		and party.battlefield.can_set_unit(id, tile_id)
+		and tiles.can_set_unit(tile_id)
 
 
 func init_battlefield(tile_id: int, unit_type: Unit.EUnitType) -> void:
-	party.battlefield.set_unit(self, tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
+	tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
 
 	# Remove the selected unit from the hand
 	hand.remove_unit(unit_type)
@@ -97,7 +98,7 @@ func init_kingdom() -> void:
 
 func start_turn() -> void:
 	party.current_player = id
-	party.battlefield.reset_units(id)
+	tiles.reset_units()
 	hand.add_unit(deck.pop_back())
 	state.new_turn()
 
@@ -133,16 +134,18 @@ func start_support() -> void:
 	state.current = StateManager.EState.SUPPORT
 
 
-func check_recruit(tile_id: int, _unit_type: Unit.EUnitType, source: Board.EUnitSource) -> bool:
+func check_recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource) -> bool:
 	return party.current_player == id and \
 		state.current == StateManager.EState.RECRUIT and \
-		party.battlefield.can_set_unit(id, tile_id) and \
+		((source == Board.EUnitSource.RESERVE and reserve.has(unit_type)) \
+		or (source == Board.EUnitSource.HAND and hand.has(unit_type))) and \
+		tiles.can_set_unit(tile_id) and \
 	 	(source == Board.EUnitSource.RESERVE or \
 		(source == Board.EUnitSource.HAND and reserve.is_empty()))
 
 
 func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource) -> void:
-	party.battlefield.set_unit(self, tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
+	tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
 	if source == Board.EUnitSource.RESERVE:
 		reserve.remove_unit(unit_type)
 	elif source == Board.EUnitSource.HAND:
