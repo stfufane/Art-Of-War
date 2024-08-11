@@ -10,4 +10,4 @@ name = "Guard"
 attack = 1
 defense = 3
 defense_engaged = 2
-attack_range = PackedVector2Array()
+attack_range = PackedVector2Array(1, 0)

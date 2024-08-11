@@ -1,6 +1,5 @@
 ## The two sides of the battlefield are mirrored horizontally so they can be represented by the same class
-## The x origin is the center of the battlefield
-##  --- --- | --- --- 
+##  --- --- | --- ---
 ## | 3 | 0 ||| 0 | 3 |
 ##  --- --- | --- --- 
 ## | 4 | 1 ||| 1 | 4 |
@@ -9,17 +8,21 @@
 ##  --- --- | --- --- 
 class_name PlayerTiles extends RefCounted
 
+## Weird but convenient way to make the coordinates map with the tile ids.
+## The (0, 0) tile is at the top left (tile id 3 of first player)
+static var tiles_coords: Dictionary = {
+    true: PackedVector2Array([Vector2(1, 0), Vector2(1, 1), Vector2(1, 2), Vector2(0, 0), Vector2(0, 1), Vector2(0, 2)]),
+    false: PackedVector2Array([Vector2(2, 0), Vector2(2, 1), Vector2(2, 2), Vector2(3, 0), Vector2(3, 1), Vector2(3, 2)])
+}
+
 var player: Player = null
 var tiles: Dictionary = {}
 
+
 func _init(p: Player) -> void:
     player = p
-    tiles[0] = UnitTile.new(0, Vector2(1, 0))
-    tiles[1] = UnitTile.new(1, Vector2(1, 1))
-    tiles[2] = UnitTile.new(2, Vector2(1, 2))
-    tiles[3] = UnitTile.new(3, Vector2(2, 0))
-    tiles[4] = UnitTile.new(4, Vector2(2, 1))
-    tiles[5] = UnitTile.new(5, Vector2(2, 2))
+    for id in range(6):
+        tiles[id] = UnitTile.new(id, player.first)
 
 
 func reset_units() -> void:
@@ -63,9 +66,9 @@ class UnitTile:
             if e:
                 hp = unit.defense_engaged
 
-    func _init(tile_id: int, tile_position: Vector2) -> void:
+    func _init(tile_id: int, first: bool) -> void:
         id = tile_id
-        position = tile_position
+        position = PlayerTiles.tiles_coords[first][id]
 
     func reset_hp() -> void:
         if unit != null:
