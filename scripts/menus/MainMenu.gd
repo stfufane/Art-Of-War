@@ -34,9 +34,9 @@ func _ready() -> void:
 		join_button.disabled = false
 
 	# An error has been set on the network before going back to the lobby.
-	if not GameManager.error_message.is_empty():
-		show_status(GameManager.error_message)
-		GameManager.error_message = ""
+	if not GameManager.lobby_error.is_empty():
+		show_status(GameManager.lobby_error)
+		GameManager.lobby_error = ""
 
 	# When using the remote server, hide the server buttons.
 	if Network.server != "localhost":

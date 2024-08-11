@@ -14,20 +14,20 @@ const BOARD_SCREEN: PackedScene = preload("res://screens/Board.tscn")
 const LOBBY_SCREEN: PackedScene = preload("res://screens/Lobby.tscn")
 ## Input map constant
 const LEFT_CLICK: StringName = &"left_click"
- 
+
 const FLASH_SHADER: Shader = preload("res://resources/shaders/flash.gdshader")
 
 const UNIT_RESOURCES: Dictionary = {
-	Unit.EUnitType.King: preload("res://resources/units/king.tres") as Unit,
-	Unit.EUnitType.Soldier: preload("res://resources/units/soldier.tres") as Unit,
-	Unit.EUnitType.Guard: preload("res://resources/units/guard.tres") as Unit,
-	Unit.EUnitType.Wizard: preload("res://resources/units/wizard.tres") as Unit,
-	Unit.EUnitType.Monk: preload("res://resources/units/monk.tres") as Unit,
-	Unit.EUnitType.Archer: preload("res://resources/units/archer.tres") as Unit
+    Unit.EUnitType.King: preload("res://resources/units/king.tres") as Unit,
+    Unit.EUnitType.Soldier: preload("res://resources/units/soldier.tres") as Unit,
+    Unit.EUnitType.Guard: preload("res://resources/units/guard.tres") as Unit,
+    Unit.EUnitType.Wizard: preload("res://resources/units/wizard.tres") as Unit,
+    Unit.EUnitType.Monk: preload("res://resources/units/monk.tres") as Unit,
+    Unit.EUnitType.Archer: preload("res://resources/units/archer.tres") as Unit
 }
 
 ## Used to display a message in the lobby
-var error_message: String = ""
+var lobby_error: String = ""
 
 ## Keep track of the current hand unit that is selected
 var selected_hand_unit: HandUnit = null
@@ -46,25 +46,31 @@ var enemy_reserve: Array[Unit.EUnitType] = []
 
 @rpc
 func notify_party_cancelled() -> void:
-	print("Party cancelled")
-	party_cancelled.emit()
+    print("Party cancelled")
+    party_cancelled.emit()
 
 
 @rpc
 func notify_party_created(id: String) -> void:
-	prints("Party created", id)
-	party_created.emit(id)
+    prints("Party created", id)
+    party_created.emit(id)
 
 
 @rpc
 func party_not_found() -> void:
-	no_party_found.emit()
+    no_party_found.emit()
 
 
 @rpc
 func notify_party_stopped() -> void:
-	error_message = "The other player left the game."
-	get_tree().change_scene_to_packed(LOBBY_SCREEN)
+    lobby_error = "The other player left the game."
+    get_tree().change_scene_to_packed(LOBBY_SCREEN)
+
+
+@rpc
+func set_action_error(error: String) -> void:
+    Events.display_action_error.emit(error)
+
 
 #endregion
 
@@ -72,42 +78,42 @@ func notify_party_stopped() -> void:
 
 @rpc
 func start_game(initial_units: Array) -> void:
-	units.assign(initial_units)
-	# The scene ready method of the board will trigger game setup
-	get_tree().change_scene_to_packed(BOARD_SCREEN)
+    units.assign(initial_units)
+    # The scene ready method of the board will trigger game setup
+    get_tree().change_scene_to_packed(BOARD_SCREEN)
 
 
 @rpc
 func update_hand_shuffle(new_units: Array, reshuffle_attempts: int) -> void:
-	units.assign(new_units)
-	Events.hand_reshuffled.emit(reshuffle_attempts)
+    units.assign(new_units)
+    Events.hand_reshuffled.emit(reshuffle_attempts)
 
 
 @rpc
 func update_hand(new_units: Array) -> void:
-	units.assign(new_units)
-	Events.hand_updated.emit()
+    units.assign(new_units)
+    Events.hand_updated.emit()
 
 
 @rpc
 func update_kingdom(units_status: Dictionary) -> void:
-	Events.update_kingdom.emit(units_status)
+    Events.update_kingdom.emit(units_status)
 
 
 @rpc
 func update_battlefield(side: Board.ESide, id: int, unit: Unit.EUnitType) -> void:
-	Events.update_battlefield.emit(side, id, unit)
+    Events.update_battlefield.emit(side, id, unit)
 
 
 @rpc
 func update_reserve(side: Board.ESide, new_units: Array) -> void:
-	var reserve_to_update: Array[Unit.EUnitType] = reserve if side == Board.ESide.PLAYER else enemy_reserve
-	reserve_to_update.assign(new_units)
-	Events.reserve_updated.emit(side)
+    var reserve_to_update: Array[Unit.EUnitType] = reserve if side == Board.ESide.PLAYER else enemy_reserve
+    reserve_to_update.assign(new_units)
+    Events.reserve_updated.emit(side)
 
 
 @rpc
 func start_turn() -> void:
-	Events.start_turn.emit()
+    Events.start_turn.emit()
 
-#endregion
+    #endregion

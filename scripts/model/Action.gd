@@ -42,6 +42,7 @@ func run(args: Array = []) -> void:
 		assert(check_callable.is_valid(), "Could not find the check function %s" % check)
 		if not check_callable.callv(args):
 			push_warning("%s (%d) could not run action %s" % [player.label, player.id, Code.keys()[code]])
+			GameManager.set_action_error.rpc_id(player.id, "You cannot perform this action")
 			return
 
 	var action_callable := Callable(player, action)

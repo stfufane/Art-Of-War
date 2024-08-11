@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://blsf8m0qs5jm4"]
+[gd_scene load_steps=20 format=3 uid="uid://blsf8m0qs5jm4"]
 
 [ext_resource type="Script" path="res://scripts/screens/Board.gd" id="1_ep6k2"]
 [ext_resource type="PackedScene" uid="uid://dg60fmrkhhol8" path="res://scenes/ShuffleHand.tscn" id="2_nmow6"]
@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://c65kfclvveb3r" path="res://scenes/Reserve.tscn" id="11_x1o1o"]
 [ext_resource type="PackedScene" uid="uid://ddrf8nigaffcl" path="res://scenes/menus/TurnMenu.tscn" id="17_gchri"]
 [ext_resource type="PackedScene" uid="uid://chqg8i8ruxuo2" path="res://scenes/Instruction.tscn" id="18_3bhdf"]
+[ext_resource type="Script" path="res://scripts/scenes/GameError.gd" id="19_mgppa"]
 
 [node name="Board" type="Node2D"]
 script = ExtResource("1_ep6k2")
@@ -165,3 +166,18 @@ offset_bottom = -22.0
 grow_horizontal = 2
 grow_vertical = 0
 text = ""
+
+[node name="Error" parent="CanvasLayer" instance=ExtResource("18_3bhdf")]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -98.0
+offset_right = 320.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 0
+text = ""
+script = ExtResource("19_mgppa")

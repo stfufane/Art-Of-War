@@ -13,10 +13,12 @@ signal reserve_unit_clicked(reserve_unit: ReserveUnit)
 signal reserve_updated(side: Board.ESide)
 
 signal battle_tile_clicked(tile: BattleTile)
+signal battle_tile_hovered(tile: BattleTile, state: bool)
 signal update_kingdom(status: Dictionary)
 signal update_battlefield(side: Board.ESide, tile_id: int, unit: Unit.EUnitType)
 
 signal start_turn
 
 signal update_instructions(instructions: String)
+signal display_action_error(error: String)
 signal update_turn_menu # A condition has changed and may have enabled/disabled an action from the menu
