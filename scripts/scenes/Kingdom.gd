@@ -36,7 +36,7 @@ func _test() -> void:
 	new_texture.position = test_button.position
 	new_texture.texture = ONE
 	add_child(new_texture)
-	var target_unit = units.keys().pick_random()
+	var target_unit: Unit.EUnitType = units.keys().pick_random() as Unit.EUnitType
 	var tween := create_tween()
 	tween.tween_property(new_texture, "position", units[target_unit].position, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_callback(func() -> void:

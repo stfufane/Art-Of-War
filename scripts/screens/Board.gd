@@ -1,4 +1,5 @@
-class_name Board extends Node2D
+class_name Board
+extends Node2D
 
 enum ESide { PLAYER, ENEMY }
 enum EUnitSource { HAND, RESERVE }
@@ -24,59 +25,61 @@ enum EUnitSource { HAND, RESERVE }
 
 
 func _ready() -> void:
-	print("Loaded the board, ready to play")
-	StateManager.get_state(StateManager.EState.RESHUFFLE).ended.connect(_on_reshuffle_ended)
-	Events.toggle_battlefield_flash.connect(_toggle_flash_battlefield)
-	Events.reserve_updated.connect(_on_reserve_updated)
+    print("Loaded the board, ready to play")
+    StateManager.get_state(StateManager.EState.RESHUFFLE).ended.connect(_on_reshuffle_ended)
+    StateManager.get_state(StateManager.EState.RECRUIT).started.connect(_on_recruit_started)
+    Events.toggle_battlefield_flash.connect(_toggle_flash_battlefield)
+    Events.reserve_updated.connect(_on_reserve_updated)
 
-	background_elements.hide()
-	kingdom.hide()
-	battlefield.hide()
-	hand.hide()
-	reserve.hide()
-	enemy_reserve.hide()
-	turn_menu.hide()
-	shuffle_hand.show()
-	shuffle_hand.update_hand(3)
+    background_elements.hide()
+    kingdom.hide()
+    battlefield.hide()
+    hand.hide()
+    reserve.hide()
+    enemy_reserve.hide()
+    turn_menu.hide()
+    shuffle_hand.show()
+    shuffle_hand.update_hand(3)
 
 
 func display_elements() -> void:
-	shuffle_hand.hide()
-	background_elements.show()
-	kingdom.show()
-	battlefield.show()
-	hand.show()
-	reserve.show()
-	enemy_reserve.show()
+    shuffle_hand.hide()
+    background_elements.show()
+    kingdom.show()
+    battlefield.show()
+    hand.show()
+    reserve.show()
+    enemy_reserve.show()
 
 
 func _on_reshuffle_ended() -> void:
-	var tween := create_tween()
-	tween.tween_property(shuffle_hand, "position", Vector2(shuffle_hand.position.x, 800), 0.6).set_trans(Tween.TRANS_QUAD)
-	tween.tween_callback(display_elements)
-	_toggle_flash_battlefield(true)
+    var tween := create_tween()
+    tween.tween_property(shuffle_hand, "position", Vector2(shuffle_hand.position.x, 800), 0.6).set_trans(Tween.TRANS_QUAD)
+    tween.tween_callback(display_elements)
+    _toggle_flash_battlefield(true)
 
 
 func _on_reserve_updated(side: ESide) -> void:
-	if side == ESide.PLAYER:
-		reserve.update()
-	else:
-		enemy_reserve.update()
+    if side == ESide.PLAYER:
+        reserve.update()
+    else:
+        enemy_reserve.update()
 
 
 func _on_recruit_started() -> void:
-	if reserve.is_empty():
-		instructions.text = "Choose a unit from your hand to recruit"
-	else:
-		instructions.text = "Choose a unit from your reserve to recruit"
+    if reserve.is_empty():
+        instructions.text = "Choose a unit from your hand to recruit"
+    else:
+        instructions.text = "Choose a unit from your reserve to recruit"
 
 
 # TODO: Generic method to flash any sprite
 func _toggle_flash_battlefield(state: bool) -> void:
-	if state:
-		if banner.material != null:
-			return
-		banner.material = ShaderMaterial.new()
-		banner.material.shader = GameManager.FLASH_SHADER
-	else:
-		banner.material = null
+    if state:
+        if banner.material != null:
+            return
+        var material := ShaderMaterial.new()
+        material.set_shader(GameManager.FLASH_SHADER)
+        banner.material = material
+    else:
+        banner.material = null

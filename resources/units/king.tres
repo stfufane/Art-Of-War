@@ -11,3 +11,5 @@ attack = 1
 defense = 5
 defense_engaged = 4
 attack_range = PackedVector2Array(1, -1, 1, 0, 1, 1)
+support_text = "Use as a wild card"
+long_support_text = "King is used as a wild card. \\nYou choose a logistic support effect from the other units. The king's logistic support must follow the activation timing of the chosen unit."

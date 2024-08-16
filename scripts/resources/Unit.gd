@@ -17,3 +17,5 @@ enum EUnitType {
 @export var defense: int
 @export var defense_engaged: int
 @export var attack_range: PackedVector2Array
+@export var support_text: String
+@export var long_support_text: String

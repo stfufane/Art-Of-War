@@ -14,12 +14,9 @@ grow_vertical = 2
 script = ExtResource("1_72u8o")
 
 [node name="MainMenu" parent="." instance=ExtResource("1_5ketb")]
+custom_minimum_size = Vector2(512, 512)
 layout_mode = 1
 
 [node name="HostMenu" parent="." instance=ExtResource("2_twrai")]
 visible = false
 layout_mode = 1
-offset_left = -192.0
-offset_top = -93.5
-offset_right = 192.0
-offset_bottom = 93.5

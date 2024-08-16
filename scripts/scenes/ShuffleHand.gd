@@ -51,7 +51,7 @@ func update_hand(reshuffle_attempts: int) -> void:
 	for unit in GameManager.units.slice(0, 3) as Array[Unit.EUnitType]: # Exclude the king
 		var unit_resource := GameManager.UNIT_RESOURCES[unit] as Unit
 		assert(unit_resource is Unit, "Did not retrieve a valid unit")
-		var unit_name := unit_resource.name
+		var unit_name := unit_resource.resource_name
 		var image: CompressedTexture2D = load("res://resources/sprites/" + unit_name + ".png")
 		var new_texture := TextureRect.new()
 		new_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH
@@ -79,6 +79,6 @@ func request_reshuffle() -> void:
 
 
 func request_play() -> void:
-	if is_animating:
+	if is_animating or is_running_locally:
 		return
 	ActionsManager.run.rpc_id(1, Action.Code.VALIDATE_HAND)

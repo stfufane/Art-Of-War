@@ -25,7 +25,7 @@ func _init(p: Player) -> void:
         tiles[id] = UnitTile.new(id, player.first)
 
 
-func reset_units() -> void:
+func reset_units_hp() -> void:
     for tile in tiles.values() as Array[UnitTile]:
         tile.reset_hp()
 

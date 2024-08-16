@@ -107,7 +107,7 @@ func init_kingdom() -> void:
 
 func start_turn() -> void:
     party.current_player = id
-    tiles.reset_units()
+    tiles.reset_units_hp()
     hand.add_unit(deck.pop_back())
     state.new_turn()
 

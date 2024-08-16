@@ -6,8 +6,10 @@
 resource_name = "Monk"
 script = ExtResource("1_vwydt")
 type = 5
-name = "Monk"
+name = "Priest"
 attack = 1
 defense = 2
 defense_engaged = 2
 attack_range = PackedVector2Array(1, 1, 1, -1, 2, 2, 2, -2)
+support_text = "Relocate a unit of your battle area"
+long_support_text = "Priest reloacate a unit within your battle area.\\nEither are possible: replacing the positions of 2 units with each other or, relocating in an open area."

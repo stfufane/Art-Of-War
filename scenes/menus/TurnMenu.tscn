@@ -1,16 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://ddrf8nigaffcl"]
+[gd_scene load_steps=4 format=3 uid="uid://ddrf8nigaffcl"]
 
 [ext_resource type="Script" path="res://scripts/menus/TurnMenu.gd" id="1_l62vm"]
+[ext_resource type="Texture2D" uid="uid://cdqilb3nep82m" path="res://resources/graphics/dialog-frame.png" id="1_ubm7u"]
 
-[node name="TurnMenu" type="Control"]
-layout_mode = 3
-anchors_preset = 0
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1fm3j"]
+texture = ExtResource("1_ubm7u")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+modulate_color = Color(1, 1, 1, 0.768627)
+
+[node name="TurnMenu" type="PanelContainer"]
+theme_override_styles/panel = SubResource("StyleBoxTexture_1fm3j")
 script = ExtResource("1_l62vm")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 2
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15

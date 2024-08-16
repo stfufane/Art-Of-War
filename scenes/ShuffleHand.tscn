@@ -4,7 +4,6 @@
 [ext_resource type="Script" path="res://scripts/scenes/ShuffleHand.gd" id="2_bxihg"]
 
 [node name="ShuffleHand" type="Panel"]
-self_modulate = Color(1, 1, 1, 0.784314)
 custom_minimum_size = Vector2(384, 202)
 anchors_preset = 8
 anchor_left = 0.5
@@ -32,14 +31,12 @@ offset_bottom = 226.0
 
 [node name="ReshuffleButton" type="Button" parent="HBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 28
 text = "Reshuffle (3)"
 
 [node name="PlayButton" type="Button" parent="HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 28
 text = "Play"
 
@@ -49,8 +46,7 @@ offset_left = 16.0
 offset_top = 11.0
 offset_right = 370.0
 offset_bottom = 39.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 23
 text = "Validate your units to start the game"
 horizontal_alignment = 1
 

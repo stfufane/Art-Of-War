@@ -6,8 +6,10 @@
 resource_name = "Guard"
 script = ExtResource("1_ljmum")
 type = 2
-name = "Guard"
+name = "Guardian"
 attack = 1
 defense = 3
 defense_engaged = 2
 attack_range = PackedVector2Array(1, 0)
+support_text = "Negate target opponent's attack"
+long_support_text = "Guardian negate the opponent's attack.\\nThis is applied right after that opponent chose a defense unit. The opponent's attack becomes invalid and the attacking unit remains horizontal."

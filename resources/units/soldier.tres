@@ -11,3 +11,5 @@ attack = 0
 defense = 2
 defense_engaged = 1
 attack_range = PackedVector2Array(1, 0)
+support_text = "All your units get 1 attack point until end of turn"
+long_support_text = "Soldier increase your unit's attack point by 1 until the end of this turn.\\nThis effect will not only apply to your battle area but to all areas including the hand."

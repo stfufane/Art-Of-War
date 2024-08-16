@@ -148,10 +148,11 @@ position = Vector2(449, 164)
 visible = false
 
 [node name="TurnMenu" parent="CanvasLayer" instance=ExtResource("17_gchri")]
-offset_left = 436.0
-offset_top = 376.0
-offset_right = 436.0
-offset_bottom = 376.0
+offset_left = 411.0
+offset_top = 379.0
+offset_right = 866.0
+offset_bottom = 480.0
+scale = Vector2(0.8, 0.8)
 
 [node name="Instruction" parent="CanvasLayer" instance=ExtResource("18_3bhdf")]
 anchors_preset = 7

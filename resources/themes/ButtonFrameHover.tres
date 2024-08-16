@@ -1,0 +1,11 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://el0h6s6aufdc"]
+
+[ext_resource type="Texture2D" uid="uid://naymdllqop4p" path="res://resources/graphics/button-frame.png" id="1_i7xom"]
+
+[resource]
+texture = ExtResource("1_i7xom")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+modulate_color = Color(0.50031, 0.691867, 5.77569e-07, 1)

@@ -11,3 +11,5 @@ attack = 1
 defense = 2
 defense_engaged = 1
 attack_range = PackedVector2Array(1, 0, 2, 0, 3, 0)
+support_text = "Negate target opponent's logistic support"
+long_support_text = "Wizard negate the opponent's logistic support.\\nThis is applied right after the logistic support is called when the opponen's card is placed in the standby area. The negated card remains in the standby area."

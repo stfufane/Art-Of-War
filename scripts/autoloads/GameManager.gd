@@ -12,6 +12,7 @@ signal party_cancelled
 
 const BOARD_SCREEN: PackedScene = preload("res://screens/Board.tscn")
 const LOBBY_SCREEN: PackedScene = preload("res://screens/Lobby.tscn")
+
 ## Input map constant
 const LEFT_CLICK: StringName = &"left_click"
 

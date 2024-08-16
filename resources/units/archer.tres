@@ -11,3 +11,5 @@ attack = 1
 defense = 2
 defense_engaged = 1
 attack_range = PackedVector2Array(1, 2, 1, -2, 2, -1, 2, 1)
+support_text = "Inflict 1 damage point to target opponent's unit"
+long_support_text = "Archer inflict 1 damage point to a unit within opponent's battle area.\\nThe unit can not be captured by this damage."
