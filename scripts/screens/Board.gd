@@ -1,8 +1,8 @@
 class_name Board
-extends Node2D
+extends PanelContainer
 
-enum ESide { PLAYER, ENEMY }
-enum EUnitSource { HAND, RESERVE }
+enum ESide {PLAYER, ENEMY}
+enum EUnitSource {HAND, RESERVE}
 
 @onready var camera := $Camera2D as Camera2D
 @onready var shuffle_hand := $CanvasLayer/ShuffleHand as ShuffleHand
@@ -78,8 +78,8 @@ func _toggle_flash_battlefield(state: bool) -> void:
     if state:
         if banner.material != null:
             return
-        var material := ShaderMaterial.new()
-        material.set_shader(GameManager.FLASH_SHADER)
-        banner.material = material
+        var s_material := ShaderMaterial.new()
+        s_material.set_shader(GameManager.FLASH_SHADER)
+        banner.material = s_material
     else:
         banner.material = null

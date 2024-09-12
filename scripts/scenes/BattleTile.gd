@@ -31,7 +31,7 @@ func _ready() -> void:
 func set_unit(unit_type: Unit.EUnitType) -> void:
     # TODO: handle the reset of the tile when we remove a unit.
     unit = GameManager.UNIT_RESOURCES[unit_type]
-    unit_sprite.texture = load("res://resources/sprites/" + unit.resource_name + ".png")
+    unit_sprite.texture = load("res://resources/icons/" + unit.resource_name + ".png")
     if side == Board.ESide.ENEMY:
         unit_sprite.flip_h = true
 

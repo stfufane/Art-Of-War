@@ -5,7 +5,7 @@ extends Control
 var unit: Unit:
     set(u):
         unit = u
-        sprite.texture = load("res://resources/sprites/" + unit.resource_name + ".png")
+        sprite.texture = load("res://resources/icons/" + unit.resource_name + ".png")
 
 
 var tilted: bool = false

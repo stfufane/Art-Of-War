@@ -1,6 +1,7 @@
-[gd_scene load_steps=20 format=3 uid="uid://blsf8m0qs5jm4"]
+[gd_scene load_steps=21 format=3 uid="uid://blsf8m0qs5jm4"]
 
 [ext_resource type="Script" path="res://scripts/screens/Board.gd" id="1_ep6k2"]
+[ext_resource type="StyleBox" uid="uid://e5bltd1uh6qj" path="res://resources/themes/MenuFrame.tres" id="1_lsh28"]
 [ext_resource type="PackedScene" uid="uid://dg60fmrkhhol8" path="res://scenes/ShuffleHand.tscn" id="2_nmow6"]
 [ext_resource type="Texture2D" uid="uid://6sgrvnftylt1" path="res://resources/graphics/parchmentAncient.png" id="2_tj5ik"]
 [ext_resource type="Texture2D" uid="uid://b717lbi446kis" path="res://resources/graphics/treePines.png" id="3_01pxd"]
@@ -20,13 +21,20 @@
 [ext_resource type="PackedScene" uid="uid://chqg8i8ruxuo2" path="res://scenes/Instruction.tscn" id="18_3bhdf"]
 [ext_resource type="Script" path="res://scripts/scenes/GameError.gd" id="19_mgppa"]
 
-[node name="Board" type="Node2D"]
+[node name="Board" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = ExtResource("1_lsh28")
 script = ExtResource("1_ep6k2")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(576, 324)
 
 [node name="Background" type="Sprite2D" parent="."]
+visible = false
 texture_filter = 2
 position = Vector2(589, 355)
 scale = Vector2(1.5, 1.5)

@@ -9,7 +9,7 @@ extends Control
 enum EStatus { ## Compares the unit to the one from enemy kingdom
     Down = 0, ## The unit type has less units than the enemy
     Up = 1, ## The unit type has more units than the enemy
-    Equal = 2  ## The unit type has as many units as the enemy
+    Equal = 2 ## The unit type has as many units as the enemy
 }
 
 ## The possible colors of the crown depending on the status
@@ -41,7 +41,7 @@ var status: EStatus = EStatus.Equal:
 
 
 func _ready() -> void:
-    var image: CompressedTexture2D = load("res://resources/sprites/" + unit_type.resource_name + ".png")
+    var image: CompressedTexture2D = load("res://resources/icons/" + unit_type.resource_name + ".png")
     sprite.texture = image
 
 

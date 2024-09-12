@@ -52,7 +52,7 @@ func update_hand(reshuffle_attempts: int) -> void:
 		var unit_resource := GameManager.UNIT_RESOURCES[unit] as Unit
 		assert(unit_resource is Unit, "Did not retrieve a valid unit")
 		var unit_name := unit_resource.resource_name
-		var image: CompressedTexture2D = load("res://resources/sprites/" + unit_name + ".png")
+		var image: CompressedTexture2D = load("res://resources/icons/" + unit_name + ".png")
 		var new_texture := TextureRect.new()
 		new_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH
 		new_texture.size = Vector2(sprite_size, sprite_size)
