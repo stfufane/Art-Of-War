@@ -18,7 +18,7 @@ const LEFT_CLICK: StringName = &"left_click"
 
 const FLASH_SHADER: Shader = preload("res://resources/shaders/flash.gdshader")
 
-const UNIT_RESOURCES: Dictionary = {
+const UNIT_RESOURCES: Dictionary[Unit.EUnitType, Unit] = {
     Unit.EUnitType.King: preload("res://resources/units/king.tres") as Unit,
     Unit.EUnitType.Soldier: preload("res://resources/units/soldier.tres") as Unit,
     Unit.EUnitType.Guard: preload("res://resources/units/guard.tres") as Unit,

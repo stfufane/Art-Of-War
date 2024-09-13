@@ -4,7 +4,7 @@ const ONE = preload("res://resources/graphics/plus_one.png")
 
 @export var sprite_size: float = 16.0
 
-@onready var units: Dictionary = {
+@onready var units: Dictionary[Unit.EUnitType, KingdomUnit] = {
 	Unit.EUnitType.Soldier: $Soldier as KingdomUnit,
 	Unit.EUnitType.Guard: $Guard as KingdomUnit,
 	Unit.EUnitType.Monk: $Monk as KingdomUnit,
@@ -22,9 +22,9 @@ func _ready() -> void:
 		test_button.pressed.connect(_test)
 
 
-func _on_kingdom_updated(units_status: Dictionary) -> void:
+func _on_kingdom_updated(units_status: Dictionary[Unit.EUnitType, KingdomUnit.EStatus]) -> void:
 	for unit in units_status.keys() as Array[Unit.EUnitType]:
-		units[unit].status = units_status[unit] as KingdomUnit.EStatus
+		units[unit].status = units_status[unit]
 
 
 #region Test methods
@@ -36,7 +36,7 @@ func _test() -> void:
 	new_texture.position = test_button.position
 	new_texture.texture = ONE
 	add_child(new_texture)
-	var target_unit: Unit.EUnitType = units.keys().pick_random() as Unit.EUnitType
+	var target_unit: Unit.EUnitType = units.keys().pick_random()
 	var tween := create_tween()
 	tween.tween_property(new_texture, "position", units[target_unit].position, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_callback(func() -> void:

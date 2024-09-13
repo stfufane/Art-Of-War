@@ -5,7 +5,7 @@ extends Node
 ## All the possible actions must be registered here
 
 ## A collection of [Action] objects associated to their [enum Action.Code]
-var actions: Dictionary = {}
+var actions: Dictionary[Action.Code, Action] = {}
 
 
 func register_action(code: Action.Code, in_check: StringName, in_action: StringName) -> void:
@@ -16,7 +16,7 @@ func register_action(code: Action.Code, in_check: StringName, in_action: StringN
 @rpc("any_peer")
 func run(code: Action.Code, args: Array = []) -> void:
     assert(actions.has(code), "Could not find the action with code " + Action.Code.keys()[code] + ", did you register it?")
-    var action := actions.get(code) as Action
+    var action: Action = actions.get(code)
     action.run(args)
 
 
