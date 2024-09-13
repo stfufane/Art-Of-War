@@ -2,8 +2,8 @@ extends Node
 ## Defines RPC calls happening server side to handle parties and players
 
 
-var players: Dictionary = {} ## The list of players : peer_id -> [Player]
-var parties: Dictionary = {} ## The list of parties : party_id -> [Party]
+var players: Dictionary[int, Player] = {} ## The list of players : peer_id -> [Player]
+var parties: Dictionary[String, Party] = {} ## The list of parties : party_id -> [Party]
 
 
 #region Basic methods to manipulate/retrieve party/player
@@ -38,11 +38,11 @@ func get_current_player() -> Player:
 
 
 func get_player(player_id: int) -> Player:
-    return players.get(player_id) as Player
+    return players.get(player_id)
 
 
 func get_party(party_id: String) -> Party:
-    return parties.get(party_id) as Party
+    return parties.get(party_id)
 
 
 #endregion
@@ -97,4 +97,4 @@ func cancel_party() -> void:
     parties.erase(player.party.id)
     GameManager.notify_party_cancelled.rpc_id(player.id)
 
-    #endregion
+#endregion

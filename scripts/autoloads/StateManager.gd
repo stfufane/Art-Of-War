@@ -20,7 +20,7 @@ enum EState {
 }
 
 ## The list of all available states with their associated texts
-var States: Dictionary = {
+var States: Dictionary[EState, State] = {
 	EState.WAITING_FOR_PLAYER: State.new("Waiting for opponent"),
 	EState.RESHUFFLE: State.new("Need to reshuffle your hand ?"),
 	EState.INIT_BATTLEFIELD: State.new("Add a unit on your battlefield"),
@@ -44,7 +44,7 @@ var current_state: EState = EState.WAITING_FOR_PLAYER
 
 func get_state(state: EState) -> State:
 	assert(States.has(state), EState.keys()[state] + " is not registered in the list of states.")
-	return States.get(state) as State
+	return States.get(state)
 
 
 ## Triggered by the server at the start of an action
