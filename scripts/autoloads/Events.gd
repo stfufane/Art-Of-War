@@ -14,8 +14,9 @@ signal update_kingdom(status: Dictionary)
 signal update_battlefield(side: Board.ESide, tile_id: int, unit: Unit.EUnitType)
 
 signal start_turn
-signal end_turn
+
+signal recruit_done
+signal attack_done
 
 signal update_instructions(instructions: String)
 signal display_action_error(error: String)
-signal update_turn_menu # A condition has changed and may have enabled/disabled an action from the menu

@@ -1,8 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://ddrf8nigaffcl"]
+[gd_scene load_steps=3 format=3 uid="uid://ddrf8nigaffcl"]
 
 [ext_resource type="Script" path="res://scripts/menus/TurnMenu.gd" id="1_l62vm"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_83v7b"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
 [node name="TurnMenu" type="PanelContainer"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_83v7b")
 script = ExtResource("1_l62vm")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
@@ -15,6 +19,7 @@ theme_override_constants/margin_bottom = 15
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
 texture_filter = 2
 layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="RecruitButton" type="Button" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2

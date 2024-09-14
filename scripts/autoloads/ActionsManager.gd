@@ -28,4 +28,6 @@ func register_actions() -> void:
     register_action(Action.Code.START_ATTACK, &"check_start_attack", &"start_attack")
     register_action(Action.Code.START_SUPPORT, &"check_start_support", &"start_support")
     register_action(Action.Code.RECRUIT, &"check_recruit", &"recruit")
+    register_action(Action.Code.PROMPT_END_TURN, &"", &"prompt_end_turn")
+    register_action(Action.Code.ADD_TO_KINGDOM, &"check_add_to_kingdom", &"add_to_kingdom")
     register_action(Action.Code.END_TURN, &"", &"end_turn")

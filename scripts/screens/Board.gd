@@ -20,8 +20,8 @@ func _ready() -> void:
     print("Loaded the board, ready to play")
     StateManager.get_state(StateManager.EState.RESHUFFLE).ended.connect(_on_reshuffle_ended)
     StateManager.get_state(StateManager.EState.RECRUIT).started.connect(_on_recruit_started)
+    StateManager.get_state(StateManager.EState.FINISH_TURN).started.connect(_on_finish_turn_started)
     Events.reserve_updated.connect(_on_reserve_updated)
-    Events.end_turn.connect(_on_turn_ended)
 
     kingdom.hide()
     battlefield.hide()
@@ -62,5 +62,6 @@ func _on_recruit_started() -> void:
         instructions.text = "Choose a unit from your reserve to recruit"
 
 
-func _on_turn_ended() -> void:
-    turn_menu.hide()
+func _on_finish_turn_started() -> void:
+    instructions.text = "Add a unit from your hand to your kingdom or end your turn"
+    turn_menu.finish_turn()

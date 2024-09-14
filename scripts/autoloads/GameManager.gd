@@ -119,7 +119,12 @@ func start_turn() -> void:
 
 
 @rpc
-func end_turn() -> void:
-    Events.end_turn.emit()
+func recruit_done() -> void:
+    Events.recruit_done.emit()
+
+
+@rpc
+func attack_done() -> void:
+    Events.attack_done.emit()
 
 #endregion

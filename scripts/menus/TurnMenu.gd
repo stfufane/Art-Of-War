@@ -16,37 +16,54 @@ func _ready() -> void:
 	StateManager.get_state(StateManager.EState.ATTACK).started.connect(hide)
 	StateManager.get_state(StateManager.EState.SUPPORT).started.connect(hide)
 	StateManager.get_state(StateManager.EState.WAITING_FOR_PLAYER).started.connect(hide)
-	Events.update_turn_menu.connect(update_menu)
+	Events.start_turn.connect(_on_turn_started)
+	Events.recruit_done.connect(_on_recruit_done)
+	Events.attack_done.connect(_on_attack_done)
 
 
-func update_menu() -> void:
-	pass
-	# # Can't recruit twice or after having attacked
-	# recruit_button.disabled = Game.has_recruited or Game.has_attacked
-	# # Can't attack after recruiting
-	# attack_button.disabled = Game.has_recruited or !Game.is_attack_available
-	# support_button.disabled = !Game.is_support_available
+func finish_turn() -> void:
+	recruit_button.hide()
+	attack_button.hide()
+	support_button.hide()
+	end_turn_button.show()
+
+
+## After recruit, you can't recruit anymore nor attack
+func _on_recruit_done() -> void:
+	recruit_button.hide()
+	attack_button.hide()
+
+
+## After attacking, you cannot recruit but you can still attack
+func _on_attack_done() -> void:
+	recruit_button.hide()
+
+
+## Reset all buttons
+func _on_turn_started() -> void:
+	recruit_button.show()
+	attack_button.show()
+	support_button.show()
+	end_turn_button.show()
 
 
 func _on_attack_button_pressed() -> void:
-	if StateManager.current_state != StateManager.EState.ACTION_CHOICE:
-		return
 	ActionsManager.run.rpc_id(1, Action.Code.START_ATTACK)
 
 
 func _on_support_button_pressed() -> void:
-	if StateManager.current_state != StateManager.EState.ACTION_CHOICE:
-		return
 	ActionsManager.run.rpc_id(1, Action.Code.START_SUPPORT)
 
 
 func _on_recruit_button_pressed() -> void:
-	if StateManager.current_state != StateManager.EState.ACTION_CHOICE:
-		return
 	ActionsManager.run.rpc_id(1, Action.Code.START_RECRUIT)
 
 
 func _on_end_turn_button_pressed() -> void:
-	if StateManager.current_state != StateManager.EState.ACTION_CHOICE:
-		return
-	ActionsManager.run.rpc_id(1, Action.Code.END_TURN)
+	match StateManager.current_state:
+		StateManager.EState.ACTION_CHOICE:
+			ActionsManager.run.rpc_id(1, Action.Code.PROMPT_END_TURN)
+		StateManager.EState.FINISH_TURN:
+			ActionsManager.run.rpc_id(1, Action.Code.END_TURN)
+		_:
+			return

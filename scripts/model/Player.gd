@@ -117,16 +117,11 @@ func start_turn() -> void:
     GameManager.start_turn.rpc_id(id)
 
 
-func end_turn() -> void:
-    state.end_turn()
-    opponent.start_turn()
-
-
 func check_start_recruit() -> bool:
     return party.current_player == id and \
-    state.current == StateManager.EState.ACTION_CHOICE and \
-    not state.has_recruited and \
-    not state.has_attacked
+        state.current == StateManager.EState.ACTION_CHOICE and \
+        not state.has_recruited and \
+        not state.has_attacked
 
 
 func start_recruit() -> void:
@@ -135,8 +130,8 @@ func start_recruit() -> void:
 
 func check_start_attack() -> bool:
     return party.current_player == id and \
-    state.current == StateManager.EState.ACTION_CHOICE and \
-    not state.has_recruited
+        state.current == StateManager.EState.ACTION_CHOICE and \
+        not state.has_recruited
 
 
 func start_attack() -> void:
@@ -145,8 +140,8 @@ func start_attack() -> void:
 
 func check_start_support() -> bool:
     return party.current_player == id and \
-    state.current == StateManager.EState.ACTION_CHOICE and \
-    not state.has_recruited
+        state.current == StateManager.EState.ACTION_CHOICE and \
+        not state.has_recruited
 
 
 func start_support() -> void:
@@ -155,12 +150,12 @@ func start_support() -> void:
 
 func check_recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource) -> bool:
     return party.current_player == id and \
-    state.current == StateManager.EState.RECRUIT and \
-    ((source == Board.EUnitSource.RESERVE and reserve.has(unit_type)) \
-    or (source == Board.EUnitSource.HAND and hand.has(unit_type))) and \
-    tiles.can_set_unit(tile_id) and \
-    (source == Board.EUnitSource.RESERVE or \
-    (source == Board.EUnitSource.HAND and reserve.is_empty()))
+        state.current == StateManager.EState.RECRUIT and \
+        ((source == Board.EUnitSource.RESERVE and reserve.has(unit_type)) \
+        or (source == Board.EUnitSource.HAND and hand.has(unit_type))) and \
+        tiles.can_set_unit(tile_id) and \
+        (source == Board.EUnitSource.RESERVE or \
+        (source == Board.EUnitSource.HAND and reserve.is_empty()))
 
 
 func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource) -> void:
@@ -172,3 +167,24 @@ func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource)
 
     # Flag that we have recruited a unit (possible only once per turn)
     state.recruit_done()
+
+
+func check_add_to_kingdom(unit: Unit.EUnitType) -> bool:
+    return party.current_player == id and \
+        state.current == StateManager.EState.FINISH_TURN and \
+        hand.has(unit) and unit != Unit.EUnitType.King
+
+
+func add_to_kingdom(unit: Unit.EUnitType) -> void:
+    kingdom.add_unit(unit)
+    hand.remove_unit(unit)
+    end_turn()
+
+
+func prompt_end_turn() -> void:
+    state.current = StateManager.EState.FINISH_TURN
+
+
+func end_turn() -> void:
+    state.end_turn()
+    opponent.start_turn()

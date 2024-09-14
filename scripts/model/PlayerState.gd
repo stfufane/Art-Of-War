@@ -64,6 +64,7 @@ func new_turn() -> void:
 ## After recruiting, we come back to action choice
 func recruit_done() -> void:
 	has_recruited = true
+	GameManager.recruit_done.rpc_id(player.id)
 	current = StateManager.EState.ACTION_CHOICE
 
 

@@ -37,3 +37,11 @@ func unit_clicked(unit: ClickableUnit) -> void:
 			if not GameManager.reserve.is_empty():
 				pass
 			toggle_unit_tilt(unit)
+
+		StateManager.EState.FINISH_TURN:
+			if unit.unit.type == Unit.EUnitType.King:
+				return
+			ActionsManager.run.rpc_id(1, Action.Code.ADD_TO_KINGDOM, [unit.unit.type])
+		
+		_:
+			pass
