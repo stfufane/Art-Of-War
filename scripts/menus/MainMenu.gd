@@ -4,8 +4,6 @@ extends PanelContainer
 
 @onready var host_button: Button = $MarginContainer/VBoxContainer/HostButton
 @onready var join_button: Button = $MarginContainer/VBoxContainer/JoinButton
-@onready var start_server_button: Button = $MarginContainer/VBoxContainer/StartServerButton
-@onready var join_server_button: Button = $MarginContainer/VBoxContainer/JoinServerButton
 @onready var connection_status: Label = $MarginContainer/VBoxContainer/ConnectionStatus
 @onready var party_id_textbox: LineEdit = $MarginContainer/VBoxContainer/PartyId
 
@@ -16,8 +14,6 @@ func _ready() -> void:
 
     host_button.pressed.connect(_on_host_button_pressed)
     join_button.pressed.connect(_on_join_button_pressed)
-    start_server_button.pressed.connect(_on_start_server_button_pressed)
-    join_server_button.pressed.connect(_on_join_server_button_pressed)
 
     Network.connection_success.connect(_client_connected)
     Network.connection_failed.connect(_client_connection_failed)
@@ -30,8 +26,6 @@ func _ready() -> void:
     # so we don't want to show the server buttons
     # and we can still host or join a game
     if Network.connected:
-        start_server_button.hide()
-        join_server_button.hide()
         host_button.disabled = false
         join_button.disabled = false
 
@@ -40,20 +34,10 @@ func _ready() -> void:
         show_status(GameManager.lobby_error)
         GameManager.lobby_error = ""
 
-    # When using the remote server, hide the server buttons.
-    #if Network.server != "localhost":
-    start_server_button.hide()
-    join_server_button.hide()
-
 
 func _client_connected() -> void:
     host_button.disabled = false
     join_button.disabled = false
-    start_server_button.hide()
-    join_server_button.hide()
-#    show_status("Connected to server")
-#    await get_tree().create_timer(2.0).timeout
-#    connection_status.hide()
 
 
 func _client_connection_failed() -> void:
@@ -80,20 +64,6 @@ func _on_join_button_pressed() -> void:
 
 func _on_party_not_found() -> void:
     show_status("No party found with this ID")
-
-
-func _on_start_server_button_pressed() -> void:
-    if Network.connected:
-        Network.stop_server()
-        start_server_button.text = "Start Server"
-    else:
-        Network.start_server()
-        start_server_button.text = "Stop Server"
-
-
-func _on_join_server_button_pressed() -> void:
-    connection_status.hide()
-    Network.join_server()
 
 
 func show_status(text: String) -> void:

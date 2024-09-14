@@ -18,7 +18,7 @@ var enet_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 func _ready() -> void:
     if DisplayServer.get_name() == "headless":
         start_server()
-    else: # if server != "localhost":
+    else:
         join_server()
 
 
