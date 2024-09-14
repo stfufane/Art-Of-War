@@ -14,11 +14,11 @@ var label: String:
 var deck: Array[Unit.EUnitType] = []
 var reshuffle_attempts: int = 3
 
-var reserve : PlayerReserve = null
-var hand : PlayerHand = null
-var kingdom : PlayerKingdom = null
-var tiles : PlayerTiles = null
-var state : PlayerState = null
+var reserve: PlayerReserve = null
+var hand: PlayerHand = null
+var kingdom: PlayerKingdom = null
+var tiles: PlayerTiles = null
+var state: PlayerState = null
 
 var dead_units: int = 0
 var party: Party = null
@@ -45,8 +45,13 @@ func init_party() -> void:
     deck.shuffle()
 
     for _i in range(3):
-        hand.add_unit(deck.pop_back())
+        hand.add_unit(draw_from_deck())
     hand.add_unit(Unit.EUnitType.King)
+
+
+func draw_from_deck() -> Unit.EUnitType:
+    var drawn_card: Unit.EUnitType = deck.pop_back()
+    return drawn_card
 
 
 func check_reshuffle() -> bool:
@@ -101,14 +106,13 @@ func init_reserve(unit_type: Unit.EUnitType) -> void:
 
 
 func init_kingdom() -> void:
-    var unit_type: Unit.EUnitType = deck.pop_back()
-    kingdom.add_unit(unit_type)
+    kingdom.add_unit(draw_from_deck())
 
 
 func start_turn() -> void:
     party.current_player = id
     tiles.reset_units_hp()
-    hand.add_unit(deck.pop_back())
+    hand.add_unit(draw_from_deck())
     state.new_turn()
 
 

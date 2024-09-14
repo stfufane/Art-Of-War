@@ -61,7 +61,7 @@ func create_party() -> void:
         return
 
     print("%d wants to create a party" % player_id)
-    var party: Party = Party.new(players.get(player_id));
+    var party: Party = Party.new(get_player(player_id));
     players[player_id].party = party
     parties[party.id] = party
     GameManager.notify_party_created.rpc_id(player_id, party.id)
@@ -83,7 +83,7 @@ func join_party(id: String) -> void:
     # Find the index of the first available party to join
     var party_to_join: Party = parties.get(id)
     if party_to_join != null and party_to_join.status == Party.EStatus.CREATED:
-        party_to_join.join(players.get(player_id))
+        party_to_join.join(get_player(player_id))
     else:
         # The party does not exist anymore
         GameManager.party_not_found.rpc_id(player_id)
