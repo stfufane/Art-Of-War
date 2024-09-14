@@ -18,7 +18,6 @@ func disengage_units() -> void:
 
 
 func _on_battlefield_updated(side: Board.ESide, tile_id: int, unit: Unit.EUnitType) -> void:
-    Events.toggle_battlefield_flash.emit(false)
     var units_to_process: Control = units if side == Board.ESide.PLAYER else enemy_units
     for tile in units_to_process.get_children() as Array[BattleTile]:
         if tile.id == tile_id:

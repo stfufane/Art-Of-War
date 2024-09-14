@@ -117,4 +117,9 @@ func update_reserve(side: Board.ESide, new_units: Array) -> void:
 func start_turn() -> void:
     Events.start_turn.emit()
 
-    #endregion
+
+@rpc
+func end_turn() -> void:
+    Events.end_turn.emit()
+
+#endregion

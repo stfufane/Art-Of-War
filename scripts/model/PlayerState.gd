@@ -65,3 +65,7 @@ func new_turn() -> void:
 func recruit_done() -> void:
 	has_recruited = true
 	current = StateManager.EState.ACTION_CHOICE
+
+
+func end_turn() -> void:
+	current = StateManager.EState.WAITING_FOR_PLAYER

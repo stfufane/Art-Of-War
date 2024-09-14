@@ -114,6 +114,12 @@ func start_turn() -> void:
     tiles.reset_units_hp()
     hand.add_unit(draw_from_deck())
     state.new_turn()
+    GameManager.start_turn.rpc_id(id)
+
+
+func end_turn() -> void:
+    state.end_turn()
+    opponent.start_turn()
 
 
 func check_start_recruit() -> bool:
