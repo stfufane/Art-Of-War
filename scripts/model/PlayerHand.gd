@@ -21,6 +21,11 @@ func has(unit_type: Unit.EUnitType) -> bool:
     return units.has(unit_type)
 
 
+# You can't have more than 5 units in your hand at the end of a turn
+func is_full() -> bool:
+    return units.size() > 5
+
+
 func clear() -> void:
     units.clear()
     update_hand_ui()

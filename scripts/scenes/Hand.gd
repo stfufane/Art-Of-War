@@ -35,12 +35,10 @@ func unit_clicked(unit: ClickableUnit) -> void:
 		StateManager.EState.RECRUIT:
 			# Recruitment must be made from the reserve if it's not empty
 			if not GameManager.reserve.is_empty():
-				pass
+				return
 			toggle_unit_tilt(unit)
 
 		StateManager.EState.FINISH_TURN:
-			if unit.unit.type == Unit.EUnitType.King:
-				return
 			ActionsManager.run.rpc_id(1, Action.Code.ADD_TO_KINGDOM, [unit.unit.type])
 		
 		_:

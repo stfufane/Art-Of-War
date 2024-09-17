@@ -30,4 +30,4 @@ func register_actions() -> void:
     register_action(Action.Code.RECRUIT, &"check_recruit", &"recruit")
     register_action(Action.Code.PROMPT_END_TURN, Action.NO_CHECK, &"prompt_end_turn")
     register_action(Action.Code.ADD_TO_KINGDOM, &"check_add_to_kingdom", &"add_to_kingdom")
-    register_action(Action.Code.END_TURN, Action.NO_CHECK, &"end_turn")
+    register_action(Action.Code.END_TURN, &"check_end_turn", &"end_turn")

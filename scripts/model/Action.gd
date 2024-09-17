@@ -41,14 +41,15 @@ func run(args: Array = []) -> void:
 		return
 
 	if check != NO_CHECK:
-		var check_callable := Callable(player, check)
+		var check_callable := Callable(player.action_check, check)
 		assert(check_callable.is_valid(), "Could not find the check function %s" % check)
 		if not check_callable.callv(args):
 			push_warning("%s (%d) could not run action %s" % [player.label, player.id, Code.keys()[code]])
-			GameManager.set_action_error.rpc_id(player.id, "You cannot perform this action")
+			GameManager.set_action_error.rpc_id(player.id, player.action_check.error_message)
 			return
 
 	var action_callable := Callable(player, action)
 	assert(action_callable.is_valid(), "Could not find the action function %s" % action)
 	print("%s (%d) running action %s" % [player.label, player.id, Code.keys()[code]])
 	action_callable.callv(args)
+	GameManager.set_action_error.rpc_id(player.id, "")

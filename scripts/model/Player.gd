@@ -19,6 +19,7 @@ var hand: PlayerHand = null
 var kingdom: PlayerKingdom = null
 var tiles: PlayerTiles = null
 var state: PlayerState = null
+var action_check: ActionCheck = null
 
 var dead_units: int = 0
 var party: Party = null
@@ -33,6 +34,7 @@ func setup() -> void:
     kingdom = PlayerKingdom.new(self)
     tiles = PlayerTiles.new(self)
     state = PlayerState.new(self)
+    action_check = ActionCheck.new(self)
 
 
 func init_party() -> void:
@@ -54,10 +56,6 @@ func draw_from_deck() -> Unit.EUnitType:
     return drawn_card
 
 
-func check_reshuffle() -> bool:
-    return state.current == StateManager.EState.RESHUFFLE and reshuffle_attempts > 0
-
-
 func reshuffle_deck() -> void:
     reshuffle_attempts -= 1
     deck.clear()
@@ -66,19 +64,9 @@ func reshuffle_deck() -> void:
     GameManager.update_hand_shuffle.rpc_id(id, hand.units, reshuffle_attempts)
 
 
-func check_validate_hand() -> bool:
-    return state.current == StateManager.EState.RESHUFFLE and not state.hand_ready
-
-
 func validate_hand() -> void:
     state.hand_ready = true
     hand.update_hand_ui()
-
-
-func check_init_battlefield(tile_id: int, _unit_type: Unit.EUnitType) -> bool:
-    return state.current == StateManager.EState.INIT_BATTLEFIELD \
-    and not state.battlefield_ready \
-    and tiles.can_set_unit(tile_id)
 
 
 func init_battlefield(tile_id: int, unit_type: Unit.EUnitType) -> void:
@@ -89,12 +77,6 @@ func init_battlefield(tile_id: int, unit_type: Unit.EUnitType) -> void:
 
     # Trigger the state change
     state.battlefield_ready = true
-
-
-func check_init_reserve(unit_type: Unit.EUnitType) -> bool:
-    return state.current == StateManager.EState.INIT_RESERVE \
-    and not state.reserve_ready \
-    and hand.units.has(unit_type)
 
 
 func init_reserve(unit_type: Unit.EUnitType) -> void:
@@ -117,44 +99,16 @@ func start_turn() -> void:
     GameManager.start_turn.rpc_id(id)
 
 
-func check_start_recruit() -> bool:
-    return party.current_player == id and \
-        state.current == StateManager.EState.ACTION_CHOICE and \
-        not state.has_recruited and \
-        not state.has_attacked
-
-
 func start_recruit() -> void:
     state.current = StateManager.EState.RECRUIT
-
-
-func check_start_attack() -> bool:
-    return party.current_player == id and \
-        state.current == StateManager.EState.ACTION_CHOICE and \
-        not state.has_recruited
 
 
 func start_attack() -> void:
     state.current = StateManager.EState.ATTACK
 
 
-func check_start_support() -> bool:
-    return party.current_player == id and \
-        state.current == StateManager.EState.ACTION_CHOICE
-
-
 func start_support() -> void:
     state.current = StateManager.EState.SUPPORT
-
-
-func check_recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource) -> bool:
-    return party.current_player == id and \
-        state.current == StateManager.EState.RECRUIT and \
-        ((source == Board.EUnitSource.RESERVE and reserve.has(unit_type)) \
-        or (source == Board.EUnitSource.HAND and hand.has(unit_type))) and \
-        tiles.can_set_unit(tile_id) and \
-        (source == Board.EUnitSource.RESERVE or \
-        (source == Board.EUnitSource.HAND and reserve.is_empty()))
 
 
 func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource) -> void:
@@ -168,12 +122,6 @@ func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource)
     state.recruit_done()
 
 
-func check_add_to_kingdom(unit: Unit.EUnitType) -> bool:
-    return party.current_player == id and \
-        state.current == StateManager.EState.FINISH_TURN and \
-        hand.has(unit) and unit != Unit.EUnitType.King
-
-
 func add_to_kingdom(unit: Unit.EUnitType) -> void:
     kingdom.add_unit(unit)
     hand.remove_unit(unit)
@@ -182,7 +130,7 @@ func add_to_kingdom(unit: Unit.EUnitType) -> void:
 
 func prompt_end_turn() -> void:
     state.current = StateManager.EState.FINISH_TURN
-
+    
 
 func end_turn() -> void:
     state.end_turn()
