@@ -140,8 +140,7 @@ func start_attack() -> void:
 
 func check_start_support() -> bool:
     return party.current_player == id and \
-        state.current == StateManager.EState.ACTION_CHOICE and \
-        not state.has_recruited
+        state.current == StateManager.EState.ACTION_CHOICE
 
 
 func start_support() -> void:

@@ -4,6 +4,7 @@ class_name Action extends RefCounted
 ## Each action is defined by its unique code and a callback that will
 ## be executed on the server if the caller is valid
 
+const NO_CHECK: StringName = &""
 
 ## The code used client side to call the action
 enum Code {
@@ -39,7 +40,7 @@ func run(args: Array = []) -> void:
 		push_error("No player or party found to run action %s" % Code.keys()[code])
 		return
 
-	if not check.is_empty():
+	if check != NO_CHECK:
 		var check_callable := Callable(player, check)
 		assert(check_callable.is_valid(), "Could not find the check function %s" % check)
 		if not check_callable.callv(args):

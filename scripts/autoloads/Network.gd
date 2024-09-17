@@ -67,7 +67,7 @@ func join_server() -> void:
     multiplayer.connection_failed.connect(_on_connection_failed)
     multiplayer.server_disconnected.connect(_on_server_disconnected)
 
-    print("Trying to connect to server")
+    print("Trying to connect to server ", server)
     var client_error := enet_peer.create_client(server, PORT)
     # Small trick to detect that we actually connected to the server and catch the error otherwise.
     enet_peer.get_peer(1).set_timeout(0, 0, 5000)
