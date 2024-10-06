@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://blsf8m0qs5jm4"]
+[gd_scene load_steps=14 format=3 uid="uid://blsf8m0qs5jm4"]
 
 [ext_resource type="Script" path="res://scripts/screens/Board.gd" id="1_ep6k2"]
 [ext_resource type="StyleBox" uid="uid://e5bltd1uh6qj" path="res://resources/themes/MenuFrame.tres" id="1_lsh28"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://4xuy7wjmcpu8" path="res://scenes/Hand.tscn" id="4_yvn43"]
 [ext_resource type="PackedScene" uid="uid://clfro4xol21jt" path="res://scenes/menus/BlockMenu.tscn" id="9_0gqnp"]
 [ext_resource type="Script" path="res://scripts/scenes/CancelButton.gd" id="9_f8osr"]
+[ext_resource type="PackedScene" uid="uid://cpy4lhyy1hi7k" path="res://scenes/menus/KingMenu.tscn" id="10_uj881"]
 [ext_resource type="PackedScene" uid="uid://bbeygppwy0ath" path="res://scenes/Battlefield.tscn" id="11_nw44b"]
 [ext_resource type="PackedScene" uid="uid://c65kfclvveb3r" path="res://scenes/Reserve.tscn" id="11_x1o1o"]
 [ext_resource type="PackedScene" uid="uid://ddrf8nigaffcl" path="res://scenes/menus/TurnMenu.tscn" id="17_gchri"]
@@ -63,6 +64,14 @@ visible = false
 offset_left = 457.0
 offset_top = 379.0
 offset_right = 795.0
+offset_bottom = 460.0
+scale = Vector2(0.8, 0.8)
+
+[node name="KingMenu" parent="CanvasLayer" instance=ExtResource("10_uj881")]
+visible = false
+offset_left = 451.0
+offset_top = 379.0
+offset_right = 789.0
 offset_bottom = 460.0
 scale = Vector2(0.8, 0.8)
 
