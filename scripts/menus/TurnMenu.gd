@@ -1,4 +1,4 @@
-class_name TurnMenu extends Control
+class_name TurnMenu extends PanelContainer
 
 @onready var recruit_button: Button = $MarginContainer/HBoxContainer/RecruitButton
 @onready var attack_button: Button = $MarginContainer/HBoxContainer/AttackButton

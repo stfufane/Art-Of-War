@@ -6,6 +6,7 @@ extends TextureRect
 @export var id: int ## To identify the tile and mirror it with the enemy tiles
 @export var side: Board.ESide = Board.ESide.PLAYER
 
+@onready var unit_sprite := $UnitSprite as TextureRect
 
 var unit: Unit = null
 var hovered: bool = false
@@ -17,9 +18,6 @@ var unit_engaged: bool = false:
             self_modulate = Color(1.0, 0.7, 0.6, 1.0)
         else:
             reset_color()
-
-
-@onready var unit_sprite := $UnitSprite as TextureRect
 
 
 func _ready() -> void:
@@ -51,6 +49,15 @@ func toggle_range_hint(state: bool) -> void:
         reset_color()
 
 
+func toggle_flash(state: bool) -> void:
+    if state:
+        var shader_material := ShaderMaterial.new()
+        shader_material.shader = GameManager.FLASH_SHADER
+        unit_sprite.material = shader_material
+    else:
+        unit_sprite.material = null
+
+
 func _on_mouse_entered() -> void:
     hovered = true
     if side == Board.ESide.PLAYER and unit == null:
@@ -68,4 +75,7 @@ func _on_mouse_exited() -> void:
 func _on_gui_input(event: InputEvent) -> void:
     if !event.is_action_pressed(GameManager.LEFT_CLICK):
         return
-    Events.battle_tile_clicked.emit(self)
+    if side == Board.ESide.PLAYER:
+        Events.battle_tile_clicked.emit(self)
+    else:
+        Events.enemy_battle_tile_clicked.emit(self)

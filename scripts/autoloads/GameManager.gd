@@ -80,7 +80,7 @@ func set_action_error(error: String) -> void:
 @rpc
 func start_game(initial_units: Array) -> void:
     units.assign(initial_units)
-    # The scene ready method of the board will trigger game setup
+    # The _ready method of the board will trigger game setup
     get_tree().change_scene_to_packed(BOARD_SCREEN)
 
 
@@ -126,5 +126,10 @@ func recruit_done() -> void:
 @rpc
 func attack_done() -> void:
     Events.attack_done.emit()
+
+
+@rpc
+func attack_to_block(attacking_tile: int, target_tile: int) -> void:
+    Events.attack_to_block.emit(attacking_tile, target_tile)
 
 #endregion

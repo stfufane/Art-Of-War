@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://clfro4xol21jt"]
+
+[ext_resource type="Script" path="res://scripts/menus/BlockMenu.gd" id="1_nuvo1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_83v7b"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[node name="BlockMenu" type="PanelContainer"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_83v7b")
+script = ExtResource("1_nuvo1")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="GuardWizardButton" type="Button" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Guard"
+
+[node name="KingButton" type="Button" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "King"
+
+[node name="PassButton" type="Button" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Pass"

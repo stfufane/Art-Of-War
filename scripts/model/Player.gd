@@ -122,6 +122,13 @@ func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource)
     state.recruit_done()
 
 
+# When attacking, we first notify the enemy so he can counter the attack
+func attack(attacking_tile: int, target_tile: int) -> void:
+    state.current = StateManager.EState.WAITING_FOR_PLAYER
+    opponent.state.current = StateManager.EState.ATTACK_BLOCK
+    GameManager.attack_to_block.rpc_id(opponent.id, attacking_tile, target_tile)
+
+
 func add_to_kingdom(unit: Unit.EUnitType) -> void:
     kingdom.add_unit(unit)
     hand.remove_unit(unit)
@@ -135,3 +142,9 @@ func prompt_end_turn() -> void:
 func end_turn() -> void:
     state.end_turn()
     opponent.start_turn()
+
+
+func cancel_action() -> void:
+    # Go back to the action choice depending on the current state.
+    # TODO: check the previous state
+    state.current = StateManager.EState.ACTION_CHOICE
