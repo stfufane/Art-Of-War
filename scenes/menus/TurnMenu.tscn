@@ -17,22 +17,25 @@ theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
-texture_filter = 2
 layout_mode = 2
 size_flags_horizontal = 4
 
 [node name="RecruitButton" type="Button" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "Recruit"
 
 [node name="AttackButton" type="Button" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "Attack"
 
 [node name="SupportButton" type="Button" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "Support"
 
 [node name="EndTurnButton" type="Button" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "End Turn"

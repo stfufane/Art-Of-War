@@ -12,14 +12,14 @@
 script = ExtResource("1_8xwdx")
 
 [node name="TextureRect" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_right = 40.0
 offset_bottom = 40.0
 texture = ExtResource("7_adj8p")
 expand_mode = 1
 
 [node name="TextureRect2" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_top = 40.0
 offset_right = 40.0
 offset_bottom = 80.0
@@ -27,7 +27,7 @@ texture = ExtResource("7_adj8p")
 expand_mode = 1
 
 [node name="TextureRect3" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_top = 80.0
 offset_right = 40.0
 offset_bottom = 120.0
@@ -35,7 +35,7 @@ texture = ExtResource("7_adj8p")
 expand_mode = 1
 
 [node name="TextureRect4" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_top = 120.0
 offset_right = 40.0
 offset_bottom = 160.0
@@ -43,7 +43,7 @@ texture = ExtResource("7_adj8p")
 expand_mode = 1
 
 [node name="TextureRect5" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_top = 160.0
 offset_right = 40.0
 offset_bottom = 200.0

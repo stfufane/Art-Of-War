@@ -9,7 +9,7 @@ scale = Vector2(2, 2)
 script = ExtResource("1_oyfmt")
 
 [node name="TextureRect" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_right = 40.0
 offset_bottom = 40.0
 texture = ExtResource("2_6grt8")
@@ -17,7 +17,7 @@ expand_mode = 1
 stretch_mode = 4
 
 [node name="TextureRect2" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_top = 40.0
 offset_right = 40.0
 offset_bottom = 80.0
@@ -26,7 +26,7 @@ expand_mode = 1
 stretch_mode = 4
 
 [node name="TextureRect3" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_top = 80.0
 offset_right = 40.0
 offset_bottom = 120.0
@@ -35,7 +35,7 @@ expand_mode = 1
 stretch_mode = 4
 
 [node name="TextureRect4" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_top = 120.0
 offset_right = 40.0
 offset_bottom = 160.0
@@ -44,7 +44,7 @@ expand_mode = 1
 stretch_mode = 4
 
 [node name="TextureRect5" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_top = 160.0
 offset_right = 40.0
 offset_bottom = 200.0
@@ -53,7 +53,7 @@ expand_mode = 1
 stretch_mode = 4
 
 [node name="TextureRect6" type="TextureRect" parent="."]
-texture_filter = 2
+texture_filter = 1
 offset_top = 200.0
 offset_right = 40.0
 offset_bottom = 240.0

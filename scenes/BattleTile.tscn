@@ -4,7 +4,6 @@
 [ext_resource type="Script" path="res://scripts/scenes/BattleTile.gd" id="2_aqmyw"]
 
 [node name="BattleTile" type="TextureRect"]
-texture_filter = 2
 texture = ExtResource("1_x4x4d")
 stretch_mode = 4
 script = ExtResource("2_aqmyw")

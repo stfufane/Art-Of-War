@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/scenes/Instruction.gd" id="1_ddrnb"]
 
 [node name="Instruction" type="Label"]
-texture_filter = 2
+texture_filter = 1
 custom_minimum_size = Vector2(640, 0)
 offset_right = 40.0
 offset_bottom = 23.0
