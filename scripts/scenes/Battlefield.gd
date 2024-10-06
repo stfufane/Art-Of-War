@@ -14,6 +14,7 @@ func _ready() -> void:
     Events.battle_tile_hovered.connect(_on_tile_hovered)
     Events.update_battlefield.connect(_on_battlefield_updated)
     Events.attack_to_block.connect(_on_attack_to_block)
+    Events.attack_done.connect(flash_all_tiles_off)
     Events.start_turn.connect(disengage_units)
     StateManager.get_state(StateManager.EState.ACTION_CHOICE).started.connect(flash_all_tiles_off)
     

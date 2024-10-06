@@ -44,6 +44,12 @@ var reserve_ready: bool = false:
 					player.opponent.start_turn()
 
 
+var is_attacking: bool = false
+var is_supporting: bool = false
+
+var attacking_tile: int = -1
+var target_tile: int = -1
+
 var has_attacked: bool = false
 var has_recruited: bool = false
 var attack_bonus: int = 0
@@ -66,6 +72,22 @@ func recruit_done() -> void:
 	has_recruited = true
 	GameManager.recruit_done.rpc_id(player.id)
 	current = StateManager.EState.ACTION_CHOICE
+
+
+func attack(attacking: int, target: int) -> void:
+	is_attacking = true
+	attacking_tile = attacking
+	target_tile = target
+
+
+func attack_done() -> void:
+	is_attacking = false
+	has_attacked = true
+	attacking_tile = -1
+	target_tile = -1
+	# Notify both players that the attack is done.
+	GameManager.attack_done.rpc_id(player.id)
+	GameManager.attack_done.rpc_id(player.opponent.id)
 
 
 func end_turn() -> void:

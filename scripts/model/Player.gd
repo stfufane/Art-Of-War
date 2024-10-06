@@ -124,9 +124,45 @@ func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource)
 
 # When attacking, we first notify the enemy so he can counter the attack
 func attack(attacking_tile: int, target_tile: int) -> void:
+    state.attack(attacking_tile, target_tile)
     state.current = StateManager.EState.WAITING_FOR_PLAYER
     opponent.state.current = StateManager.EState.ATTACK_BLOCK
     GameManager.attack_to_block.rpc_id(opponent.id, attacking_tile, target_tile)
+
+
+func block_attack(unit: Unit.EUnitType) -> void:
+    # The unit used to block is added to the reserve and removed from the hand
+    reserve.add_unit(unit)
+    hand.remove_unit(unit)
+    state.current = StateManager.EState.WAITING_FOR_PLAYER
+    # The opponent can now block the attack block if he wants
+    opponent.state.current = StateManager.EState.SUPPORT_BLOCK
+
+
+func block_support(unit: Unit.EUnitType) -> void:
+    # The unit used to block is added to the reserve and removed from the hand
+    reserve.add_unit(unit)
+    hand.remove_unit(unit)
+    state.current = StateManager.EState.WAITING_FOR_PLAYER
+    # The opponent can now block the support block if he wants (the loop ends when someone does not block)
+    opponent.state.current = StateManager.EState.SUPPORT_BLOCK
+
+
+# The opponent did not block the attack, we can apply the effects.
+func no_attack_block() -> void:
+    # TODO: apply attack
+    opponent.state.attack_done()
+    state.current = StateManager.EState.WAITING_FOR_PLAYER
+    opponent.state.current = StateManager.EState.ACTION_CHOICE
+    pass
+
+
+# Several cases here :
+# - The current player is using a support, the opponent blocked it, and we don't block the block -> cancel the support
+# - The current player is using a support, the opponent did not block it -> apply the support or the attack
+# - The opponent is using a support to block an attack, we don't block the block -> cancel the attack
+func no_support_block() -> void:
+    pass
 
 
 func add_to_kingdom(unit: Unit.EUnitType) -> void:

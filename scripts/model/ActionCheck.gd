@@ -8,6 +8,14 @@ const NOT_YOUR_TURN: String = "It's not your turn"
 const NOT_AUTHORIZED: String = "You're not authorized to perform this action now"
 const RECRUIT_DONE: String = "You've already recruited, you can't recruit or attack this turn"
 
+# Determines from which states we can go back to the action choice.
+const CANCELLABLE_STATES: Array[StateManager.EState] = [
+    StateManager.EState.ATTACK,
+    StateManager.EState.SUPPORT,
+    StateManager.EState.RECRUIT,
+    StateManager.EState.FINISH_TURN,
+]
+
 func _init(p: Player) -> void:
     player = p
 
@@ -128,6 +136,57 @@ func check_add_to_kingdom(unit: Unit.EUnitType) -> bool:
         return false
     if not player.hand.has(unit) or unit == Unit.EUnitType.King:
         error_message = "You can't put this unit in your kingdom"
+        return false
+    return true
+
+
+func check_block_attack(unit: Unit.EUnitType) -> bool:
+    # Tricky one, you can block only if it's NOT your turn.
+    if player.party.current_player == player.id and not player.opponent.state.is_attacking:
+        error_message = NOT_YOUR_TURN
+        return false
+    if player.state.current != StateManager.EState.ATTACK_BLOCK:
+        error_message = NOT_AUTHORIZED
+        return false
+    if player.reserve.is_full():
+        error_message = "Your reserve is already full, you cannot block"
+        return false
+    if not player.hand.has(unit) or (unit != Unit.EUnitType.King and unit != Unit.EUnitType.Guard):
+        error_message = "You can't block with this unit"
+        return false
+    return true
+
+
+func check_block_support(unit: Unit.EUnitType) -> bool:
+    if player.state.current != StateManager.EState.SUPPORT_BLOCK:
+        error_message = NOT_AUTHORIZED
+        return false
+    if player.reserve.is_full():
+        error_message = "Your reserve is already full, you cannot block"
+        return false
+    if not player.hand.has(unit) or (unit != Unit.EUnitType.King and unit != Unit.EUnitType.Wizard):
+        error_message = "You can't block with this unit"
+        return false
+    return true
+
+
+func check_no_attack_block() -> bool:
+    if player.state.current != StateManager.EState.ATTACK_BLOCK:
+        error_message = NOT_AUTHORIZED
+        return false
+    return true
+
+
+func check_no_support_block() -> bool:
+    if player.state.current != StateManager.EState.SUPPORT_BLOCK:
+        error_message = NOT_AUTHORIZED
+        return false
+    return true
+
+
+func check_cancel() -> bool:
+    if not CANCELLABLE_STATES.has(player.state.current):
+        error_message = NOT_AUTHORIZED
         return false
     return true
 

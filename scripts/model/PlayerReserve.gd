@@ -1,5 +1,7 @@
 class_name PlayerReserve extends RefCounted
 
+const MAX_UNITS: int = 5
+
 var player: Player = null
 var units: Array[Unit.EUnitType] = []
 
@@ -19,6 +21,9 @@ func has(unit_type: Unit.EUnitType) -> bool:
 
 func is_empty() -> bool:
 	return units.is_empty()
+
+func is_full() -> bool:
+	return units.size() == MAX_UNITS
 
 func update_reserve_ui() -> void:
 	GameManager.update_reserve.rpc_id(player.id, Board.ESide.PLAYER, units)
