@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://dg60fmrkhhol8" path="res://scenes/ShuffleHand.tscn" id="2_nmow6"]
 [ext_resource type="PackedScene" uid="uid://cu2sfyvc5bcdj" path="res://scenes/Kingdom.tscn" id="3_67vue"]
 [ext_resource type="PackedScene" uid="uid://4xuy7wjmcpu8" path="res://scenes/Hand.tscn" id="4_yvn43"]
+[ext_resource type="Script" path="res://scripts/scenes/CancelButton.gd" id="9_f8osr"]
 [ext_resource type="PackedScene" uid="uid://bbeygppwy0ath" path="res://scenes/Battlefield.tscn" id="11_nw44b"]
 [ext_resource type="PackedScene" uid="uid://c65kfclvveb3r" path="res://scenes/Reserve.tscn" id="11_x1o1o"]
 [ext_resource type="PackedScene" uid="uid://ddrf8nigaffcl" path="res://scenes/menus/TurnMenu.tscn" id="17_gchri"]
@@ -54,6 +55,16 @@ offset_top = 379.0
 offset_right = 866.0
 offset_bottom = 480.0
 scale = Vector2(0.8, 0.8)
+
+[node name="CancelButton" type="Button" parent="CanvasLayer"]
+custom_minimum_size = Vector2(100, 0)
+offset_left = 552.0
+offset_top = 469.0
+offset_right = 652.0
+offset_bottom = 520.0
+scale = Vector2(0.8, 0.8)
+text = "Cancel"
+script = ExtResource("9_f8osr")
 
 [node name="Instruction" parent="CanvasLayer" instance=ExtResource("18_3bhdf")]
 anchors_preset = 7

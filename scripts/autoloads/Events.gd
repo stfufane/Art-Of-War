@@ -20,3 +20,4 @@ signal attack_done
 
 signal update_instructions(instructions: String)
 signal display_action_error(error: String)
+signal toggle_cancel_button(shown: bool)

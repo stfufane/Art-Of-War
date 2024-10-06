@@ -21,6 +21,7 @@ enum Code {
 	ADD_TO_KINGDOM,
 	PROMPT_END_TURN,
 	END_TURN,
+	CANCEL_ACTION,
 }
 
 
