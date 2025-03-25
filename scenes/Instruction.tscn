@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://chqg8i8ruxuo2"]
 
-[ext_resource type="Script" path="res://scripts/scenes/Instruction.gd" id="1_ddrnb"]
+[ext_resource type="Script" uid="uid://b8bfdw584111m" path="res://scripts/scenes/Instruction.gd" id="1_ddrnb"]
 
 [node name="Instruction" type="Label"]
 texture_filter = 1

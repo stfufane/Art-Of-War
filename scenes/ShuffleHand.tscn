@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dg60fmrkhhol8"]
 
 [ext_resource type="StyleBox" uid="uid://e5bltd1uh6qj" path="res://resources/themes/MenuFrame.tres" id="1_rn1jc"]
-[ext_resource type="Script" path="res://scripts/scenes/ShuffleHand.gd" id="2_bxihg"]
+[ext_resource type="Script" uid="uid://buiqlm46hpl1m" path="res://scripts/scenes/ShuffleHand.gd" id="2_bxihg"]
 
 [node name="ShuffleHand" type="Panel"]
 custom_minimum_size = Vector2(384, 202)

@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://bp4ut36apw8b2"]
 
-[ext_resource type="Script" path="res://scripts/scenes/units/KingdomUnit.gd" id="1_n4jup"]
+[ext_resource type="Script" uid="uid://i1qj6og3t60m" path="res://scripts/scenes/units/KingdomUnit.gd" id="1_n4jup"]
 [ext_resource type="Resource" uid="uid://dtlbn1h00vl15" path="res://resources/units/guard.tres" id="2_esqu1"]
 [ext_resource type="Texture2D" uid="uid://ctas0gyh05iu5" path="res://resources/graphics/crown.png" id="3_44t33"]
 [ext_resource type="Texture2D" uid="uid://vi75tjr72sg4" path="res://resources/icons/Soldier.png" id="3_hnjdc"]
