@@ -44,7 +44,13 @@ var reserve_ready: bool = false:
 					player.opponent.start_turn()
 
 
-var is_attacking: bool = false
+var is_attacking: bool = false:
+	set(attacking):
+		is_attacking = attacking
+		if not is_attacking:
+			attacking_tile = -1
+			target_tile = -1
+
 var is_supporting: bool = false
 
 var attacking_tile: int = -1
@@ -83,8 +89,6 @@ func attack(attacking: int, target: int) -> void:
 func attack_done() -> void:
 	is_attacking = false
 	has_attacked = true
-	attacking_tile = -1
-	target_tile = -1
 	# Notify both players that the attack is done.
 	GameManager.attack_done.rpc_id(player.id)
 	GameManager.attack_done.rpc_id(player.opponent.id)

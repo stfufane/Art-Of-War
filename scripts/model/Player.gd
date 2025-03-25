@@ -70,7 +70,7 @@ func validate_hand() -> void:
 
 
 func init_battlefield(tile_id: int, unit_type: Unit.EUnitType) -> void:
-    tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
+    tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate() as Unit)
 
     # Remove the selected unit from the hand
     hand.remove_unit(unit_type)
@@ -112,7 +112,7 @@ func start_support() -> void:
 
 
 func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource) -> void:
-    tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
+    tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate() as Unit)
     if source == Board.EUnitSource.RESERVE:
         reserve.remove_unit(unit_type)
     elif source == Board.EUnitSource.HAND:
@@ -154,7 +154,6 @@ func no_attack_block() -> void:
     opponent.state.attack_done()
     state.current = StateManager.EState.WAITING_FOR_PLAYER
     opponent.state.current = StateManager.EState.ACTION_CHOICE
-    pass
 
 
 # Several cases here :
@@ -182,5 +181,4 @@ func end_turn() -> void:
 
 func cancel_action() -> void:
     # Go back to the action choice depending on the current state.
-    # TODO: check the previous state
     state.current = StateManager.EState.ACTION_CHOICE
