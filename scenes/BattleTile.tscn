@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://wudfgd30ka7g"]
 
 [ext_resource type="Texture2D" uid="uid://dnemanqlk17wv" path="res://resources/graphics/elementSquare.png" id="1_x4x4d"]
-[ext_resource type="Script" path="res://scripts/scenes/BattleTile.gd" id="2_aqmyw"]
+[ext_resource type="Script" uid="uid://dl6rhff00rg4y" path="res://scripts/scenes/BattleTile.gd" id="2_aqmyw"]
 
 [node name="BattleTile" type="TextureRect"]
 texture = ExtResource("1_x4x4d")

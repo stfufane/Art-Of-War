@@ -3,7 +3,7 @@ class_name PlayerKingdom extends RefCounted
 var player: Player = null
 
 ## Store the kingdom in raw number of units
-var units: Dictionary = {
+var units: Dictionary[Unit.EUnitType, int] = {
 	Unit.EUnitType.Soldier: 0,
 	Unit.EUnitType.Guard: 0,
 	Unit.EUnitType.Wizard: 0,
@@ -12,7 +12,7 @@ var units: Dictionary = {
 }
 
 ## And also relative to the other player
-var status: Dictionary = {
+var status: Dictionary[Unit.EUnitType, KingdomUnit.EStatus] = {
 	Unit.EUnitType.Soldier: KingdomUnit.EStatus.Equal,
 	Unit.EUnitType.Guard: KingdomUnit.EStatus.Equal,
 	Unit.EUnitType.Wizard: KingdomUnit.EStatus.Equal,

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bbeygppwy0ath"]
 
-[ext_resource type="Script" path="res://scripts/scenes/Battlefield.gd" id="1_k2n5b"]
+[ext_resource type="Script" uid="uid://bo7xhl56evfn8" path="res://scripts/scenes/Battlefield.gd" id="1_k2n5b"]
 [ext_resource type="PackedScene" uid="uid://wudfgd30ka7g" path="res://scenes/BattleTile.tscn" id="2_rvu1o"]
 
 [node name="Battlefield" type="Node2D"]

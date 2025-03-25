@@ -10,13 +10,13 @@ class_name PlayerTiles extends RefCounted
 
 ## Weird but convenient way to make the coordinates map with the tile ids.
 ## The (0, 0) tile is at the top left (tile id 3 of first player)
-static var tiles_coords: Dictionary = {
+static var tiles_coords: Dictionary[bool, PackedVector2Array] = {
     true: PackedVector2Array([Vector2(1, 0), Vector2(1, 1), Vector2(1, 2), Vector2(0, 0), Vector2(0, 1), Vector2(0, 2)]),
     false: PackedVector2Array([Vector2(2, 0), Vector2(2, 1), Vector2(2, 2), Vector2(3, 0), Vector2(3, 1), Vector2(3, 2)])
 }
 
 var player: Player = null
-var tiles: Dictionary = {}
+var tiles: Dictionary[int, UnitTile] = {}
 
 
 func _init(p: Player) -> void:

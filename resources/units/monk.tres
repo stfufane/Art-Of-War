@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="Unit" load_steps=2 format=3 uid="uid://dhy0y3dpbnstr"]
 
-[ext_resource type="Script" path="res://scripts/resources/Unit.gd" id="1_vwydt"]
+[ext_resource type="Script" uid="uid://472kwxuhr1gl" path="res://scripts/resources/Unit.gd" id="1_vwydt"]
 
 [resource]
 resource_name = "Monk"

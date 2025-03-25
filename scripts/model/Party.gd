@@ -19,7 +19,7 @@ var id: String = Party.generate_id()
 var status: EStatus = EStatus.CREATED
 
 ## The 2 players : id -> [Player]
-var players: Dictionary = {}
+var players: Dictionary[int, Player] = {}
 var first_player: Player = null
 var second_player: Player = null
 ## Whose turn is it

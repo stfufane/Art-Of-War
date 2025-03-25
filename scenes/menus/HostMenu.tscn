@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cb36f58b35nwp"]
 
 [ext_resource type="StyleBox" uid="uid://e5bltd1uh6qj" path="res://resources/themes/MenuFrame.tres" id="1_5bsbs"]
-[ext_resource type="Script" path="res://scripts/menus/HostMenu.gd" id="1_k7i3w"]
+[ext_resource type="Script" uid="uid://cwgvkaog8yd3e" path="res://scripts/menus/HostMenu.gd" id="1_k7i3w"]
 
 [node name="HostMenu" type="PanelContainer"]
 custom_minimum_size = Vector2(384, 2.08165e-12)
