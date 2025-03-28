@@ -29,7 +29,7 @@ func register_actions() -> void:
     register_action(Action.Code.START_ATTACK, &"check_start_attack", &"start_attack")
     register_action(Action.Code.START_SUPPORT, &"check_start_support", &"start_support")
     register_action(Action.Code.RECRUIT, &"check_recruit", &"recruit")
-    register_action(Action.Code.ATTACK, Action.NO_CHECK, &"attack")
+    register_action(Action.Code.ATTACK, &"check_attack", &"attack")
     register_action(Action.Code.BLOCK_ATTACK, &"check_block_attack", &"block_attack")
     register_action(Action.Code.BLOCK_SUPPORT, &"check_block_support", &"block_support")
     register_action(Action.Code.NO_ATTACK_BLOCK, &"check_no_attack_block", &"no_attack_block")

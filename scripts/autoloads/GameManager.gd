@@ -129,6 +129,11 @@ func attack_done() -> void:
 
 
 @rpc
+func support_done() -> void:
+    Events.support_done.emit()  
+
+
+@rpc
 func attack_to_block(attacking_tile: int, target_tile: int) -> void:
     Events.attack_to_block.emit(attacking_tile, target_tile)
 

@@ -30,6 +30,19 @@ func reset_units_hp() -> void:
         tile.reset_hp()
 
 
+func disengage_units() -> void:
+    for tile in tiles.values() as Array[UnitTile]:
+        tile.engaged = false
+
+
+func engage_unit(tile_id: int) -> void:
+    tiles[tile_id].engaged = true
+
+
+func is_engaged(tile_id: int) -> bool:
+    return tiles[tile_id].engaged
+
+
 func can_set_unit(tile_id: int) -> bool:
     assert(tiles.has(tile_id), "Invalid tile id %d" % tile_id)
     if tiles[tile_id].unit != null:

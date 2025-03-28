@@ -9,6 +9,7 @@ const NOT_AUTHORIZED: String = "You're not authorized to perform this action now
 const RECRUIT_DONE: String = "You've already recruited, you can't recruit or attack this turn"
 
 # Determines from which states we can go back to the action choice.
+# TODO: check why button disappears when attacking
 const CANCELLABLE_STATES: Array[StateManager.EState] = [
     StateManager.EState.ATTACK,
     StateManager.EState.SUPPORT,
@@ -97,6 +98,14 @@ func check_start_attack() -> bool:
         return false
     if player.state.has_recruited:
         error_message = RECRUIT_DONE
+        return false
+    return true
+
+
+func check_attack(attacking_tile: int, _target_tile: int) -> bool:
+    if player.tiles.is_engaged(attacking_tile):
+        error_message = "You can't attack with an already engaged unit"
+        player.state.current = StateManager.EState.ACTION_CHOICE
         return false
     return true
 

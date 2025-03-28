@@ -148,12 +148,19 @@ func block_support(unit: Unit.EUnitType) -> void:
     opponent.state.current = StateManager.EState.SUPPORT_BLOCK
 
 
-# The opponent did not block the attack, we can apply the effects.
+# We did not block the attack, the opponent can apply the effects.
 func no_attack_block() -> void:
-    # TODO: apply attack
-    opponent.state.attack_done()
-    state.current = StateManager.EState.WAITING_FOR_PLAYER
-    opponent.state.current = StateManager.EState.ACTION_CHOICE
+    opponent.apply_attack()
+
+
+func apply_attack() -> void:
+    # TODO: actually apply the attack
+    state.attack_done()
+
+
+func apply_support() -> void:
+    # TODO: actually apply the support
+    state.support_done()
 
 
 # Several cases here :
@@ -161,7 +168,21 @@ func no_attack_block() -> void:
 # - The current player is using a support, the opponent did not block it -> apply the support or the attack
 # - The opponent is using a support to block an attack, we don't block the block -> cancel the attack
 func no_support_block() -> void:
-    pass
+    # The current player is not blocking the support block
+    if party.current_player == id:
+        if state.is_attacking:
+            # The current player did not block the support, the attack is done without any effect.
+            state.attack_done()
+        else:
+            # Cancel the support
+            state.support_done()
+    
+    # The opponent is not blocking the support block
+    else:
+        if opponent.state.is_attacking:
+            opponent.apply_attack() # Apply the opponent's attack
+        else:
+            opponent.apply_support() # Apply the opponent's support
 
 
 func add_to_kingdom(unit: Unit.EUnitType) -> void:

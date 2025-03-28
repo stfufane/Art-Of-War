@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cc0osc8mgosst"]
 
 [ext_resource type="StyleBox" uid="uid://e5bltd1uh6qj" path="res://resources/themes/MenuFrame.tres" id="1_2dk4e"]
-[ext_resource type="Script" uid="uid://b4xj8dj4yth42" path="res://scripts/menus/MainMenu.gd" id="1_oqife"]
+[ext_resource type="Script" uid="uid://07m82iuvewor" path="res://scripts/menus/MainMenu.gd" id="1_oqife"]
 [ext_resource type="Theme" uid="uid://dbrhpn2cakki" path="res://resources/themes/game_theme.tres" id="3_rl0ly"]
 [ext_resource type="FontFile" uid="uid://qmp5jybxhv3t" path="res://resources/fonts/Beyond Wonderland.ttf" id="4_g8vm3"]
 

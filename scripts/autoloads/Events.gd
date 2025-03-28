@@ -19,6 +19,7 @@ signal start_turn
 
 signal recruit_done
 signal attack_done
+signal support_done
 signal attack_to_block(attacking_unit: int, target: int)
 
 signal update_instructions(instructions: String)

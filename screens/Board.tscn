@@ -6,13 +6,13 @@
 [ext_resource type="PackedScene" uid="uid://cu2sfyvc5bcdj" path="res://scenes/Kingdom.tscn" id="3_67vue"]
 [ext_resource type="PackedScene" uid="uid://4xuy7wjmcpu8" path="res://scenes/Hand.tscn" id="4_yvn43"]
 [ext_resource type="PackedScene" uid="uid://clfro4xol21jt" path="res://scenes/menus/BlockMenu.tscn" id="9_0gqnp"]
-[ext_resource type="Script" uid="uid://3kgwsprnw8yl" path="res://scripts/scenes/CancelButton.gd" id="9_f8osr"]
+[ext_resource type="Script" uid="uid://bm846mbd28do7" path="res://scripts/scenes/CancelButton.gd" id="9_f8osr"]
 [ext_resource type="PackedScene" uid="uid://cpy4lhyy1hi7k" path="res://scenes/menus/KingMenu.tscn" id="10_uj881"]
 [ext_resource type="PackedScene" uid="uid://bbeygppwy0ath" path="res://scenes/Battlefield.tscn" id="11_nw44b"]
 [ext_resource type="PackedScene" uid="uid://c65kfclvveb3r" path="res://scenes/Reserve.tscn" id="11_x1o1o"]
 [ext_resource type="PackedScene" uid="uid://ddrf8nigaffcl" path="res://scenes/menus/TurnMenu.tscn" id="17_gchri"]
 [ext_resource type="PackedScene" uid="uid://chqg8i8ruxuo2" path="res://scenes/Instruction.tscn" id="18_3bhdf"]
-[ext_resource type="Script" uid="uid://15mbla02n73r" path="res://scripts/scenes/GameError.gd" id="19_mgppa"]
+[ext_resource type="Script" uid="uid://b4tyoknw1sg2q" path="res://scripts/scenes/GameError.gd" id="19_mgppa"]
 
 [node name="Board" type="PanelContainer"]
 anchors_preset = 15

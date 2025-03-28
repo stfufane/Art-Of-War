@@ -87,12 +87,25 @@ func attack(attacking: int, target: int) -> void:
 
 
 func attack_done() -> void:
+	# Mark the card that just attacked as engaged so it can't attack twice
+	player.tiles.engage_unit(attacking_tile)
 	is_attacking = false
 	has_attacked = true
+
+	current = StateManager.EState.ACTION_CHOICE
+	player.opponent.state.current = StateManager.EState.WAITING_FOR_PLAYER
 	# Notify both players that the attack is done.
 	GameManager.attack_done.rpc_id(player.id)
 	GameManager.attack_done.rpc_id(player.opponent.id)
 
+
+func support_done() -> void:
+	is_supporting = false
+	current = StateManager.EState.ACTION_CHOICE
+	player.opponent.state.current = StateManager.EState.WAITING_FOR_PLAYER
+	# Notify both players that the support is done.
+	GameManager.support_done.rpc_id(player.id)
+	GameManager.support_done.rpc_id(player.opponent.id)
 
 func end_turn() -> void:
 	current = StateManager.EState.WAITING_FOR_PLAYER
