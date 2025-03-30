@@ -30,6 +30,8 @@ const UNIT_RESOURCES: Dictionary[Unit.EUnitType, Unit] = {
 ## Used to display a message in the lobby
 var lobby_error: String = ""
 
+var my_turn: bool = false
+
 ## Keep track of the current hand unit that is selected
 var selected_hand_unit: HandUnit = null
 var selected_reserve_unit: ReserveUnit = null
@@ -115,7 +117,13 @@ func update_reserve(side: Board.ESide, new_units: Array) -> void:
 
 @rpc
 func start_turn() -> void:
+    my_turn = true
     Events.start_turn.emit()
+
+
+@rpc
+func end_turn() -> void:
+    my_turn = false
 
 
 @rpc
@@ -124,13 +132,13 @@ func recruit_done() -> void:
 
 
 @rpc
-func attack_done() -> void:
-    Events.attack_done.emit()
+func attack_done(attacking_unit: int) -> void:
+    Events.attack_done.emit(attacking_unit)
 
 
 @rpc
 func support_done() -> void:
-    Events.support_done.emit()  
+    Events.support_done.emit()
 
 
 @rpc

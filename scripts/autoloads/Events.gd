@@ -18,9 +18,10 @@ signal update_battlefield(side: Board.ESide, tile_id: int, unit: Unit.EUnitType)
 signal start_turn
 
 signal recruit_done
-signal attack_done
+signal attack_done(attacking_unit: int)
 signal support_done
 signal attack_to_block(attacking_unit: int, target: int)
+signal unit_captured_or_killed(unit_tile_id: int)
 
 signal update_instructions(instructions: String)
 signal display_action_error(error: String)

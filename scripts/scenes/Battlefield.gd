@@ -14,10 +14,11 @@ func _ready() -> void:
     Events.battle_tile_hovered.connect(_on_tile_hovered)
     Events.update_battlefield.connect(_on_battlefield_updated)
     Events.attack_to_block.connect(_on_attack_to_block)
-    Events.attack_done.connect(flash_all_tiles_off)
+    Events.attack_done.connect(_on_attack_done)
+    Events.unit_captured_or_killed.connect(_on_unit_captured_or_killed)
     Events.start_turn.connect(disengage_units)
     StateManager.get_state(StateManager.EState.ACTION_CHOICE).started.connect(flash_all_tiles_off)
-    
+
 
 func disengage_units() -> void:
     for tile in units.get_children() as Array[BattleTile]:
@@ -28,7 +29,7 @@ func get_tile(tile_id: int) -> BattleTile:
     for tile in units.get_children() as Array[BattleTile]:
         if tile.id == tile_id:
             return tile
-    
+
     return null
 
 
@@ -36,7 +37,7 @@ func get_enemy_tile(tile_id: int) -> BattleTile:
     for tile in enemy_units.get_children() as Array[BattleTile]:
         if tile.id == tile_id:
             return tile
-    
+
     return null
 
 
@@ -53,6 +54,16 @@ func _on_battlefield_updated(side: Board.ESide, tile_id: int, unit: Unit.EUnitTy
         if tile.id == tile_id:
             tile.set_unit(unit)
             return
+
+
+func _on_attack_done(attacking_tile: int) -> void:
+    if GameManager.my_turn:
+        get_tile(attacking_tile).unit_engaged = true
+    flash_all_tiles_off()
+
+
+func _on_unit_captured_or_killed(unit_tile_id: int) -> void:
+    get_tile(unit_tile_id).reset_unit()
 
 
 func _on_tile_clicked(tile: BattleTile) -> void:
@@ -83,7 +94,10 @@ func _on_tile_clicked(tile: BattleTile) -> void:
                 ActionsManager.run.rpc_id(1, Action.Code.RECRUIT, [tile.id, unit_type, source])
 
         StateManager.EState.ATTACK:
-            if tile.unit != null:
+            if tile.unit_engaged:
+                Events.update_instructions.emit("This unit has already attacked this turn. Choose an other one.")
+                return
+            elif tile.unit != null:
                 attacking_from = tile.id
                 tile.toggle_flash(true)
                 Events.update_instructions.emit("Select the enemy unit to attack")
@@ -131,7 +145,7 @@ func _on_tile_hovered(tile: BattleTile, state: bool) -> void:
         return
 
     # Calculate which tiles should be hinted
-    var tiles_in_reach := PartyBattlefield.get_tiles_at_reach(tile.id, tile.side == Board.ESide.PLAYER, tile.unit.type)
+    var tiles_in_reach := PartyBattlefield.get_tiles_at_reach(tile.id, tile.unit.type)
     var units_to_highlight: Control = enemy_units if tile.side == Board.ESide.PLAYER else units
     for highlight_tile in units_to_highlight.get_children() as Array[BattleTile]:
         highlight_tile.toggle_range_hint(tiles_in_reach.has(highlight_tile.id))

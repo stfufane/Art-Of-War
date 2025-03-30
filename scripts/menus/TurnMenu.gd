@@ -55,7 +55,9 @@ func _on_recruit_done() -> void:
 
 
 ## After attacking, you cannot recruit but you can still attack
-func _on_attack_done() -> void:
+func _on_attack_done(_attacking_unit: int) -> void:
+	if not GameManager.my_turn:
+		return
 	attack_done = true
 	recruit_button.hide()
 
