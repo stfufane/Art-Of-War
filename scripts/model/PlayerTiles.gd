@@ -1,5 +1,10 @@
 class_name PlayerTiles extends RefCounted
 
+enum EUnitState {
+    ALIVE,
+    CAPTURED,
+    DEAD
+}
 
 var player: Player = null
 var tiles: Dictionary[int, UnitTile] = {}
@@ -23,6 +28,14 @@ func disengage_units() -> void:
 
 func engage_unit(tile_id: int) -> void:
     tiles[tile_id].engaged = true
+
+
+func damage_unit(tile_id: int, damage: int) -> EUnitState:
+    return tiles[tile_id].take_damage(damage)
+
+
+func archer_damage_unit(tile_id: int) -> EUnitState:
+    return tiles[tile_id].take_archer_damage()
 
 
 func is_engaged(tile_id: int) -> bool:
@@ -66,6 +79,31 @@ class UnitTile:
 
     func _init(tile_id: int) -> void:
         id = tile_id
+
+    func take_damage(damage: int) -> EUnitState:
+        # When a unit has all its hp and takes exactly the same amount of damage,
+        # it's captured instead of being killed
+        if engaged:
+            if hp == unit.defense_engaged and damage == hp:
+                return EUnitState.CAPTURED
+        else:
+            if hp == unit.defense and damage == hp:
+                return EUnitState.CAPTURED
+        
+        hp -= damage
+        if hp <= 0:
+            return EUnitState.DEAD
+        
+        return EUnitState.ALIVE
+    
+    
+    # Archer inflicts exactly one damage and cannot capture a unit.
+    func take_archer_damage() -> EUnitState:
+        hp -= 1
+        if hp <= 0:
+            return EUnitState.DEAD
+        
+        return EUnitState.ALIVE
 
     func reset_hp() -> void:
         if unit != null:
