@@ -5,6 +5,9 @@ var player: Player = null ## Reference to the player holding the state
 ## Every time the state is updated by the server, the client is notified via an RPC call
 var current: StateManager.EState = StateManager.EState.WAITING_FOR_PLAYER:
 	set(state):
+		# The state can't change anymore when the party is over.
+		if player.party.status == Party.EStatus.GAME_WON:
+			return
 		current = state
 		print("%s (%d) state is now %s" % [player.label, player.id, StateManager.EState.keys()[current]])
 		StateManager.set_state.rpc_id(player.id, state)
@@ -58,9 +61,10 @@ var target_tile: int = -1
 
 var has_attacked: bool = false
 var has_recruited: bool = false
-var attack_bonus: int = 0
+var attack_bonus: int = 0 # Increases when a soldier is used as support
 
-var has_won: bool = false
+var dead_units: int = 0
+
 
 func _init(p: Player) -> void:
 	player = p

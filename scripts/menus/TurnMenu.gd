@@ -19,6 +19,8 @@ func _ready() -> void:
 	StateManager.get_state(StateManager.EState.ATTACK).started.connect(hide)
 	StateManager.get_state(StateManager.EState.SUPPORT).started.connect(hide)
 	StateManager.get_state(StateManager.EState.WAITING_FOR_PLAYER).started.connect(hide)
+	StateManager.get_state(StateManager.EState.GAME_OVER_LOSS).started.connect(hide)
+	StateManager.get_state(StateManager.EState.GAME_OVER_WIN).started.connect(hide)
 	Events.start_turn.connect(_on_turn_started)
 	Events.recruit_done.connect(_on_recruit_done)
 	Events.attack_done.connect(_on_attack_done)

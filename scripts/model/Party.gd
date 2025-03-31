@@ -10,6 +10,7 @@ extends Object
 enum EStatus {
     CREATED,
     STARTED,
+    GAME_WON,
     OVER
 }
 
@@ -117,16 +118,18 @@ func update_kingdom_status() -> void:
     GameManager.update_kingdom.rpc_id(first_player.id, first_player.kingdom.status)
     GameManager.update_kingdom.rpc_id(second_player.id, second_player.kingdom.status)
 
+    # Check if the party has ended.
+    check_kingdom_status()
+
 
 ## Checks if one player is victorious based on their kingdom's populations
-func check_kingdom_status() -> bool:
+func check_kingdom_status() -> void:
     var first_player_kingdom: Array[KingdomUnit.EStatus] = first_player.kingdom.status.values()
-    var nb_up: int = first_player_kingdom.count(KingdomUnit.EStatus.Up)
-    var nb_down: int = first_player_kingdom.count(KingdomUnit.EStatus.Down)
-    if nb_up >= 4:
-        first_player.state.has_won = true
-        return true
-    if nb_down >= 4:
-        second_player.state.has_won = true
-        return true
-    return false
+    if first_player_kingdom.count(KingdomUnit.EStatus.Up) >= 4:
+        first_player.state.current = StateManager.EState.GAME_OVER_WIN
+        second_player.state.current = StateManager.EState.GAME_OVER_LOSS
+        status = EStatus.GAME_WON
+    elif first_player_kingdom.count(KingdomUnit.EStatus.Down) >= 4:
+        second_player.state.current = StateManager.EState.GAME_OVER_WIN
+        first_player.state.current = StateManager.EState.GAME_OVER_LOSS
+        status = EStatus.GAME_WON

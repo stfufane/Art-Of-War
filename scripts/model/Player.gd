@@ -21,7 +21,6 @@ var tiles: PlayerTiles = null
 var state: PlayerState = null
 var action_check: ActionCheck = null
 
-var dead_units: int = 0
 var party: Party = null
 
 
@@ -92,6 +91,9 @@ func init_kingdom() -> void:
 
 
 func start_turn() -> void:
+    # Nothing to do if a player won the game.
+    if party.status == Party.EStatus.GAME_WON:
+        return
     party.current_player = id
     tiles.reset_units_hp()
     hand.add_unit(draw_from_deck())
@@ -186,8 +188,8 @@ func no_support_block() -> void:
 
 
 func add_to_kingdom(unit: Unit.EUnitType) -> void:
-    kingdom.add_unit(unit)
     hand.remove_unit(unit)
+    kingdom.add_unit(unit)
     end_turn()
 
 

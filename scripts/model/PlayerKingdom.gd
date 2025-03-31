@@ -21,9 +21,9 @@ var status: Dictionary[Unit.EUnitType, KingdomUnit.EStatus] = {
 }
 
 func _init(p: Player) -> void:
-    player = p
+	player = p
 
 
 func add_unit(type: Unit.EUnitType) -> void:
-    units[type] += 1
-    player.party.update_kingdom_status()
+	units[type] += 1
+	player.party.update_kingdom_status()

@@ -16,7 +16,8 @@ enum EState {
 	ATTACK_BLOCK,
 	CONSCRIPTION,
 	FINISH_TURN,
-	GAME_OVER
+	GAME_OVER_WIN,
+	GAME_OVER_LOSS
 }
 
 ## The list of all available states with their associated texts
@@ -36,7 +37,8 @@ var States: Dictionary[EState, State] = {
 	EState.ATTACK_BLOCK: State.new("You can block the enemy attack by using a guard or a king"),
 	EState.CONSCRIPTION: State.new("You must recruit 2 units to repopulate the battlefield"),
 	EState.FINISH_TURN: State.new("Finish turn"),
-	EState.GAME_OVER: State.new("Game Over :)")
+	EState.GAME_OVER_WIN: State.new("You won the game, you mastered the art of war."),
+	EState.GAME_OVER_LOSS: State.new("You lost the game, train harder to master the art of war.")
 }
 
 var current_state: EState = EState.WAITING_FOR_PLAYER

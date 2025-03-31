@@ -10,6 +10,8 @@ func _ready() -> void:
     StateManager.get_state(StateManager.EState.ATTACK).started.connect(show)
     StateManager.get_state(StateManager.EState.SUPPORT).started.connect(show)
     StateManager.get_state(StateManager.EState.FINISH_TURN).started.connect(show)
+    StateManager.get_state(StateManager.EState.GAME_OVER_LOSS).started.connect(hide)
+    StateManager.get_state(StateManager.EState.GAME_OVER_WIN).started.connect(hide)
 
 
 func _on_toggle_cancel_button(shown: bool) -> void:
