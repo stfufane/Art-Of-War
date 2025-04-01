@@ -26,6 +26,10 @@ func is_full() -> bool:
     return units.size() > 5
 
 
+func size() -> int:
+    return units.size()
+
+
 func clear() -> void:
     units.clear()
     update_hand_ui()

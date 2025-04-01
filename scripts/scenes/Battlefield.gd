@@ -15,6 +15,7 @@ func _ready() -> void:
     Events.update_battlefield.connect(_on_battlefield_updated)
     Events.attack_to_block.connect(_on_attack_to_block)
     Events.attack_done.connect(_on_attack_done)
+    Events.unit_took_damage.connect(_on_unit_took_damage)
     Events.unit_captured_or_killed.connect(_on_unit_captured_or_killed)
     Events.start_turn.connect(disengage_units)
     StateManager.get_state(StateManager.EState.ACTION_CHOICE).started.connect(flash_all_tiles_off)
@@ -22,7 +23,8 @@ func _ready() -> void:
 
 func disengage_units() -> void:
     for tile in units.get_children() as Array[BattleTile]:
-        tile.unit_engaged = false
+        if tile.unit != null:
+            tile.unit_engaged = false # Will also reset the HP of the unit.
 
 
 func get_tile(tile_id: int) -> BattleTile:
@@ -30,6 +32,7 @@ func get_tile(tile_id: int) -> BattleTile:
         if tile.id == tile_id:
             return tile
 
+    assert(false, "[Battlefield.get_tile] Invalid tile id %d" % tile_id)
     return null
 
 
@@ -38,6 +41,7 @@ func get_enemy_tile(tile_id: int) -> BattleTile:
         if tile.id == tile_id:
             return tile
 
+    assert(false, "[Battlefield.get_enemy_tile] Invalid tile id %d" % tile_id)
     return null
 
 
@@ -62,8 +66,14 @@ func _on_attack_done(attacking_tile: int) -> void:
     flash_all_tiles_off()
 
 
-func _on_unit_captured_or_killed(unit_tile_id: int) -> void:
-    get_tile(unit_tile_id).reset_unit()
+func _on_unit_took_damage(side: Board.ESide, unit_tile_id: int, damage: int) -> void:
+    var damaged_unit := get_tile(unit_tile_id) if side == Board.ESide.PLAYER else get_enemy_tile(unit_tile_id)
+    damaged_unit.take_damage(damage) # TODO animate something showing damage.
+
+
+func _on_unit_captured_or_killed(side: Board.ESide, unit_tile_id: int) -> void:
+    var dead_unit := get_tile(unit_tile_id) if side == Board.ESide.PLAYER else get_enemy_tile(unit_tile_id)
+    dead_unit.reset_unit() # TODO animate the tile disappearing.
 
 
 func _on_tile_clicked(tile: BattleTile) -> void:

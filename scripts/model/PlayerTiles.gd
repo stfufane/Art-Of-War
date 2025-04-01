@@ -42,6 +42,14 @@ func is_engaged(tile_id: int) -> bool:
     return tiles[tile_id].engaged
 
 
+func get_attack(tile_id: int) -> int:
+    return tiles[tile_id].unit.attack
+
+
+func get_unit_type(tile_id: int) -> Unit.EUnitType:
+    return tiles[tile_id].unit.type
+
+
 func can_set_unit(tile_id: int) -> bool:
     assert(tiles.has(tile_id), "Invalid tile id %d" % tile_id)
     if tiles[tile_id].unit != null:
@@ -81,20 +89,28 @@ class UnitTile:
         id = tile_id
 
     func take_damage(damage: int) -> EUnitState:
+        print("Unit %s is taking %d damage" % [unit.resource_name, damage])
+        var state := EUnitState.ALIVE
         # When a unit has all its hp and takes exactly the same amount of damage,
         # it's captured instead of being killed
         if engaged:
             if hp == unit.defense_engaged and damage == hp:
-                return EUnitState.CAPTURED
+                state = EUnitState.CAPTURED
         else:
             if hp == unit.defense and damage == hp:
-                return EUnitState.CAPTURED
+                state = EUnitState.CAPTURED
         
         hp -= damage
         if hp <= 0:
-            return EUnitState.DEAD
+            state = EUnitState.DEAD
         
-        return EUnitState.ALIVE
+        if state != EUnitState.ALIVE:
+            print("Unit %s died" % unit.resource_name)
+            unit = null # Remove the unit from the battlefield.
+        else:
+            print("Unit still has %d HP after the attack" % hp)
+
+        return state
     
     
     # Archer inflicts exactly one damage and cannot capture a unit.

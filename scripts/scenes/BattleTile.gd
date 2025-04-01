@@ -9,14 +9,17 @@ extends TextureRect
 @onready var unit_sprite := $UnitSprite as TextureRect
 
 var unit: Unit = null
+var hp: int = 0
 var hovered: bool = false
 
 var unit_engaged: bool = false:
     set(engaged):
         unit_engaged = engaged
         if unit_engaged:
+            hp = unit.defense_engaged
             self_modulate = Color(1.0, 0.7, 0.6, 1.0)
         else:
+            hp = unit.defense
             reset_color()
 
 
@@ -31,6 +34,10 @@ func set_unit(unit_type: Unit.EUnitType) -> void:
     unit_sprite.texture = load("res://resources/icons/" + unit.resource_name + ".png")
     if side == Board.ESide.ENEMY:
         unit_sprite.flip_h = true
+
+
+func take_damage(damage: int) -> void:
+    hp -= damage # TODO: display info somewhere and play information
 
 
 func reset_unit() -> void:

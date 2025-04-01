@@ -156,7 +156,28 @@ func no_attack_block() -> void:
 
 
 func apply_attack() -> void:
-    # TODO: actually apply the attack
+    var damage: int = 0
+    var opponent_unit_type := opponent.tiles.get_unit_type(state.target_tile)
+    var unit_type := tiles.get_unit_type(state.attacking_tile)
+    if unit_type == Unit.EUnitType.Soldier:
+        damage = hand.size()
+    else:
+        damage = tiles.get_attack(state.attacking_tile)
+    damage += state.attack_bonus
+    
+    var target_state := tiles.damage_unit(state.target_tile, damage)
+    match target_state:
+        PlayerTiles.EUnitState.ALIVE:
+            GameManager.unit_took_damage.rpc_id(id, Board.ESide.ENEMY, state.target_tile, damage)
+            GameManager.unit_took_damage.rpc_id(opponent.id, Board.ESide.PLAYER, state.target_tile, damage)
+            pass # Just send the new HP value of the unit to the UI.
+        PlayerTiles.EUnitState.DEAD, PlayerTiles.EUnitState.CAPTURED:
+            # Notify players that a unit died and increase the graveyard
+            GameManager.unit_killed_or_captured.rpc_id(id, Board.ESide.ENEMY, state.target_tile)
+            GameManager.unit_killed_or_captured.rpc_id(opponent.id, Board.ESide.PLAYER, state.target_tile)
+            if target_state == PlayerTiles.EUnitState.CAPTURED:
+                kingdom.add_unit(opponent_unit_type)
+
     state.attack_done()
 
 

@@ -109,6 +109,16 @@ func update_battlefield(side: Board.ESide, id: int, unit: Unit.EUnitType) -> voi
 
 
 @rpc
+func unit_killed_or_captured(side: Board.ESide, id: int) -> void:
+    Events.unit_captured_or_killed.emit(side, id)
+
+
+@rpc
+func unit_took_damage(side: Board.ESide, id: int, damage: int) -> void:
+    Events.unit_took_damage.emit(side, id, damage)
+
+
+@rpc
 func update_reserve(side: Board.ESide, new_units: Array) -> void:
     var reserve_to_update: Array[Unit.EUnitType] = reserve if side == Board.ESide.PLAYER else enemy_reserve
     reserve_to_update.assign(new_units)
