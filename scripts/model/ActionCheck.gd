@@ -8,12 +8,17 @@ const NOT_YOUR_TURN: String = "It's not your turn"
 const NOT_AUTHORIZED: String = "You're not authorized to perform this action now"
 const RECRUIT_DONE: String = "You've already recruited, you can't recruit or attack this turn"
 
-# Determines from which states we can go back to the action choice.
+## Determines from which states we can go back to the action choice.
 const CANCELLABLE_STATES: Array[StateManager.EState] = [
     StateManager.EState.ATTACK,
     StateManager.EState.SUPPORT,
     StateManager.EState.RECRUIT,
     StateManager.EState.FINISH_TURN,
+]
+
+## List of possible supports when it's the player's turn
+const AUTHORIZED_SUPPORTS: Array[Unit.EUnitType] = [
+    Unit.EUnitType.Archer, Unit.EUnitType.King, Unit.EUnitType.Monk
 ]
 
 func _init(p: Player) -> void:
@@ -85,6 +90,9 @@ func check_start_support() -> bool:
     if player.state.current != StateManager.EState.ACTION_CHOICE:
         error_message = NOT_AUTHORIZED
         return false
+    if player.reserve.is_full():
+        error_message = "Your reserve is full, you cannot add an other support"
+        return false
     return true
 
 
@@ -132,6 +140,71 @@ func check_recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitS
         error_message = "You don't have this unit in your reserve"
         return false
 
+    return true
+
+
+func check_support_choice(support_type: Unit.EUnitType) -> bool:
+    if player.party.current_player != player.id:
+        error_message = NOT_YOUR_TURN
+        return false
+    if player.state.current != StateManager.EState.SUPPORT:
+        error_message = NOT_AUTHORIZED
+        return false
+    if not AUTHORIZED_SUPPORTS.has(support_type):
+        error_message = "You can only play archer, soldier, priest or king as a support"
+        return false
+    if not player.hand.has(support_type):
+        error_message = "You don't have this unit in your hand"
+        return false
+    return true
+
+
+func check_priest_support(src_unit: Unit.EUnitType, src_tile: int, dest_tile: int) -> bool:
+    if player.party.current_player != player.id:
+        error_message = NOT_YOUR_TURN
+        return false
+    if player.state.current != StateManager.EState.PRIEST_SUPPORT:
+        error_message = NOT_AUTHORIZED
+        return false
+    if src_tile < 0:
+        if not player.reserve.has(src_unit):
+            error_message = "You do not have this unit in your reserve"
+            return false
+    else:
+        if not player.tiles.has_unit(src_tile):
+            error_message = "There is no unit on this tile"
+            return false
+    
+    if not player.tiles.has_unit(dest_tile) and not player.tiles.can_set_unit(dest_tile):
+        error_message = "You cannot put a unit here"
+        return false
+
+    return true
+
+
+func check_archer_support(target_tile: int) -> bool:
+    if player.party.current_player != player.id:
+        error_message = NOT_YOUR_TURN
+        return false
+    if player.state.current != StateManager.EState.ARCHER_SUPPORT:
+        error_message = NOT_AUTHORIZED
+        return false
+    if not player.opponent.tiles.has_unit(target_tile):
+        error_message = "There's no unit to attack on this tile"
+        return false
+    return true
+
+
+func check_soldier_support() -> bool:
+    if player.party.current_player != player.id:
+        error_message = NOT_YOUR_TURN
+        return false
+    if player.state.current != StateManager.EState.SUPPORT:
+        error_message = NOT_AUTHORIZED
+        return false
+    if not player.hand.has(Unit.EUnitType.Soldier):
+        error_message = "You don't have a soldier unit in your hand"
+        return false
     return true
 
 

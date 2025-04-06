@@ -45,6 +45,10 @@ var reserve: Array[Unit.EUnitType] = []
 var enemy_reserve: Array[Unit.EUnitType] = []
 
 
+func is_reserve_full() -> bool:
+    return reserve.size() >= 5
+
+
 #region RPC Party events called by the server
 
 @rpc
@@ -154,5 +158,10 @@ func support_done() -> void:
 @rpc
 func attack_to_block(attacking_tile: int, target_tile: int) -> void:
     Events.attack_to_block.emit(attacking_tile, target_tile)
+
+
+@rpc
+func support_to_block(unit_type: Unit.EUnitType) -> void:
+    Events.support_to_block.emit(unit_type)
 
 #endregion

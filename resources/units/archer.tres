@@ -6,7 +6,6 @@
 resource_name = "Archer"
 script = ExtResource("1_0r4t7")
 type = 4
-name = "Archer"
 attack = 1
 defense = 2
 defense_engaged = 1

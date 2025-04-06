@@ -2,7 +2,7 @@ class_name Hand extends UnitsHolder
 
 
 func _ready() -> void:
-	super()
+	super ()
 	default_unit = preload("res://scenes/characters/HandUnit.tscn")
 	Events.hand_unit_clicked.connect(unit_clicked)
 	Events.hand_updated.connect(update_hand)
@@ -20,12 +20,12 @@ func update_hand() -> void:
 
 
 func set_selected_unit(unit: ClickableUnit) -> void:
-	super(unit)
+	super (unit)
 	GameManager.selected_hand_unit = unit
 
 
 func unit_clicked(unit: ClickableUnit) -> void:
-	super(unit)
+	super (unit)
 	match StateManager.current_state:
 		StateManager.EState.INIT_BATTLEFIELD, StateManager.EState.INIT_RESERVE:
 			toggle_unit_tilt(unit)
@@ -37,6 +37,19 @@ func unit_clicked(unit: ClickableUnit) -> void:
 			if not GameManager.reserve.is_empty():
 				return
 			toggle_unit_tilt(unit)
+		
+		StateManager.EState.SUPPORT:
+			# Can't use a support if the reserve is full
+			if GameManager.is_reserve_full():
+				return
+			
+			match unit.unit.type:
+				Unit.EUnitType.Soldier:
+					ActionsManager.run.rpc_id(1, Action.Code.SOLDIER_SUPPORT)
+				Unit.EUnitType.Archer, Unit.EUnitType.Monk, Unit.EUnitType.King:
+					ActionsManager.run.rpc_id(1, Action.Code.SUPPORT_CHOICE, [unit.unit.type])
+				_:
+					pass
 
 		StateManager.EState.FINISH_TURN:
 			ActionsManager.run.rpc_id(1, Action.Code.ADD_TO_KINGDOM, [unit.unit.type])

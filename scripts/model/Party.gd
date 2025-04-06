@@ -102,7 +102,7 @@ func init_kingdoms() -> void:
 ## Compares the two players' kingdoms to see which units are winning on both sides
 func update_kingdom_status() -> void:
     for unit_type: Unit.EUnitType in Unit.EUnitType.values():
-        if unit_type == Unit.EUnitType.King:
+        if unit_type == Unit.EUnitType.King or unit_type == Unit.EUnitType.None:
             continue
         if first_player.kingdom.units[unit_type] == second_player.kingdom.units[unit_type]:
             first_player.kingdom.status[unit_type] = KingdomUnit.EStatus.Equal

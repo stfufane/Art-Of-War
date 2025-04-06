@@ -132,6 +132,25 @@ func attack(attacking_tile: int, target_tile: int) -> void:
     GameManager.attack_to_block.rpc_id(opponent.id, attacking_tile, target_tile)
 
 
+func support_choice(unit_type: Unit.EUnitType) -> void:
+    match unit_type:
+        Unit.EUnitType.King:
+            state.current = StateManager.EState.KING_SUPPORT
+        Unit.EUnitType.Archer:
+            state.current = StateManager.EState.ARCHER_SUPPORT
+        Unit.EUnitType.Monk:
+            state.current = StateManager.EState.PRIEST_SUPPORT
+        _:
+            pass
+
+
+func soldier_support() -> void:
+    state.support_unit = Unit.EUnitType.Soldier
+    state.current = StateManager.EState.WAITING_FOR_PLAYER
+    opponent.state.current = StateManager.EState.SUPPORT_BLOCK
+    GameManager.support_to_block.rpc_id(opponent.id, state.support_unit)
+
+
 func block_attack(unit: Unit.EUnitType) -> void:
     # The unit used to block is added to the reserve and removed from the hand
     reserve.add_unit(unit)
@@ -164,8 +183,8 @@ func apply_attack() -> void:
     else:
         damage = tiles.get_attack(state.attacking_tile)
     damage += state.attack_bonus
-    
-    var target_state := tiles.damage_unit(state.target_tile, damage)
+
+    var target_state := opponent.tiles.damage_unit(state.target_tile, damage)
     match target_state:
         PlayerTiles.EUnitState.ALIVE:
             GameManager.unit_took_damage.rpc_id(id, Board.ESide.ENEMY, state.target_tile, damage)
@@ -182,7 +201,11 @@ func apply_attack() -> void:
 
 
 func apply_support() -> void:
-    # TODO: actually apply the support
+    match state.support_unit:
+        Unit.EUnitType.Soldier:
+            state.attack_bonus += 1
+        _:
+            pass
     state.support_done()
 
 
@@ -199,7 +222,7 @@ func no_support_block() -> void:
         else:
             # Cancel the support
             state.support_done()
-    
+
     # The opponent is not blocking the support block
     else:
         if opponent.state.is_attacking:
@@ -216,7 +239,7 @@ func add_to_kingdom(unit: Unit.EUnitType) -> void:
 
 func prompt_end_turn() -> void:
     state.current = StateManager.EState.FINISH_TURN
-    
+
 
 func end_turn() -> void:
     state.end_turn()

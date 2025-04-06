@@ -42,21 +42,29 @@ func is_engaged(tile_id: int) -> bool:
     return tiles[tile_id].engaged
 
 
+func has_unit(tile_id: int) -> bool:
+    return tiles[tile_id].unit != null
+
+
 func get_attack(tile_id: int) -> int:
-    return tiles[tile_id].unit.attack
+    if has_unit(tile_id):
+        return tiles[tile_id].unit.attack
+    return 0
 
 
 func get_unit_type(tile_id: int) -> Unit.EUnitType:
-    return tiles[tile_id].unit.type
+    if has_unit(tile_id):
+        return tiles[tile_id].unit.type
+    return Unit.EUnitType.None
 
 
 func can_set_unit(tile_id: int) -> bool:
     assert(tiles.has(tile_id), "Invalid tile id %d" % tile_id)
-    if tiles[tile_id].unit != null:
+    if has_unit(tile_id):
         return false
     # You can't put a tile on the back row if the front row is empty
     if tile_id > 2:
-        if tiles[tile_id - 3].unit == null:
+        if not has_unit(tile_id - 3):
             return false
     return true
 
@@ -82,7 +90,7 @@ class UnitTile:
     var engaged: bool = false:
         set(e):
             engaged = e
-            if e:
+            if e and unit != null:
                 hp = unit.defense_engaged
 
     func _init(tile_id: int) -> void:
@@ -99,11 +107,11 @@ class UnitTile:
         else:
             if hp == unit.defense and damage == hp:
                 state = EUnitState.CAPTURED
-        
+
         hp -= damage
         if hp <= 0:
             state = EUnitState.DEAD
-        
+
         if state != EUnitState.ALIVE:
             print("Unit %s died" % unit.resource_name)
             unit = null # Remove the unit from the battlefield.
@@ -111,14 +119,14 @@ class UnitTile:
             print("Unit still has %d HP after the attack" % hp)
 
         return state
-    
-    
+
+
     # Archer inflicts exactly one damage and cannot capture a unit.
     func take_archer_damage() -> EUnitState:
         hp -= 1
         if hp <= 0:
             return EUnitState.DEAD
-        
+
         return EUnitState.ALIVE
 
     func reset_hp() -> void:
