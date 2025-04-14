@@ -30,7 +30,7 @@ func unit_clicked(unit: ClickableUnit) -> void:
 		StateManager.EState.INIT_BATTLEFIELD, StateManager.EState.INIT_RESERVE:
 			toggle_unit_tilt(unit)
 			if StateManager.current_state == StateManager.EState.INIT_RESERVE:
-				ActionsManager.run.rpc_id(1, Action.Code.INIT_RESERVE, [unit.unit.type])
+				ActionsManager.do(Action.Code.INIT_RESERVE, [unit.unit.type])
 		
 		StateManager.EState.RECRUIT:
 			# Recruitment must be made from the reserve if it's not empty
@@ -45,14 +45,14 @@ func unit_clicked(unit: ClickableUnit) -> void:
 			
 			match unit.unit.type:
 				Unit.EUnitType.Soldier:
-					ActionsManager.run.rpc_id(1, Action.Code.SOLDIER_SUPPORT)
-				Unit.EUnitType.Archer, Unit.EUnitType.Monk, Unit.EUnitType.King:
-					ActionsManager.run.rpc_id(1, Action.Code.SUPPORT_CHOICE, [unit.unit.type])
+					ActionsManager.do(Action.Code.SOLDIER_SUPPORT)
+				Unit.EUnitType.Archer, Unit.EUnitType.Priest, Unit.EUnitType.King:
+					ActionsManager.do(Action.Code.SUPPORT_CHOICE, [unit.unit.type])
 				_:
 					pass
 
 		StateManager.EState.FINISH_TURN:
-			ActionsManager.run.rpc_id(1, Action.Code.ADD_TO_KINGDOM, [unit.unit.type])
+			ActionsManager.do(Action.Code.ADD_TO_KINGDOM, [unit.unit.type])
 		
 		_:
 			pass

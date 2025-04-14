@@ -72,22 +72,22 @@ func _on_turn_started() -> void:
 
 
 func _on_attack_button_pressed() -> void:
-	ActionsManager.run.rpc_id(1, Action.Code.START_ATTACK)
+	ActionsManager.do(Action.Code.START_ATTACK)
 
 
 func _on_support_button_pressed() -> void:
-	ActionsManager.run.rpc_id(1, Action.Code.START_SUPPORT)
+	ActionsManager.do(Action.Code.START_SUPPORT)
 
 
 func _on_recruit_button_pressed() -> void:
-	ActionsManager.run.rpc_id(1, Action.Code.START_RECRUIT)
+	ActionsManager.do(Action.Code.START_RECRUIT)
 
 
 func _on_end_turn_button_pressed() -> void:
 	match StateManager.current_state:
 		StateManager.EState.ACTION_CHOICE:
-			ActionsManager.run.rpc_id(1, Action.Code.PROMPT_END_TURN)
+			ActionsManager.do(Action.Code.PROMPT_END_TURN)
 		StateManager.EState.FINISH_TURN:
-			ActionsManager.run.rpc_id(1, Action.Code.END_TURN)
+			ActionsManager.do(Action.Code.END_TURN)
 		_:
 			return

@@ -30,23 +30,23 @@ func _support_block_started() -> void:
 func _on_king_button_pressed() -> void:
     if StateManager.current_state == StateManager.EState.ATTACK_BLOCK:
         # The player is blocking an attack
-        ActionsManager.run.rpc_id(1, Action.Code.BLOCK_ATTACK, [Unit.EUnitType.King])
+        ActionsManager.do(Action.Code.BLOCK_ATTACK, [Unit.EUnitType.King])
     elif StateManager.current_state == StateManager.EState.SUPPORT_BLOCK:
         # The player is blocking a support
-        ActionsManager.run.rpc_id(1, Action.Code.BLOCK_SUPPORT, [Unit.EUnitType.King])
+        ActionsManager.do(Action.Code.BLOCK_SUPPORT, [Unit.EUnitType.King])
 
 
 func _on_guard_wizard_button_pressed() -> void:
     if StateManager.current_state == StateManager.EState.ATTACK_BLOCK:
         # The player is blocking an attack
-        ActionsManager.run.rpc_id(1, Action.Code.BLOCK_ATTACK, [Unit.EUnitType.Guard])
+        ActionsManager.do(Action.Code.BLOCK_ATTACK, [Unit.EUnitType.Guard])
     elif StateManager.current_state == StateManager.EState.SUPPORT_BLOCK:
         # The player is blocking a support
-        ActionsManager.run.rpc_id(1, Action.Code.BLOCK_SUPPORT, [Unit.EUnitType.Wizard])
+        ActionsManager.do(Action.Code.BLOCK_SUPPORT, [Unit.EUnitType.Wizard])
 
 
 func _on_pass_button_pressed() -> void:
     if StateManager.current_state == StateManager.EState.ATTACK_BLOCK:
-        ActionsManager.run.rpc_id(1, Action.Code.NO_ATTACK_BLOCK)
+        ActionsManager.do(Action.Code.NO_ATTACK_BLOCK)
     elif StateManager.current_state == StateManager.EState.SUPPORT_BLOCK:
-        ActionsManager.run.rpc_id(1, Action.Code.NO_SUPPORT_BLOCK)
+        ActionsManager.do(Action.Code.NO_SUPPORT_BLOCK)

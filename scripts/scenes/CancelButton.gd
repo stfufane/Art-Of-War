@@ -22,4 +22,4 @@ func _on_toggle_cancel_button(shown: bool) -> void:
 
 
 func _on_pressed() -> void:
-    ActionsManager.run.rpc_id(1, Action.Code.CANCEL_ACTION)
+    ActionsManager.do(Action.Code.CANCEL_ACTION)

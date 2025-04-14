@@ -85,7 +85,7 @@ func _on_tile_clicked(tile: BattleTile) -> void:
     match StateManager.current_state:
         StateManager.EState.INIT_BATTLEFIELD:
             if tile.unit == null and GameManager.selected_hand_unit != null:
-                ActionsManager.run.rpc_id(1, Action.Code.INIT_BATTLEFIELD,
+                ActionsManager.do(Action.Code.INIT_BATTLEFIELD,
                     [tile.id, GameManager.selected_hand_unit.unit.type])
 
         StateManager.EState.RECRUIT:
@@ -101,7 +101,7 @@ func _on_tile_clicked(tile: BattleTile) -> void:
                     unit_type = GameManager.selected_reserve_unit.unit.type
                     source = Board.EUnitSource.RESERVE
 
-                ActionsManager.run.rpc_id(1, Action.Code.RECRUIT, [tile.id, unit_type, source])
+                ActionsManager.do(Action.Code.RECRUIT, [tile.id, unit_type, source])
 
         StateManager.EState.ATTACK:
             if tile.unit_engaged:

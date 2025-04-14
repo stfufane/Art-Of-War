@@ -13,6 +13,10 @@ func register_action(code: Action.Code, in_check: StringName, in_action: StringN
     actions[code] = Action.new(code, in_check, in_action)
 
 
+func do(code: Action.Code, args: Array = []) -> void:
+    run.rpc_id(1, code, args)
+
+
 @rpc("any_peer")
 func run(code: Action.Code, args: Array = []) -> void:
     assert(actions.has(code), "Could not find the action with code " + Action.Code.keys()[code] + ", did you register it?")
