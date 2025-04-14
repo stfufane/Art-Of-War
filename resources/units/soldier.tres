@@ -6,7 +6,6 @@
 resource_name = "Soldier"
 script = ExtResource("1_ndgov")
 type = 1
-name = "Soldier"
 attack = 0
 defense = 2
 defense_engaged = 1

@@ -18,7 +18,7 @@ const CANCELLABLE_STATES: Array[StateManager.EState] = [
 
 ## List of possible supports when it's the player's turn
 const AUTHORIZED_SUPPORTS: Array[Unit.EUnitType] = [
-    Unit.EUnitType.Archer, Unit.EUnitType.King, Unit.EUnitType.Monk
+    Unit.EUnitType.Archer, Unit.EUnitType.King, Unit.EUnitType.Priest, Unit.EUnitType.Soldier
 ]
 
 func _init(p: Player) -> void:

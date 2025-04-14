@@ -23,7 +23,7 @@ const UNIT_RESOURCES: Dictionary[Unit.EUnitType, Unit] = {
     Unit.EUnitType.Soldier: preload("res://resources/units/soldier.tres") as Unit,
     Unit.EUnitType.Guard: preload("res://resources/units/guard.tres") as Unit,
     Unit.EUnitType.Wizard: preload("res://resources/units/wizard.tres") as Unit,
-    Unit.EUnitType.Monk: preload("res://resources/units/monk.tres") as Unit,
+    Unit.EUnitType.Priest: preload("res://resources/units/priest.tres") as Unit,
     Unit.EUnitType.Archer: preload("res://resources/units/archer.tres") as Unit
 }
 

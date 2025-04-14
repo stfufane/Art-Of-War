@@ -42,7 +42,7 @@ func init_party() -> void:
         deck.append(Unit.EUnitType.Archer)
         deck.append(Unit.EUnitType.Guard)
         deck.append(Unit.EUnitType.Wizard)
-        deck.append(Unit.EUnitType.Monk)
+        deck.append(Unit.EUnitType.Priest)
     deck.shuffle()
 
     for _i in range(3):
@@ -138,7 +138,7 @@ func support_choice(unit_type: Unit.EUnitType) -> void:
             state.current = StateManager.EState.KING_SUPPORT
         Unit.EUnitType.Archer:
             state.current = StateManager.EState.ARCHER_SUPPORT
-        Unit.EUnitType.Monk:
+        Unit.EUnitType.Priest:
             state.current = StateManager.EState.PRIEST_SUPPORT
         _:
             pass

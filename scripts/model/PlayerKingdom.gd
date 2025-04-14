@@ -7,7 +7,7 @@ var units: Dictionary[Unit.EUnitType, int] = {
 	Unit.EUnitType.Soldier: 0,
 	Unit.EUnitType.Guard: 0,
 	Unit.EUnitType.Wizard: 0,
-	Unit.EUnitType.Monk: 0,
+	Unit.EUnitType.Priest: 0,
 	Unit.EUnitType.Archer: 0
 }
 
@@ -16,7 +16,7 @@ var status: Dictionary[Unit.EUnitType, KingdomUnit.EStatus] = {
 	Unit.EUnitType.Soldier: KingdomUnit.EStatus.Equal,
 	Unit.EUnitType.Guard: KingdomUnit.EStatus.Equal,
 	Unit.EUnitType.Wizard: KingdomUnit.EStatus.Equal,
-	Unit.EUnitType.Monk: KingdomUnit.EStatus.Equal,
+	Unit.EUnitType.Priest: KingdomUnit.EStatus.Equal,
 	Unit.EUnitType.Archer: KingdomUnit.EStatus.Equal
 }
 

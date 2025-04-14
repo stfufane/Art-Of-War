@@ -8,7 +8,7 @@ enum EUnitType {
 	Guard,
 	Wizard,
 	Archer,
-	Monk,
+	Priest,
 	None # To allow returning invalid unit type
 }
 

@@ -7,7 +7,7 @@ const ONE = preload("res://resources/graphics/plus_one.png")
 @onready var units: Dictionary[Unit.EUnitType, KingdomUnit] = {
 	Unit.EUnitType.Soldier: $Soldier as KingdomUnit,
 	Unit.EUnitType.Guard: $Guard as KingdomUnit,
-	Unit.EUnitType.Monk: $Monk as KingdomUnit,
+	Unit.EUnitType.Priest: $Priest as KingdomUnit,
 	Unit.EUnitType.Archer: $Archer as KingdomUnit,
 	Unit.EUnitType.Wizard: $Wizard as KingdomUnit
 }
