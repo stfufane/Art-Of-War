@@ -4,9 +4,6 @@ extends Node2D
 @onready var units := $Units as Control
 @onready var enemy_units := $EnemyUnits as Control
 
-## The id of the tile the player is attacking from
-var attacking_from: int = -1
-
 
 func _ready() -> void:
     Events.battle_tile_clicked.connect(_on_tile_clicked)
@@ -15,6 +12,7 @@ func _ready() -> void:
     Events.update_battlefield.connect(_on_battlefield_updated)
     Events.attack_to_block.connect(_on_attack_to_block)
     Events.attack_done.connect(_on_attack_done)
+    Events.support_done.connect(_on_support_done)
     Events.unit_took_damage.connect(_on_unit_took_damage)
     Events.unit_captured_or_killed.connect(_on_unit_captured_or_killed)
     Events.start_turn.connect(disengage_units)
@@ -84,39 +82,36 @@ func _on_tile_clicked(tile: BattleTile) -> void:
 
     match StateManager.current_state:
         StateManager.EState.INIT_BATTLEFIELD:
-            if tile.unit == null and GameManager.selected_hand_unit != null:
-                ActionsManager.do(Action.Code.INIT_BATTLEFIELD,
-                    [tile.id, GameManager.selected_hand_unit.unit.type])
+            if tile.unit == null:
+                GameManager.init_battlefield(tile.id)
 
         StateManager.EState.RECRUIT:
+            if GameManager.selected_hand_unit == null and GameManager.selected_reserve_unit == null:
+                return
             if tile.unit == null:
-                if GameManager.selected_hand_unit == null and GameManager.selected_reserve_unit == null:
-                    return
-                var unit_type: Unit.EUnitType
-                var source: Board.EUnitSource
-                if GameManager.selected_hand_unit != null:
-                    unit_type = GameManager.selected_hand_unit.unit.type
-                    source = Board.EUnitSource.HAND
-                else:
-                    unit_type = GameManager.selected_reserve_unit.unit.type
-                    source = Board.EUnitSource.RESERVE
-
-                ActionsManager.do(Action.Code.RECRUIT, [tile.id, unit_type, source])
+                GameManager.recruit(tile.id)
 
         StateManager.EState.ATTACK:
             if tile.unit_engaged:
                 Events.update_instructions.emit("This unit has already attacked this turn. Choose an other one.")
                 return
             elif tile.unit != null:
-                attacking_from = tile.id
+                GameManager.selected_tile_id = tile.id
                 tile.toggle_flash(true)
                 Events.update_instructions.emit("Select the enemy unit to attack")
             else:
-                var attacking_tile := get_tile(attacking_from)
+                var attacking_tile := get_tile(GameManager.selected_tile_id)
                 if attacking_tile != null:
                     attacking_tile.toggle_flash(false)
-                attacking_from = -1
+                GameManager.selected_tile_id = -1
                 Events.update_instructions.emit("Select the unit to attack from")
+
+        StateManager.EState.PRIEST_SUPPORT:
+            if tile.unit == null:
+                return
+            GameManager.add_switching_unit(tile.id)
+            tile.toggle_flash(GameManager.switching_units.has(tile.id))
+            GameManager.priest_support()
 
         _:
             pass
@@ -125,13 +120,17 @@ func _on_tile_clicked(tile: BattleTile) -> void:
 func _on_enemy_tile_clicked(tile: BattleTile) -> void:
     match StateManager.current_state:
         StateManager.EState.ATTACK:
-            if attacking_from == -1 or tile.unit == null:
+            if GameManager.selected_tile_id == -1 or tile.unit == null:
                 return
 
             tile.toggle_flash(true)
             Events.toggle_cancel_button.emit(false) # Cannot cancel anymore
-            ActionsManager.run.rpc_id(1, Action.Code.ATTACK, [attacking_from, tile.id])
-
+            ActionsManager.do(Action.Code.ATTACK, [GameManager.selected_tile_id, tile.id])
+        StateManager.EState.ARCHER_SUPPORT:
+            if tile.unit == null:
+                return
+            ActionsManager.do(Action.Code.ARCHER_SUPPORT, [tile.id])
+            
         _:
             pass
 
@@ -143,7 +142,7 @@ func _on_tile_hovered(tile: BattleTile, state: bool) -> void:
 
     # Do not display the reach when selecting a target
     if tile.side == Board.ESide.ENEMY and \
-        StateManager.current_state == StateManager.EState.ATTACK and attacking_from != -1:
+        StateManager.current_state == StateManager.EState.ATTACK and GameManager.selected_tile_id != -1:
         return
 
     # Turn off all the hints
@@ -164,3 +163,8 @@ func _on_tile_hovered(tile: BattleTile, state: bool) -> void:
 func _on_attack_to_block(attacking_tile: int, target_tile: int) -> void:
     get_enemy_tile(attacking_tile).toggle_flash(true)
     get_tile(target_tile).toggle_flash(true)
+
+
+func _on_support_done() -> void:
+    for tile in units.get_children() as Array[BattleTile]:
+        tile.toggle_flash(false)

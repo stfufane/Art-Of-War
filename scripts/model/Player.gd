@@ -136,6 +136,7 @@ func support_choice(unit_type: Unit.EUnitType) -> void:
     match unit_type:
         Unit.EUnitType.King:
             state.current = StateManager.EState.KING_SUPPORT
+            state.king_support = true
         Unit.EUnitType.Archer:
             state.current = StateManager.EState.ARCHER_SUPPORT
         Unit.EUnitType.Priest:
@@ -145,10 +146,24 @@ func support_choice(unit_type: Unit.EUnitType) -> void:
 
 
 func soldier_support() -> void:
-    state.support_unit = Unit.EUnitType.Soldier
+    trigger_support_block(Unit.EUnitType.Soldier)
+
+
+func archer_support(target_tile: int) -> void:
+    state.archer_target_tile = target_tile
+    trigger_support_block(Unit.EUnitType.Archer)
+
+
+func priest_support(src_unit: Unit.EUnitType, src_tile: int, dest_tile: int) -> void:
+    state.priest_action = PlayerState.PriestAction.new(src_unit, src_tile, dest_tile)
+    trigger_support_block(Unit.EUnitType.Priest)
+
+
+func trigger_support_block(support_unit: Unit.EUnitType) -> void:
+    state.support_unit = support_unit
     state.current = StateManager.EState.WAITING_FOR_PLAYER
     opponent.state.current = StateManager.EState.SUPPORT_BLOCK
-    GameManager.support_to_block.rpc_id(opponent.id, state.support_unit)
+    GameManager.support_to_block.rpc_id(opponent.id, support_unit)
 
 
 func block_attack(unit: Unit.EUnitType) -> void:
@@ -189,7 +204,6 @@ func apply_attack() -> void:
         PlayerTiles.EUnitState.ALIVE:
             GameManager.unit_took_damage.rpc_id(id, Board.ESide.ENEMY, state.target_tile, damage)
             GameManager.unit_took_damage.rpc_id(opponent.id, Board.ESide.PLAYER, state.target_tile, damage)
-            pass # Just send the new HP value of the unit to the UI.
         PlayerTiles.EUnitState.DEAD, PlayerTiles.EUnitState.CAPTURED:
             # Notify players that a unit died and increase the graveyard
             GameManager.unit_killed_or_captured.rpc_id(id, Board.ESide.ENEMY, state.target_tile)
@@ -204,8 +218,31 @@ func apply_support() -> void:
     match state.support_unit:
         Unit.EUnitType.Soldier:
             state.attack_bonus += 1
+        Unit.EUnitType.Priest:
+            if state.priest_action.src_tile > -1:
+                tiles.swap_units(state.priest_action.src_tile, state.priest_action.dest_tile)
+            else:
+                var replaced_unit := tiles.get_unit_type(state.priest_action.dest_tile)
+                # Exchange the units in the reserve
+                reserve.remove_unit(state.priest_action.src_unit)
+                reserve.add_unit(replaced_unit)
+                tiles.set_unit(state.priest_action.dest_tile, GameManager.UNIT_RESOURCES[state.priest_action.src_unit].duplicate() as Unit)
+        Unit.EUnitType.Archer:
+            var target_state := opponent.tiles.archer_damage_unit(state.archer_target_tile)
+            match target_state:
+                PlayerTiles.EUnitState.ALIVE:
+                    GameManager.unit_took_damage.rpc_id(id, Board.ESide.ENEMY, state.archer_target_tile, 1)
+                    GameManager.unit_took_damage.rpc_id(opponent.id, Board.ESide.PLAYER, state.archer_target_tile, 1)
+                PlayerTiles.EUnitState.DEAD:
+                    # Notify players that a unit died and increase the graveyard
+                    GameManager.unit_killed_or_captured.rpc_id(id, Board.ESide.ENEMY, state.archer_target_tile)
+                    GameManager.unit_killed_or_captured.rpc_id(opponent.id, Board.ESide.PLAYER, state.archer_target_tile)
+                _:
+                    # You can't capture when using an archer to inflict damage to a unit
+                    pass
         _:
             pass
+    
     state.support_done()
 
 

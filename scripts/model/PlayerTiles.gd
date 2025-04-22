@@ -30,6 +30,18 @@ func engage_unit(tile_id: int) -> void:
     tiles[tile_id].engaged = true
 
 
+func swap_units(tile_id_1: int, tile_id_2: int) -> void:
+    # First swap all the unit contents
+    var tile_1: UnitTile = tiles[tile_id_1]
+    tiles[tile_id_1] = tiles[tile_id_2]
+    tiles[tile_id_2] = tile_1
+
+    # Then reset the ids and update the UI accordingly
+    tiles[tile_id_1].id = tile_id_1
+    tiles[tile_id_2].id = tile_id_2
+    update_battlefield_ui(tile_id_1, tiles[tile_id_1].unit.type)
+    update_battlefield_ui(tile_id_2, tiles[tile_id_2].unit.type)
+
 func damage_unit(tile_id: int, damage: int) -> EUnitState:
     return tiles[tile_id].take_damage(damage)
 
@@ -79,7 +91,7 @@ func update_battlefield_ui(tile_id: int, unit_type: Unit.EUnitType) -> void:
     GameManager.update_battlefield.rpc_id(player.opponent.id, Board.ESide.ENEMY, tile_id, unit_type)
 
 
-class UnitTile:
+class UnitTile extends RefCounted:
     var id: int
     var hp: int = 0
     var unit: Unit = null:

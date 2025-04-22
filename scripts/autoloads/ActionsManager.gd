@@ -34,6 +34,7 @@ func register_actions() -> void:
     register_action(Action.Code.START_SUPPORT, &"check_start_support", &"start_support")
     register_action(Action.Code.RECRUIT, &"check_recruit", &"recruit")
     register_action(Action.Code.SUPPORT_CHOICE, &"check_support_choice", &"support_choice")
+    register_action(Action.Code.KING_SUPPORT, &"check_king_support", &"support_choice") # King support is a special case of support choice
     register_action(Action.Code.PRIEST_SUPPORT, &"check_priest_support", &"priest_support")
     register_action(Action.Code.ARCHER_SUPPORT, &"check_archer_support", &"archer_support")
     register_action(Action.Code.SOLDIER_SUPPORT, &"check_soldier_support", &"soldier_support")

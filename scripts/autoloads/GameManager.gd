@@ -35,6 +35,9 @@ var my_turn: bool = false
 ## Keep track of the current hand unit that is selected
 var selected_hand_unit: HandUnit = null
 var selected_reserve_unit: ReserveUnit = null
+var selected_tile_id: int = -1
+var selected_enemy_tile_id: int = -1
+var switching_units: Array[int] = []
 
 ## Units available in hand (init with dummy values for local testing)
 var units: Array[Unit.EUnitType] = [Unit.EUnitType.Soldier, Unit.EUnitType.Wizard, Unit.EUnitType.Archer]
@@ -45,8 +48,57 @@ var reserve: Array[Unit.EUnitType] = []
 var enemy_reserve: Array[Unit.EUnitType] = []
 
 
+#region Local game events to trigger server events
+
 func is_reserve_full() -> bool:
     return reserve.size() >= 5
+
+
+func init_battlefield(tile_id: int) -> void:
+    if selected_hand_unit != null:
+        ActionsManager.do(Action.Code.INIT_BATTLEFIELD, [tile_id, selected_hand_unit.unit.type])
+
+
+func recruit(tile_id: int) -> void:
+    var unit_type: Unit.EUnitType
+    var source: Board.EUnitSource
+    if selected_hand_unit != null:
+        unit_type = selected_hand_unit.unit.type
+        source = Board.EUnitSource.HAND
+    else:
+        unit_type = selected_reserve_unit.unit.type
+        source = Board.EUnitSource.RESERVE
+
+    ActionsManager.do(Action.Code.RECRUIT, [tile_id, unit_type, source])
+
+
+func add_switching_unit(tile_id: int) -> void:
+    if switching_units.has(tile_id):
+        switching_units.erase(tile_id)
+        return
+    else:
+        switching_units.append(tile_id)
+
+    if switching_units.size() > 1 and selected_reserve_unit != null:
+        selected_reserve_unit = null
+
+    # If we have more than 2 units, remove the first one    
+    if switching_units.size() > 2:
+        switching_units.pop_front()
+    
+
+func priest_support() -> void:
+    if switching_units.is_empty():
+        return
+    if switching_units.size() == 1 and selected_reserve_unit == null:
+        return
+    
+    var src_unit_type := selected_reserve_unit.unit.type if selected_reserve_unit != null else Unit.EUnitType.None
+    var dest_tile: int = switching_units.front()
+    var src_tile: int = switching_units.back() if switching_units.size() > 1 else -1
+    ActionsManager.do(Action.Code.PRIEST_SUPPORT, [src_unit_type, src_tile, dest_tile])
+
+#endregion
 
 
 #region RPC Party events called by the server

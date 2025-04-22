@@ -54,14 +54,19 @@ var is_attacking: bool = false:
             attacking_tile = -1
             target_tile = -1
 
+
+# TODO: group inside a SupportData utilitary class
 var support_unit: Unit.EUnitType = Unit.EUnitType.None
+var king_support: bool = false
+var priest_action: PriestAction = null
+var archer_target_tile: int = -1
+var attack_bonus: int = 0 # Increases when a soldier is used as support
 
 var attacking_tile: int = -1
 var target_tile: int = -1
 
 var has_attacked: bool = false
 var has_recruited: bool = false
-var attack_bonus: int = 0 # Increases when a soldier is used as support
 
 var dead_units: int = 0
 
@@ -109,7 +114,20 @@ func is_supporting() -> bool:
 
 
 func support_done() -> void:
+    # Remove the used support from the hand and add it to the reserve
+    if king_support: # Handle the case of king support
+        player.hand.remove_unit(Unit.EUnitType.King)
+        player.reserve.add_unit(Unit.EUnitType.King)
+    else:
+        player.hand.remove_unit(support_unit)
+        player.reserve.add_unit(support_unit)
+    
+    # Reset all support data
     support_unit = Unit.EUnitType.None
+    king_support = false
+    priest_action = null
+    archer_target_tile = -1
+
     current = StateManager.EState.ACTION_CHOICE
     player.opponent.state.current = StateManager.EState.WAITING_FOR_PLAYER
     # Notify both players that the support is done.
@@ -120,3 +138,13 @@ func support_done() -> void:
 func end_turn() -> void:
     current = StateManager.EState.WAITING_FOR_PLAYER
     GameManager.end_turn.rpc_id(player.id)
+
+
+class PriestAction extends RefCounted:
+    var src_unit: Unit.EUnitType
+    var src_tile: int
+    var dest_tile: int
+    func _init(s_u: Unit.EUnitType, s_t: int, d_t: int) -> void:
+        src_unit = s_u
+        src_tile = s_t
+        dest_tile = d_t
