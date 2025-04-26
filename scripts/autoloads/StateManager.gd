@@ -56,4 +56,5 @@ func set_state(state: EState) -> void:
 	current_state = state
 	var new_state := get_state(current_state)
 	Events.update_instructions.emit(new_state.instruction)
+	Events.state_changed.emit(state)
 	new_state.started.emit()

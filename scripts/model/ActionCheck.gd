@@ -9,7 +9,7 @@ const NOT_AUTHORIZED: String = "You're not authorized to perform this action now
 const RECRUIT_DONE: String = "You've already recruited, you can't recruit or attack this turn"
 
 ## Determines from which states we can go back to the action choice.
-const CANCELLABLE_STATES: Array[StateManager.EState] = [
+static var CANCELLABLE_STATES: Array[StateManager.EState] = [
     StateManager.EState.ATTACK,
     StateManager.EState.SUPPORT,
     StateManager.EState.KING_SUPPORT,

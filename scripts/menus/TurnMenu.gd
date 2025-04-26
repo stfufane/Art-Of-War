@@ -5,6 +5,15 @@ class_name TurnMenu extends PanelContainer
 @onready var support_button: Button = $MarginContainer/HBoxContainer/SupportButton
 @onready var end_turn_button: Button = $MarginContainer/HBoxContainer/EndTurnButton
 
+const HIDING_STATES: Array[StateManager.EState] = [
+	StateManager.EState.RECRUIT,
+	StateManager.EState.ATTACK,
+	StateManager.EState.SUPPORT,
+	StateManager.EState.WAITING_FOR_PLAYER,
+	StateManager.EState.GAME_OVER_LOSS,
+	StateManager.EState.GAME_OVER_WIN
+]
+
 # Store the state to handle the case of the cancel button.
 var attack_done: bool = false
 var recruit_done: bool = false
@@ -15,15 +24,15 @@ func _ready() -> void:
 	support_button.pressed.connect(_on_support_button_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
 	StateManager.get_state(StateManager.EState.ACTION_CHOICE).started.connect(_on_action_choice)
-	StateManager.get_state(StateManager.EState.RECRUIT).started.connect(hide)
-	StateManager.get_state(StateManager.EState.ATTACK).started.connect(hide)
-	StateManager.get_state(StateManager.EState.SUPPORT).started.connect(hide)
-	StateManager.get_state(StateManager.EState.WAITING_FOR_PLAYER).started.connect(hide)
-	StateManager.get_state(StateManager.EState.GAME_OVER_LOSS).started.connect(hide)
-	StateManager.get_state(StateManager.EState.GAME_OVER_WIN).started.connect(hide)
+	Events.state_changed.connect(_on_state_changed)
 	Events.start_turn.connect(_on_turn_started)
 	Events.recruit_done.connect(_on_recruit_done)
 	Events.attack_done.connect(_on_attack_done)
+
+
+func _on_state_changed(state: StateManager.EState) -> void:
+	if HIDING_STATES.has(state):
+		hide()
 
 
 func _on_action_choice() -> void:

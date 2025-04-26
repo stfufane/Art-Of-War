@@ -25,6 +25,7 @@ signal support_done
 signal attack_to_block(attacking_unit: int, target: int)
 signal support_to_block(unit: Unit.EUnitType)
 
+signal state_changed(state: StateManager.EState)
+
 signal update_instructions(instructions: String)
 signal display_action_error(error: String)
-signal toggle_cancel_button(shown: bool)

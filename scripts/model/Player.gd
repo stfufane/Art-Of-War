@@ -141,6 +141,8 @@ func support_choice(unit_type: Unit.EUnitType) -> void:
             state.current = StateManager.EState.ARCHER_SUPPORT
         Unit.EUnitType.Priest:
             state.current = StateManager.EState.PRIEST_SUPPORT
+        Unit.EUnitType.Soldier:
+            soldier_support()
         _:
             pass
 
@@ -160,7 +162,8 @@ func priest_support(src_unit: Unit.EUnitType, src_tile: int, dest_tile: int) -> 
 
 
 func trigger_support_block(support_unit: Unit.EUnitType) -> void:
-    state.support_unit = support_unit
+    # Remove the used support from the hand and add it to the reserve
+    state.start_support(support_unit)
     state.current = StateManager.EState.WAITING_FOR_PLAYER
     opponent.state.current = StateManager.EState.SUPPORT_BLOCK
     GameManager.support_to_block.rpc_id(opponent.id, support_unit)

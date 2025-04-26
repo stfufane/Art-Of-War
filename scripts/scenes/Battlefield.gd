@@ -124,7 +124,6 @@ func _on_enemy_tile_clicked(tile: BattleTile) -> void:
                 return
 
             tile.toggle_flash(true)
-            Events.toggle_cancel_button.emit(false) # Cannot cancel anymore
             ActionsManager.do(Action.Code.ATTACK, [GameManager.selected_tile_id, tile.id])
         StateManager.EState.ARCHER_SUPPORT:
             if tile.unit == null:

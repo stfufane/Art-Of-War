@@ -113,15 +113,18 @@ func is_supporting() -> bool:
     return support_unit != Unit.EUnitType.None
 
 
-func support_done() -> void:
+func start_support(unit_type: Unit.EUnitType) -> void:
+    support_unit = unit_type
     # Remove the used support from the hand and add it to the reserve
     if king_support: # Handle the case of king support
         player.hand.remove_unit(Unit.EUnitType.King)
         player.reserve.add_unit(Unit.EUnitType.King)
     else:
-        player.hand.remove_unit(support_unit)
-        player.reserve.add_unit(support_unit)
-    
+        player.hand.remove_unit(unit_type)
+        player.reserve.add_unit(unit_type)
+
+
+func support_done() -> void:
     # Reset all support data
     support_unit = Unit.EUnitType.None
     king_support = false
@@ -140,7 +143,7 @@ func end_turn() -> void:
     GameManager.end_turn.rpc_id(player.id)
 
 
-class PriestAction extends RefCounted:
+class PriestAction extends Object:
     var src_unit: Unit.EUnitType
     var src_tile: int
     var dest_tile: int
