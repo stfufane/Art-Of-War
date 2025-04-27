@@ -45,7 +45,7 @@ func _init(in_code: Code, in_check: StringName, in_action: StringName) -> void:
 
 func run(args: Array = []) -> void:
     var player: Player = GameServer.get_current_player()
-    if player == null or player.party == null:
+    if not is_instance_valid(player) or not is_instance_valid(player.party):
         push_error("No player or party found to run action %s" % Code.keys()[code])
         return
 
