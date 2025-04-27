@@ -6,15 +6,25 @@ class_name BlockMenu extends PanelContainer
 @onready var pass_button: Button = $MarginContainer/HBoxContainer/PassButton
 
 
+const HIDING_STATES: Array[StateManager.EState] = [
+    StateManager.EState.WAITING_FOR_PLAYER,
+    StateManager.EState.ACTION_CHOICE,
+    StateManager.EState.CONSCRIPTION
+]
+
 func _ready() -> void:
     guard_wizard_button.pressed.connect(_on_guard_wizard_button_pressed)
     king_button.pressed.connect(_on_king_button_pressed)
     pass_button.pressed.connect(_on_pass_button_pressed)
 
-    StateManager.get_state(StateManager.EState.WAITING_FOR_PLAYER).started.connect(hide)
-    StateManager.get_state(StateManager.EState.ACTION_CHOICE).started.connect(hide)
+    Events.state_changed.connect(_on_state_changed)
     StateManager.get_state(StateManager.EState.ATTACK_BLOCK).started.connect(_attack_block_started)
     StateManager.get_state(StateManager.EState.SUPPORT_BLOCK).started.connect(_support_block_started)
+
+
+func _on_state_changed(state: StateManager.EState) -> void:
+    if HIDING_STATES.has(state):
+        hide()
 
 
 func _attack_block_started() -> void:

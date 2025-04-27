@@ -102,11 +102,20 @@ func attack_done() -> void:
     is_attacking = false
     has_attacked = true
 
-    current = StateManager.EState.ACTION_CHOICE
-    player.opponent.state.current = StateManager.EState.WAITING_FOR_PLAYER
     # Notify both players that the attack is done.
     GameManager.attack_done.rpc_id(player.id, attacked_with)
     GameManager.attack_done.rpc_id(player.opponent.id, attacked_with)
+
+    # Check that the opponent still has units on his battlefield.
+    # If he does not he's force to recruit 2 units. If he can't, he loses.
+    if player.opponent.tiles.is_empty():
+        player.opponent.state.current = StateManager.EState.CONSCRIPTION # TODO
+        current = StateManager.EState.WAITING_FOR_PLAYER
+        return
+
+    # If the opponent has units, we can go back to action choice.
+    current = StateManager.EState.ACTION_CHOICE
+    player.opponent.state.current = StateManager.EState.WAITING_FOR_PLAYER
 
 
 func is_supporting() -> bool:
