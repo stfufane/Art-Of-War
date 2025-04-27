@@ -176,23 +176,31 @@ func check_king_support(support_type: Unit.EUnitType) -> bool:
 
 
 func check_priest_support(src_unit: Unit.EUnitType, src_tile: int, dest_tile: int) -> bool:
-    if player.party.current_player != player.id:
-        error_message = NOT_YOUR_TURN
-        return false
-    if player.state.current != StateManager.EState.PRIEST_SUPPORT and player.state.current != StateManager.EState.KING_SUPPORT:
-        error_message = NOT_AUTHORIZED
-        return false
-    if src_tile < 0:
-        if not player.reserve.has(src_unit):
-            error_message = "You do not have this unit in your reserve"
+    var internal_check := func() -> bool:
+        if player.party.current_player != player.id:
+            error_message = NOT_YOUR_TURN
             return false
-    else:
-        if not player.tiles.has_unit(src_tile):
-            error_message = "There is no unit on this tile"
+        elif player.state.current != StateManager.EState.PRIEST_SUPPORT and player.state.current != StateManager.EState.KING_SUPPORT:
+            error_message = NOT_AUTHORIZED
             return false
+
+        if src_tile < 0:
+            if not player.reserve.has(src_unit):
+                error_message = "You do not have this unit in your reserve"
+                return false
+            
+            if not player.tiles.has_unit(dest_tile) and not player.tiles.can_set_unit(dest_tile):
+                error_message = "You can't put a unit here"
+                return false
+        else:
+            if not player.tiles.can_swap_tiles(src_tile, dest_tile):
+                error_message = "You cannot swap these units"
+                return false
+        
+        return true
     
-    if not player.tiles.has_unit(dest_tile) and not player.tiles.can_set_unit(dest_tile):
-        error_message = "You cannot put a unit here"
+    if not internal_check.call():
+        GameManager.reset_priest_support.rpc_id(player.id)
         return false
 
     return true

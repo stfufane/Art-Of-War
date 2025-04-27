@@ -16,7 +16,9 @@ func _ready() -> void:
     Events.unit_took_damage.connect(_on_unit_took_damage)
     Events.unit_captured_or_killed.connect(_on_unit_captured_or_killed)
     Events.start_turn.connect(disengage_units)
+    Events.reset_priest_support.connect(_on_reset_priest_support)
     StateManager.get_state(StateManager.EState.ACTION_CHOICE).started.connect(flash_all_tiles_off)
+    StateManager.get_state(StateManager.EState.PRIEST_SUPPORT).started.connect(_on_reset_priest_support)
 
 
 func disengage_units() -> void:
@@ -107,15 +109,21 @@ func _on_tile_clicked(tile: BattleTile) -> void:
                 Events.update_instructions.emit("Select the unit to attack from")
 
         StateManager.EState.PRIEST_SUPPORT:
-            if tile.unit == null:
-                return
-            GameManager.add_switching_unit(tile.id)
-            tile.toggle_flash(GameManager.switching_units.has(tile.id))
+            GameManager.add_switching_tile(tile.id)
+            tile.toggle_flash(GameManager.switching_tiles.has(tile.id))
             GameManager.priest_support()
 
         _:
             pass
 
+
+func _on_reset_priest_support() -> void:
+    # Make sure there are no leftovers of previous priest support
+    GameManager.switching_tiles.clear()
+    GameManager.selected_reserve_unit = null
+    for tile in units.get_children() as Array[BattleTile]:
+        tile.toggle_flash(false)
+    
 
 func _on_enemy_tile_clicked(tile: BattleTile) -> void:
     match StateManager.current_state:

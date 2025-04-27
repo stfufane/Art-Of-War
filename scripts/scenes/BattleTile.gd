@@ -30,6 +30,9 @@ func _ready() -> void:
 
 
 func set_unit(unit_type: Unit.EUnitType) -> void:
+    if unit_type == Unit.EUnitType.None:
+        reset_unit()
+        return
     unit = GameManager.UNIT_RESOURCES[unit_type]
     unit_sprite.texture = load("res://resources/icons/" + unit.resource_name + ".png")
     if side == Board.ESide.ENEMY:
@@ -66,9 +69,13 @@ func toggle_flash(state: bool) -> void:
     if state:
         var shader_material := ShaderMaterial.new()
         shader_material.shader = GameManager.FLASH_SHADER
-        unit_sprite.material = shader_material
+        if unit != null:
+            unit_sprite.material = shader_material
+        else:
+            material = shader_material
     else:
         unit_sprite.material = null
+        material = null
 
 
 func _on_mouse_entered() -> void:

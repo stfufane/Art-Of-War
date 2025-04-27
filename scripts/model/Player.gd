@@ -225,10 +225,11 @@ func apply_support() -> void:
             if state.priest_action.src_tile > -1:
                 tiles.swap_units(state.priest_action.src_tile, state.priest_action.dest_tile)
             else:
+                reserve.remove_unit(state.priest_action.src_unit)
                 var replaced_unit := tiles.get_unit_type(state.priest_action.dest_tile)
                 # Exchange the units in the reserve
-                reserve.remove_unit(state.priest_action.src_unit)
-                reserve.add_unit(replaced_unit)
+                if replaced_unit != Unit.EUnitType.None:
+                    reserve.add_unit(replaced_unit)
                 tiles.set_unit(state.priest_action.dest_tile, GameManager.UNIT_RESOURCES[state.priest_action.src_unit].duplicate() as Unit)
         Unit.EUnitType.Archer:
             var target_state := opponent.tiles.archer_damage_unit(state.archer_target_tile)
@@ -245,7 +246,7 @@ func apply_support() -> void:
                     pass
         _:
             pass
-    
+
     state.support_done()
 
 

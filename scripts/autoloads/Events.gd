@@ -21,6 +21,7 @@ signal start_turn
 
 signal recruit_done
 signal attack_done(attacking_unit: int)
+signal reset_priest_support
 signal support_done
 signal attack_to_block(attacking_unit: int, target: int)
 signal support_to_block(unit: Unit.EUnitType)

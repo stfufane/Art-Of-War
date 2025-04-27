@@ -37,7 +37,7 @@ var selected_hand_unit: HandUnit = null
 var selected_reserve_unit: ReserveUnit = null
 var selected_tile_id: int = -1
 var selected_enemy_tile_id: int = -1
-var switching_units: Array[int] = []
+var switching_tiles: Array[int] = []
 
 ## Units available in hand (init with dummy values for local testing)
 var units: Array[Unit.EUnitType] = [Unit.EUnitType.Soldier, Unit.EUnitType.Wizard, Unit.EUnitType.Archer]
@@ -72,30 +72,30 @@ func recruit(tile_id: int) -> void:
     ActionsManager.do(Action.Code.RECRUIT, [tile_id, unit_type, source])
 
 
-func add_switching_unit(tile_id: int) -> void:
-    if switching_units.has(tile_id):
-        switching_units.erase(tile_id)
+func add_switching_tile(tile_id: int) -> void:
+    if switching_tiles.has(tile_id):
+        switching_tiles.erase(tile_id)
         return
     else:
-        switching_units.append(tile_id)
+        switching_tiles.append(tile_id)
 
-    if switching_units.size() > 1 and selected_reserve_unit != null:
+    if switching_tiles.size() > 1 and selected_reserve_unit != null:
         selected_reserve_unit = null
 
     # If we have more than 2 units, remove the first one    
-    if switching_units.size() > 2:
-        switching_units.pop_front()
+    if switching_tiles.size() > 2:
+        switching_tiles.pop_front()
     
 
 func priest_support() -> void:
-    if switching_units.is_empty():
+    if switching_tiles.is_empty():
         return
-    if switching_units.size() == 1 and selected_reserve_unit == null:
+    if switching_tiles.size() == 1 and selected_reserve_unit == null:
         return
     
     var src_unit_type := selected_reserve_unit.unit.type if selected_reserve_unit != null else Unit.EUnitType.None
-    var dest_tile: int = switching_units.front()
-    var src_tile: int = switching_units.back() if switching_units.size() > 1 else -1
+    var dest_tile: int = switching_tiles.front()
+    var src_tile: int = switching_tiles.back() if switching_tiles.size() > 1 else -1
     ActionsManager.do(Action.Code.PRIEST_SUPPORT, [src_unit_type, src_tile, dest_tile])
 
 #endregion
@@ -201,6 +201,10 @@ func recruit_done() -> void:
 func attack_done(attacking_unit: int) -> void:
     Events.attack_done.emit(attacking_unit)
 
+
+@rpc
+func reset_priest_support() -> void:
+    Events.reset_priest_support.emit()
 
 @rpc
 func support_done() -> void:

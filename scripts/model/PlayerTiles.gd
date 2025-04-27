@@ -30,17 +30,47 @@ func engage_unit(tile_id: int) -> void:
     tiles[tile_id].engaged = true
 
 
+func can_swap_tiles(tile_id_1: int, tile_id_2: int) -> bool:
+    # Check if the tiles are not empty and not the same
+    if tile_id_1 == tile_id_2:
+        return false
+    if not has_unit(tile_id_1) and not has_unit(tile_id_2):
+        return false
+
+    # If both have units, it's all good, they're already in valid positions.
+    if has_unit(tile_id_1) and has_unit(tile_id_2):
+        return true
+
+    # The complicated case is when moving a unit to an empty tile.
+    # We can't move a unit behind itself or it would create an empty front row.
+    # First we check if the dest tile is valid. If it is, we check that moving the unit won't create an empty front row.
+    var internal_check := func(src_tile: int, dest_tile: int) -> bool:
+        if not has_unit(dest_tile):
+            if not can_set_unit(dest_tile):
+                return false
+            if src_tile + 3 == dest_tile:
+                return false
+        return true
+
+    if not internal_check.call(tile_id_1, tile_id_2) or not internal_check.call(tile_id_2, tile_id_1):
+        return false
+
+    return true
+
+
 func swap_units(tile_id_1: int, tile_id_2: int) -> void:
     # First swap all the unit contents
     var tile_1: UnitTile = tiles[tile_id_1]
+    print("Swapping tile 1 %s with tile 2 %s" % [tile_1.to_string(), tiles[tile_id_2].to_string()])
     tiles[tile_id_1] = tiles[tile_id_2]
     tiles[tile_id_2] = tile_1
 
     # Then reset the ids and update the UI accordingly
     tiles[tile_id_1].id = tile_id_1
     tiles[tile_id_2].id = tile_id_2
-    update_battlefield_ui(tile_id_1, tiles[tile_id_1].unit.type)
-    update_battlefield_ui(tile_id_2, tiles[tile_id_2].unit.type)
+    update_battlefield_ui(tile_id_1, tiles[tile_id_1].unit.type if has_unit(tile_id_1) else Unit.EUnitType.None)
+    update_battlefield_ui(tile_id_2, tiles[tile_id_2].unit.type if has_unit(tile_id_2) else Unit.EUnitType.None)
+
 
 func damage_unit(tile_id: int, damage: int) -> EUnitState:
     return tiles[tile_id].take_damage(damage)
@@ -68,6 +98,13 @@ func get_unit_type(tile_id: int) -> Unit.EUnitType:
     if has_unit(tile_id):
         return tiles[tile_id].unit.type
     return Unit.EUnitType.None
+
+
+func is_empty() -> bool:
+    for tile in tiles.values() as Array[UnitTile]:
+        if tile.unit != null:
+            return false
+    return true
 
 
 func can_set_unit(tile_id: int) -> bool:
@@ -108,6 +145,16 @@ class UnitTile extends RefCounted:
     func _init(tile_id: int) -> void:
         id = tile_id
 
+
+    func _to_string() -> String:
+        var unit_string: String = "[UnitTile %d" % id
+        if unit != null:
+            unit_string += " with %s (%d hp)" % [unit.resource_name, hp]
+        else:
+            unit_string += " without unit"
+        unit_string += "]"
+        return unit_string
+
     func take_damage(damage: int) -> EUnitState:
         print("Unit %s is taking %d damage" % [unit.resource_name, damage])
         var state := EUnitState.ALIVE
@@ -135,11 +182,15 @@ class UnitTile extends RefCounted:
 
     # Archer inflicts exactly one damage and cannot capture a unit.
     func take_archer_damage() -> EUnitState:
+        print("Unit %s is taking 1 archer damage" % unit.resource_name)
         hp -= 1
         if hp <= 0:
+            print("Unit %s died" % unit.resource_name)
             return EUnitState.DEAD
 
+        print("Unit still has %d HP after the attack" % hp)
         return EUnitState.ALIVE
+
 
     func reset_hp() -> void:
         if unit != null:

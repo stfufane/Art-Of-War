@@ -30,7 +30,7 @@ var States: Dictionary[EState, State] = {
 	EState.RECRUIT: State.new("Recruit a unit"),
 	EState.SUPPORT: State.new("Play a support by adding it to your reserve"),
 	EState.KING_SUPPORT: State.new("Choose what unit your king is playing as"),
-	EState.PRIEST_SUPPORT: State.new("Move a unit on the battlefield"),
+	EState.PRIEST_SUPPORT: State.new("Move a unit on the battlefield or swap two units"),
 	EState.ARCHER_SUPPORT: State.new("Choose a target to hit with your archer"),
 	EState.SUPPORT_BLOCK: State.new("You can block the enemy support by using a wizard or a king"),
 	EState.ATTACK: State.new("Attack a unit on the enemy battlefield"),
