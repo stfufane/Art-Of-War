@@ -32,10 +32,10 @@ var States: Dictionary[EState, State] = {
 	EState.KING_SUPPORT: State.new("Choose what unit your king is playing as"),
 	EState.PRIEST_SUPPORT: State.new("Move a unit on the battlefield or swap two units"),
 	EState.ARCHER_SUPPORT: State.new("Choose a target to hit with your archer"),
-	EState.SUPPORT_BLOCK: State.new("You can block the enemy support by using a wizard or a king"),
+	EState.SUPPORT_BLOCK: State.new("Enemy is using a support: You can block it by using a wizard or a king"),
 	EState.ATTACK: State.new("Attack a unit on the enemy battlefield"),
-	EState.ATTACK_BLOCK: State.new("You can block the enemy attack by using a guard or a king"),
-	EState.CONSCRIPTION: State.new("You must recruit 2 units to repopulate the battlefield"),
+	EState.ATTACK_BLOCK: State.new("Enemy is attacking: You can block it by using a guard or a king"),
+	EState.CONSCRIPTION: State.new("Conscription: You must recruit 2 units to repopulate the battlefield"),
 	EState.FINISH_TURN: State.new("Finish turn"),
 	EState.GAME_OVER_WIN: State.new("You won the game, you mastered the art of war."),
 	EState.GAME_OVER_LOSS: State.new("You lost the game, train harder to master the art of war.")

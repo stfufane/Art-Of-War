@@ -35,7 +35,7 @@ func unit_clicked(unit: ClickableUnit) -> void:
 
     super (unit)
     match StateManager.current_state:
-        StateManager.EState.RECRUIT:
+        StateManager.EState.RECRUIT, StateManager.EState.CONSCRIPTION:
             toggle_unit_tilt(unit)
         StateManager.EState.PRIEST_SUPPORT:
             toggle_unit_tilt(unit)

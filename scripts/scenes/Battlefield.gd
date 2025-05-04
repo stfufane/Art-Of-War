@@ -87,7 +87,7 @@ func _on_tile_clicked(tile: BattleTile) -> void:
             if tile.unit == null:
                 GameManager.init_battlefield(tile.id)
 
-        StateManager.EState.RECRUIT:
+        StateManager.EState.RECRUIT, StateManager.EState.CONSCRIPTION:
             if GameManager.selected_hand_unit == null and GameManager.selected_reserve_unit == null:
                 return
             if tile.unit == null:

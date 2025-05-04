@@ -19,6 +19,9 @@ func remove_unit(type: Unit.EUnitType) -> void:
 func has(unit_type: Unit.EUnitType) -> bool:
 	return units.has(unit_type)
 
+func size() -> int:
+	return units.size()
+
 func is_empty() -> bool:
 	return units.is_empty()
 

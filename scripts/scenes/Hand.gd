@@ -32,7 +32,7 @@ func unit_clicked(unit: ClickableUnit) -> void:
 			if StateManager.current_state == StateManager.EState.INIT_RESERVE:
 				ActionsManager.do(Action.Code.INIT_RESERVE, [unit.unit.type])
 		
-		StateManager.EState.RECRUIT:
+		StateManager.EState.RECRUIT, StateManager.EState.CONSCRIPTION:
 			# Recruitment must be made from the reserve if it's not empty
 			if not GameManager.reserve.is_empty():
 				return

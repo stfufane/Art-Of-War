@@ -67,6 +67,7 @@ var target_tile: int = -1
 
 var has_attacked: bool = false
 var has_recruited: bool = false
+var recruited_units: int = 0
 
 var dead_units: int = 0
 
@@ -89,6 +90,14 @@ func recruit_done() -> void:
     current = StateManager.EState.ACTION_CHOICE
 
 
+func conscription_recruit_done() -> void:
+    recruited_units += 1
+    if recruited_units == 2:
+        current = StateManager.EState.WAITING_FOR_PLAYER
+        player.opponent.state.current = StateManager.EState.ACTION_CHOICE
+        recruited_units = 0
+
+
 func attack(attacking: int, target: int) -> void:
     is_attacking = true
     attacking_tile = attacking
@@ -109,7 +118,16 @@ func attack_done() -> void:
     # Check that the opponent still has units on his battlefield.
     # If he does not he's force to recruit 2 units. If he can't, he loses.
     if player.opponent.tiles.is_empty():
-        player.opponent.state.current = StateManager.EState.CONSCRIPTION # TODO
+        if player.opponent.reserve.size() + player.opponent.hand.size() < 2:
+            # The opponent has no units left and can't recruit any.
+            # He loses the game.
+            player.opponent.state.current = StateManager.EState.GAME_OVER_LOSS
+            current = StateManager.EState.GAME_OVER_WIN
+            player.party.status = Party.EStatus.GAME_WON
+            return
+        
+        player.opponent.state.current = StateManager.EState.CONSCRIPTION
+        player.opponent.state.recruited_units = 0
         current = StateManager.EState.WAITING_FOR_PLAYER
         return
 

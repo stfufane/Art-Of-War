@@ -121,7 +121,10 @@ func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource)
         hand.remove_unit(unit_type)
 
     # Flag that we have recruited a unit (possible only once per turn)
-    state.recruit_done()
+    if state.current == StateManager.EState.RECRUIT:
+        state.recruit_done()
+    elif state.current == StateManager.EState.CONSCRIPTION:
+        state.conscription_recruit_done()
 
 
 # When attacking, we first notify the enemy so he can counter the attack

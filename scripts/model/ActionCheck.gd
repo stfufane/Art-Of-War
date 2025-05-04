@@ -121,15 +121,16 @@ func check_attack(attacking_tile: int, _target_tile: int) -> bool:
 
 
 func check_recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource) -> bool:
-    if player.party.current_player != player.id:
-        error_message = NOT_YOUR_TURN
-        return false
-    if player.state.current != StateManager.EState.RECRUIT:
-        error_message = NOT_AUTHORIZED
-        return false
-    if player.state.has_recruited:
-        error_message = RECRUIT_DONE
-        return false
+    if player.state.current != StateManager.EState.CONSCRIPTION:
+        if player.party.current_player != player.id:
+            error_message = NOT_YOUR_TURN
+            return false
+        if player.state.current != StateManager.EState.RECRUIT:
+            error_message = NOT_AUTHORIZED
+            return false
+        if player.state.has_recruited:
+            error_message = RECRUIT_DONE
+            return false
     if not player.tiles.can_set_unit(tile_id):
         error_message = "You can't put a unit here"
         return false
