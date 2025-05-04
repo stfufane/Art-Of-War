@@ -15,6 +15,8 @@ var party: Party = null
 const PlayerSide := &"player"
 const OpponentSide := &"opponent"
 
+const BackRow: Array[int] = [3, 4, 5]
+
 
 func _init(p: Party) -> void:
     party = p

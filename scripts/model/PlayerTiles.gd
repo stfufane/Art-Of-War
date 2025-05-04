@@ -71,6 +71,17 @@ func swap_units(tile_id_1: int, tile_id_2: int) -> void:
     update_battlefield_ui(tile_id_1, tiles[tile_id_1].unit.type if has_unit(tile_id_1) else Unit.EUnitType.None)
     update_battlefield_ui(tile_id_2, tiles[tile_id_2].unit.type if has_unit(tile_id_2) else Unit.EUnitType.None)
 
+    # Check that we did not leave an empty tile in the front row
+    check_back_row()
+
+
+func check_back_row() -> void:
+    for tile_id in PartyBattlefield.BackRow:
+        # Check that the tile in front of it is not empty
+        if has_unit(tile_id) and not has_unit(tile_id - 3):
+            # The back row tile is empty, we need to move the unit to the front row
+            swap_units(tile_id, tile_id - 3)
+
 
 func damage_unit(tile_id: int, damage: int) -> EUnitState:
     return tiles[tile_id].take_damage(damage)
