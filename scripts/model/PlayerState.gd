@@ -55,6 +55,12 @@ var is_attacking: bool = false:
             target_tile = -1
 
 
+var killed_units: int = 0:
+    set(k_u):
+        killed_units = k_u
+        print("Player %d has killed %d units" % [player.id, killed_units])
+
+
 # TODO: group inside a SupportData utilitary class
 var support_unit: Unit.EUnitType = Unit.EUnitType.None
 var king_support: bool = false
@@ -69,8 +75,6 @@ var has_attacked: bool = false
 var has_recruited: bool = false
 var recruited_units: int = 0
 
-var dead_units: int = 0
-
 
 func _init(p: Player) -> void:
     player = p
@@ -80,6 +84,7 @@ func new_turn() -> void:
     has_attacked = false
     has_recruited = false
     attack_bonus = 0
+    player.tiles.disengage_units()
     current = StateManager.EState.ACTION_CHOICE
 
 

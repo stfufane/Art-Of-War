@@ -197,7 +197,6 @@ func no_attack_block() -> void:
 
 func apply_attack() -> void:
     var damage: int = 0
-    var opponent_unit_type := opponent.tiles.get_unit_type(state.target_tile)
     var unit_type := tiles.get_unit_type(state.attacking_tile)
     if unit_type == Unit.EUnitType.Soldier:
         damage = hand.size()
@@ -205,18 +204,7 @@ func apply_attack() -> void:
         damage = tiles.get_attack(state.attacking_tile)
     damage += state.attack_bonus
 
-    var target_state := opponent.tiles.damage_unit(state.target_tile, damage)
-    match target_state:
-        PlayerTiles.EUnitState.ALIVE:
-            GameManager.unit_took_damage.rpc_id(id, Board.ESide.ENEMY, state.target_tile, damage)
-            GameManager.unit_took_damage.rpc_id(opponent.id, Board.ESide.PLAYER, state.target_tile, damage)
-        PlayerTiles.EUnitState.DEAD, PlayerTiles.EUnitState.CAPTURED:
-            # Notify players that a unit died and increase the graveyard
-            GameManager.unit_killed_or_captured.rpc_id(id, Board.ESide.ENEMY, state.target_tile)
-            GameManager.unit_killed_or_captured.rpc_id(opponent.id, Board.ESide.PLAYER, state.target_tile)
-            if target_state == PlayerTiles.EUnitState.CAPTURED:
-                kingdom.add_unit(opponent_unit_type)
-
+    handle_damaged_unit(state.target_tile, damage, false)
     state.attack_done()
 
 
@@ -235,22 +223,35 @@ func apply_support() -> void:
                     reserve.add_unit(replaced_unit)
                 tiles.set_unit(state.priest_action.dest_tile, GameManager.UNIT_RESOURCES[state.priest_action.src_unit].duplicate() as Unit)
         Unit.EUnitType.Archer:
-            var target_state := opponent.tiles.archer_damage_unit(state.archer_target_tile)
-            match target_state:
-                PlayerTiles.EUnitState.ALIVE:
-                    GameManager.unit_took_damage.rpc_id(id, Board.ESide.ENEMY, state.archer_target_tile, 1)
-                    GameManager.unit_took_damage.rpc_id(opponent.id, Board.ESide.PLAYER, state.archer_target_tile, 1)
-                PlayerTiles.EUnitState.DEAD:
-                    # Notify players that a unit died and increase the graveyard
-                    GameManager.unit_killed_or_captured.rpc_id(id, Board.ESide.ENEMY, state.archer_target_tile)
-                    GameManager.unit_killed_or_captured.rpc_id(opponent.id, Board.ESide.PLAYER, state.archer_target_tile)
-                _:
-                    # You can't capture when using an archer to inflict damage to a unit
-                    pass
+            handle_damaged_unit(state.archer_target_tile, 1, true)
         _:
             pass
 
     state.support_done()
+
+
+func handle_damaged_unit(target_tile: int, damage: int, is_archer: bool) -> void:
+    var opponent_unit_type := opponent.tiles.get_unit_type(target_tile)
+    var target_state := opponent.tiles.damage_unit(target_tile, damage, is_archer)
+    match target_state:
+        PlayerTiles.EUnitState.ALIVE:
+            GameManager.unit_took_damage.rpc_id(id, Board.ESide.ENEMY, target_tile, damage)
+            GameManager.unit_took_damage.rpc_id(opponent.id, Board.ESide.PLAYER, target_tile, damage)
+        PlayerTiles.EUnitState.DEAD, PlayerTiles.EUnitState.CAPTURED:
+            # Notify players that a unit died and increase the graveyard
+            GameManager.unit_killed_or_captured.rpc_id(id, Board.ESide.ENEMY, target_tile)
+            GameManager.unit_killed_or_captured.rpc_id(opponent.id, Board.ESide.PLAYER, target_tile)
+
+            if target_state == PlayerTiles.EUnitState.CAPTURED:
+                kingdom.add_unit(opponent_unit_type)
+            elif target_state == PlayerTiles.EUnitState.DEAD:
+                state.killed_units += 1
+            
+            # If the king is dead or captured, it's game over
+            if opponent_unit_type == Unit.EUnitType.King:
+                state.current = StateManager.EState.GAME_OVER_WIN
+                opponent.state.current = StateManager.EState.GAME_OVER_LOSS
+                party.status = Party.EStatus.GAME_WON
 
 
 # Several cases here :

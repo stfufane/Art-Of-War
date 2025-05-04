@@ -25,5 +25,7 @@ func _init(p: Player) -> void:
 
 
 func add_unit(type: Unit.EUnitType) -> void:
+	if type == Unit.EUnitType.King:
+		return
 	units[type] += 1
 	player.party.update_kingdom_status()

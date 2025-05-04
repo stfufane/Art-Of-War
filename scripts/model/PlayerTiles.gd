@@ -83,12 +83,8 @@ func check_back_row() -> void:
             swap_units(tile_id, tile_id - 3)
 
 
-func damage_unit(tile_id: int, damage: int) -> EUnitState:
-    return tiles[tile_id].take_damage(damage)
-
-
-func archer_damage_unit(tile_id: int) -> EUnitState:
-    return tiles[tile_id].take_archer_damage()
+func damage_unit(tile_id: int, damage: int, is_archer: bool) -> EUnitState:
+    return tiles[tile_id].take_damage(damage, is_archer)
 
 
 func is_engaged(tile_id: int) -> bool:
@@ -123,7 +119,7 @@ func can_set_unit(tile_id: int) -> bool:
     if has_unit(tile_id):
         return false
     # You can't put a tile on the back row if the front row is empty
-    if tile_id > 2:
+    if PartyBattlefield.BackRow.has(tile_id):
         if not has_unit(tile_id - 3):
             return false
     return true
@@ -147,11 +143,13 @@ class UnitTile extends RefCounted:
             unit = u
             if u != null:
                 hp = u.defense
+                engaged = false
     var engaged: bool = false:
         set(e):
             engaged = e
             if e and unit != null:
                 hp = unit.defense_engaged
+
 
     func _init(tile_id: int) -> void:
         id = tile_id
@@ -166,21 +164,23 @@ class UnitTile extends RefCounted:
         unit_string += "]"
         return unit_string
 
-    func take_damage(damage: int) -> EUnitState:
+    func take_damage(damage: int, is_archer: bool) -> EUnitState:
         print("Unit %s is taking %d damage" % [unit.resource_name, damage])
         var state := EUnitState.ALIVE
         # When a unit has all its hp and takes exactly the same amount of damage,
-        # it's captured instead of being killed
-        if engaged:
-            if hp == unit.defense_engaged and damage == hp:
-                state = EUnitState.CAPTURED
-        else:
-            if hp == unit.defense and damage == hp:
-                state = EUnitState.CAPTURED
+        # it's captured instead of being killed, except when dealing damage with an archer.
+        if not is_archer:
+            if engaged:
+                if hp == unit.defense_engaged and damage == hp:
+                    state = EUnitState.CAPTURED
+            else:
+                if hp == unit.defense and damage == hp:
+                    state = EUnitState.CAPTURED
 
-        hp -= damage
-        if hp <= 0:
-            state = EUnitState.DEAD
+        if state != EUnitState.CAPTURED:
+            hp -= damage
+            if hp <= 0:
+                state = EUnitState.DEAD
 
         if state != EUnitState.ALIVE:
             print("Unit %s died" % unit.resource_name)
@@ -189,18 +189,6 @@ class UnitTile extends RefCounted:
             print("Unit still has %d HP after the attack" % hp)
 
         return state
-
-
-    # Archer inflicts exactly one damage and cannot capture a unit.
-    func take_archer_damage() -> EUnitState:
-        print("Unit %s is taking 1 archer damage" % unit.resource_name)
-        hp -= 1
-        if hp <= 0:
-            print("Unit %s died" % unit.resource_name)
-            return EUnitState.DEAD
-
-        print("Unit still has %d HP after the attack" % hp)
-        return EUnitState.ALIVE
 
 
     func reset_hp() -> void:
