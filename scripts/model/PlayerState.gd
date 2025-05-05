@@ -101,6 +101,9 @@ func conscription_recruit_done() -> void:
         current = StateManager.EState.WAITING_FOR_PLAYER
         player.opponent.state.current = StateManager.EState.ACTION_CHOICE
         recruited_units = 0
+    else:
+        # Retrigger the conscription state so it auto-selects the first unit of the reserve
+        current = StateManager.EState.CONSCRIPTION
 
 
 func attack(attacking: int, target: int) -> void:

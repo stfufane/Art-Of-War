@@ -115,11 +115,18 @@ func start_support() -> void:
 
 
 func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource) -> void:
+    # Check if there was a unit here before. If it's the case it will be switched with the reserve/hand.
+    var current_tile_unit := tiles.get_unit_type(tile_id)
+
     tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate() as Unit)
     if source == Board.EUnitSource.RESERVE:
         reserve.remove_unit(unit_type)
+        if current_tile_unit != Unit.EUnitType.None:
+            reserve.add_unit(current_tile_unit)
     elif source == Board.EUnitSource.HAND:
         hand.remove_unit(unit_type)
+        if current_tile_unit != Unit.EUnitType.None:
+            hand.add_unit(current_tile_unit)
 
     # Flag that we have recruited a unit (possible only once per turn)
     if state.current == StateManager.EState.RECRUIT:

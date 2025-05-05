@@ -140,8 +140,8 @@ func check_recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitS
     if source == Board.EUnitSource.HAND and not player.hand.has(unit_type):
         error_message = "You don't have this unit in your hand"
         return false
-    if source == Board.EUnitSource.RESERVE and not player.reserve.has(unit_type):
-        error_message = "You don't have this unit in your reserve"
+    if source == Board.EUnitSource.RESERVE and player.reserve.front() != unit_type:
+        error_message = "You have to take the first unit of your reserve"
         return false
 
     return true

@@ -116,7 +116,8 @@ func is_empty() -> bool:
 
 func can_set_unit(tile_id: int) -> bool:
     assert(tiles.has(tile_id), "Invalid tile id %d" % tile_id)
-    if has_unit(tile_id):
+    # You can't replace a unit during conscription
+    if player.state.current == StateManager.EState.CONSCRIPTION and has_unit(tile_id):
         return false
     # You can't put a tile on the back row if the front row is empty
     if PartyBattlefield.BackRow.has(tile_id):

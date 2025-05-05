@@ -82,17 +82,17 @@ func add_switching_tile(tile_id: int) -> void:
     if switching_tiles.size() > 1 and selected_reserve_unit != null:
         selected_reserve_unit = null
 
-    # If we have more than 2 units, remove the first one    
+    # If we have more than 2 units, remove the first one
     if switching_tiles.size() > 2:
         switching_tiles.pop_front()
-    
+
 
 func priest_support() -> void:
     if switching_tiles.is_empty():
         return
     if switching_tiles.size() == 1 and selected_reserve_unit == null:
         return
-    
+
     var src_unit_type := selected_reserve_unit.unit.type if selected_reserve_unit != null else Unit.EUnitType.None
     var dest_tile: int = switching_tiles.front()
     var src_tile: int = switching_tiles.back() if switching_tiles.size() > 1 else -1
