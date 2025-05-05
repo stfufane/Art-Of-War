@@ -10,6 +10,7 @@ extends Object
 enum EStatus {
     CREATED,
     STARTED,
+    GAME_WON,
     OVER
 }
 
@@ -101,7 +102,7 @@ func init_kingdoms() -> void:
 ## Compares the two players' kingdoms to see which units are winning on both sides
 func update_kingdom_status() -> void:
     for unit_type: Unit.EUnitType in Unit.EUnitType.values():
-        if unit_type == Unit.EUnitType.King:
+        if unit_type == Unit.EUnitType.King or unit_type == Unit.EUnitType.None:
             continue
         if first_player.kingdom.units[unit_type] == second_player.kingdom.units[unit_type]:
             first_player.kingdom.status[unit_type] = KingdomUnit.EStatus.Equal
@@ -117,16 +118,47 @@ func update_kingdom_status() -> void:
     GameManager.update_kingdom.rpc_id(first_player.id, first_player.kingdom.status)
     GameManager.update_kingdom.rpc_id(second_player.id, second_player.kingdom.status)
 
+    # Check if the party has ended.
+    check_kingdom_status()
+
 
 ## Checks if one player is victorious based on their kingdom's populations
-func check_kingdom_status() -> bool:
+func check_kingdom_status() -> void:
     var first_player_kingdom: Array[KingdomUnit.EStatus] = first_player.kingdom.status.values()
-    var nb_up: int = first_player_kingdom.count(KingdomUnit.EStatus.Up)
-    var nb_down: int = first_player_kingdom.count(KingdomUnit.EStatus.Down)
-    if nb_up >= 4:
-        first_player.state.has_won = true
-        return true
-    if nb_down >= 4:
-        second_player.state.has_won = true
-        return true
-    return false
+    if first_player_kingdom.count(KingdomUnit.EStatus.Up) >= 4:
+        party_won(first_player)
+    elif first_player_kingdom.count(KingdomUnit.EStatus.Down) >= 4:
+        party_won(second_player)
+
+
+func check_game_end() -> void:
+    # As far as the two players have cards in their deck, it can continue
+    if not first_player.deck.is_empty() and not second_player.deck.is_empty():
+        return
+
+    # Both decks are empty so we need to evaluate the victory conditions
+    # The player with most citizens in his kingdom wins.
+    # In case of a draw, the one who killed the more units wins.
+    if first_player.kingdom.units_total() > second_player.kingdom.units_total():
+        party_won(first_player)
+    elif first_player.kingdom.units_total() < second_player.kingdom.units_total():
+        party_won(second_player)
+    else:
+        if first_player.state.killed_units > second_player.state.killed_units:
+            party_won(first_player)
+        elif first_player.state.killed_units < second_player.state.killed_units:
+            party_won(second_player)
+        else:
+            party_draw()
+
+
+func party_won(winner: Player) -> void:
+    winner.state.current = StateManager.EState.GAME_OVER_WIN
+    winner.opponent.state.current = StateManager.EState.GAME_OVER_LOSS
+    status = EStatus.GAME_WON
+
+
+func party_draw() -> void:
+    first_player.state.current = StateManager.EState.GAME_OVER_DRAW
+    second_player.state.current = StateManager.EState.GAME_OVER_DRAW
+    status = EStatus.GAME_WON

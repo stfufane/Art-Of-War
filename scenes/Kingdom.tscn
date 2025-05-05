@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bp4ut36apw8b2" path="res://scenes/characters/KingdomUnit.tscn" id="2_38wid"]
 [ext_resource type="Resource" uid="uid://c2dghikpwx1ya" path="res://resources/units/soldier.tres" id="3_yseex"]
 [ext_resource type="Resource" uid="uid://bowjsunt6dme8" path="res://resources/units/archer.tres" id="4_6sujq"]
-[ext_resource type="Resource" uid="uid://dhy0y3dpbnstr" path="res://resources/units/monk.tres" id="5_2j8ro"]
+[ext_resource type="Resource" uid="uid://dhy0y3dpbnstr" path="res://resources/units/priest.tres" id="5_2j8ro"]
 [ext_resource type="Resource" uid="uid://2twarv3h6kom" path="res://resources/units/wizard.tres" id="6_x1oea"]
 [ext_resource type="Texture2D" uid="uid://t70abbdmuja1" path="res://resources/graphics/elementCircle.png" id="7_adj8p"]
 
@@ -79,7 +79,7 @@ offset_right = 36.0
 offset_bottom = 116.0
 unit_type = ExtResource("4_6sujq")
 
-[node name="Monk" parent="." instance=ExtResource("2_38wid")]
+[node name="Priest" parent="." instance=ExtResource("2_38wid")]
 offset_left = 4.0
 offset_top = 124.0
 offset_right = 36.0

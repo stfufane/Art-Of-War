@@ -25,8 +25,20 @@ func add_player(peer_id: int) -> void:
 
 
 func remove_player(peer_id: int) -> void:
-    print(peer_id, " removed from the server")
+    var player := get_player(peer_id)
+    var party := player.party
+    if party != null:
+        # Notify the other player that the game is over to put it back in the lobby
+        var opponent := player.opponent
+        if is_instance_valid(opponent):
+            GameManager.notify_party_stopped.rpc_id(opponent.id)
+        party.players.erase(peer_id)
+        print("Party %s is over" % party.id)
+        parties.erase(party.id)
+        party.free()
+    player.free()
     players.erase(peer_id)
+    print("%d removed from the server" % peer_id)
 
 
 func get_current_player() -> Player:
@@ -57,7 +69,7 @@ func create_party() -> void:
 
     var player_id := multiplayer.get_remote_sender_id()
     if not players.has(player_id):
-        print("Player ", player_id, " not found")
+        print("Player %d not found" % player_id)
         return
 
     print("%d wants to create a party" % player_id)
@@ -77,7 +89,7 @@ func join_party(id: String) -> void:
     print("%d wants to join party %s" % [player_id, id])
 
     if not players.has(player_id):
-        print("Player ", player_id, " not found")
+        print("Player %d not found" % player_id)
         return
 
     # Find the index of the first available party to join
@@ -93,8 +105,9 @@ func join_party(id: String) -> void:
 func cancel_party() -> void:
     var player: Player = get_current_player()
 
-    print("Cancel party ", player.party.id)
+    print("Cancel party %s" % player.party.id)
     parties.erase(player.party.id)
+    player.party.free()
     GameManager.notify_party_cancelled.rpc_id(player.id)
 
 #endregion

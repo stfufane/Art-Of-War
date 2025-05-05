@@ -13,6 +13,10 @@ func register_action(code: Action.Code, in_check: StringName, in_action: StringN
     actions[code] = Action.new(code, in_check, in_action)
 
 
+func do(code: Action.Code, args: Array = []) -> void:
+    run.rpc_id(1, code, args)
+
+
 @rpc("any_peer")
 func run(code: Action.Code, args: Array = []) -> void:
     assert(actions.has(code), "Could not find the action with code " + Action.Code.keys()[code] + ", did you register it?")
@@ -29,7 +33,12 @@ func register_actions() -> void:
     register_action(Action.Code.START_ATTACK, &"check_start_attack", &"start_attack")
     register_action(Action.Code.START_SUPPORT, &"check_start_support", &"start_support")
     register_action(Action.Code.RECRUIT, &"check_recruit", &"recruit")
-    register_action(Action.Code.ATTACK, Action.NO_CHECK, &"attack")
+    register_action(Action.Code.SUPPORT_CHOICE, &"check_support_choice", &"support_choice")
+    register_action(Action.Code.KING_SUPPORT, &"check_king_support", &"support_choice") # King support is a special case of support choice
+    register_action(Action.Code.PRIEST_SUPPORT, &"check_priest_support", &"priest_support")
+    register_action(Action.Code.ARCHER_SUPPORT, &"check_archer_support", &"archer_support")
+    register_action(Action.Code.SOLDIER_SUPPORT, &"check_soldier_support", &"soldier_support")
+    register_action(Action.Code.ATTACK, &"check_attack", &"attack")
     register_action(Action.Code.BLOCK_ATTACK, &"check_block_attack", &"block_attack")
     register_action(Action.Code.BLOCK_SUPPORT, &"check_block_support", &"block_support")
     register_action(Action.Code.NO_ATTACK_BLOCK, &"check_no_attack_block", &"no_attack_block")

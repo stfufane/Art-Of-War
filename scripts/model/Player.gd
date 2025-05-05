@@ -21,7 +21,6 @@ var tiles: PlayerTiles = null
 var state: PlayerState = null
 var action_check: ActionCheck = null
 
-var dead_units: int = 0
 var party: Party = null
 
 
@@ -43,7 +42,7 @@ func init_party() -> void:
         deck.append(Unit.EUnitType.Archer)
         deck.append(Unit.EUnitType.Guard)
         deck.append(Unit.EUnitType.Wizard)
-        deck.append(Unit.EUnitType.Monk)
+        deck.append(Unit.EUnitType.Priest)
     deck.shuffle()
 
     for _i in range(3):
@@ -70,7 +69,7 @@ func validate_hand() -> void:
 
 
 func init_battlefield(tile_id: int, unit_type: Unit.EUnitType) -> void:
-    tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
+    tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate() as Unit)
 
     # Remove the selected unit from the hand
     hand.remove_unit(unit_type)
@@ -92,6 +91,10 @@ func init_kingdom() -> void:
 
 
 func start_turn() -> void:
+    party.check_game_end()
+    # Nothing to do if a player won the game.
+    if party.status == Party.EStatus.GAME_WON:
+        return
     party.current_player = id
     tiles.reset_units_hp()
     hand.add_unit(draw_from_deck())
@@ -112,14 +115,24 @@ func start_support() -> void:
 
 
 func recruit(tile_id: int, unit_type: Unit.EUnitType, source: Board.EUnitSource) -> void:
-    tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate())
+    # Check if there was a unit here before. If it's the case it will be switched with the reserve/hand.
+    var current_tile_unit := tiles.get_unit_type(tile_id)
+
+    tiles.set_unit(tile_id, GameManager.UNIT_RESOURCES[unit_type].duplicate() as Unit)
     if source == Board.EUnitSource.RESERVE:
         reserve.remove_unit(unit_type)
+        if current_tile_unit != Unit.EUnitType.None:
+            reserve.add_unit(current_tile_unit)
     elif source == Board.EUnitSource.HAND:
         hand.remove_unit(unit_type)
+        if current_tile_unit != Unit.EUnitType.None:
+            hand.add_unit(current_tile_unit)
 
     # Flag that we have recruited a unit (possible only once per turn)
-    state.recruit_done()
+    if state.current == StateManager.EState.RECRUIT:
+        state.recruit_done()
+    elif state.current == StateManager.EState.CONSCRIPTION:
+        state.conscription_recruit_done()
 
 
 # When attacking, we first notify the enemy so he can counter the attack
@@ -128,6 +141,43 @@ func attack(attacking_tile: int, target_tile: int) -> void:
     state.current = StateManager.EState.WAITING_FOR_PLAYER
     opponent.state.current = StateManager.EState.ATTACK_BLOCK
     GameManager.attack_to_block.rpc_id(opponent.id, attacking_tile, target_tile)
+
+
+func support_choice(unit_type: Unit.EUnitType) -> void:
+    match unit_type:
+        Unit.EUnitType.King:
+            state.current = StateManager.EState.KING_SUPPORT
+            state.king_support = true
+        Unit.EUnitType.Archer:
+            state.current = StateManager.EState.ARCHER_SUPPORT
+        Unit.EUnitType.Priest:
+            state.current = StateManager.EState.PRIEST_SUPPORT
+        Unit.EUnitType.Soldier:
+            soldier_support()
+        _:
+            pass
+
+
+func soldier_support() -> void:
+    trigger_support_block(Unit.EUnitType.Soldier)
+
+
+func archer_support(target_tile: int) -> void:
+    state.archer_target_tile = target_tile
+    trigger_support_block(Unit.EUnitType.Archer)
+
+
+func priest_support(src_unit: Unit.EUnitType, src_tile: int, dest_tile: int) -> void:
+    state.priest_action = PlayerState.PriestAction.new(src_unit, src_tile, dest_tile)
+    trigger_support_block(Unit.EUnitType.Priest)
+
+
+func trigger_support_block(support_unit: Unit.EUnitType) -> void:
+    # Remove the used support from the hand and add it to the reserve
+    state.start_support(support_unit)
+    state.current = StateManager.EState.WAITING_FOR_PLAYER
+    opponent.state.current = StateManager.EState.SUPPORT_BLOCK
+    GameManager.support_to_block.rpc_id(opponent.id, support_unit)
 
 
 func block_attack(unit: Unit.EUnitType) -> void:
@@ -148,13 +198,66 @@ func block_support(unit: Unit.EUnitType) -> void:
     opponent.state.current = StateManager.EState.SUPPORT_BLOCK
 
 
-# The opponent did not block the attack, we can apply the effects.
+# We did not block the attack, the opponent can apply the effects.
 func no_attack_block() -> void:
-    # TODO: apply attack
-    opponent.state.attack_done()
-    state.current = StateManager.EState.WAITING_FOR_PLAYER
-    opponent.state.current = StateManager.EState.ACTION_CHOICE
-    pass
+    opponent.apply_attack()
+
+
+func apply_attack() -> void:
+    var damage: int = 0
+    var unit_type := tiles.get_unit_type(state.attacking_tile)
+    if unit_type == Unit.EUnitType.Soldier:
+        damage = hand.size()
+    else:
+        damage = tiles.get_attack(state.attacking_tile)
+    damage += state.attack_bonus
+
+    handle_damaged_unit(state.target_tile, damage, false)
+    state.attack_done()
+
+
+func apply_support() -> void:
+    match state.support_unit:
+        Unit.EUnitType.Soldier:
+            state.attack_bonus += 1
+        Unit.EUnitType.Priest:
+            if state.priest_action.src_tile > -1:
+                tiles.swap_units(state.priest_action.src_tile, state.priest_action.dest_tile)
+            else:
+                reserve.remove_unit(state.priest_action.src_unit)
+                var replaced_unit := tiles.get_unit_type(state.priest_action.dest_tile)
+                # Exchange the units in the reserve
+                if replaced_unit != Unit.EUnitType.None:
+                    reserve.add_unit(replaced_unit)
+                tiles.set_unit(state.priest_action.dest_tile, GameManager.UNIT_RESOURCES[state.priest_action.src_unit].duplicate() as Unit)
+        Unit.EUnitType.Archer:
+            handle_damaged_unit(state.archer_target_tile, 1, true)
+        _:
+            pass
+
+    state.support_done()
+
+
+func handle_damaged_unit(target_tile: int, damage: int, is_archer: bool) -> void:
+    var opponent_unit_type := opponent.tiles.get_unit_type(target_tile)
+    var target_state := opponent.tiles.damage_unit(target_tile, damage, is_archer)
+    match target_state:
+        PlayerTiles.EUnitState.ALIVE:
+            GameManager.unit_took_damage.rpc_id(id, Board.ESide.ENEMY, target_tile, damage)
+            GameManager.unit_took_damage.rpc_id(opponent.id, Board.ESide.PLAYER, target_tile, damage)
+        PlayerTiles.EUnitState.DEAD, PlayerTiles.EUnitState.CAPTURED:
+            # Notify players that a unit died and increase the graveyard
+            GameManager.unit_killed_or_captured.rpc_id(id, Board.ESide.ENEMY, target_tile)
+            GameManager.unit_killed_or_captured.rpc_id(opponent.id, Board.ESide.PLAYER, target_tile)
+
+            if target_state == PlayerTiles.EUnitState.CAPTURED:
+                kingdom.add_unit(opponent_unit_type)
+            elif target_state == PlayerTiles.EUnitState.DEAD:
+                state.killed_units += 1
+            
+            # If the king is dead or captured, it's game over
+            if opponent_unit_type == Unit.EUnitType.King:
+                party.party_won(self)
 
 
 # Several cases here :
@@ -162,18 +265,32 @@ func no_attack_block() -> void:
 # - The current player is using a support, the opponent did not block it -> apply the support or the attack
 # - The opponent is using a support to block an attack, we don't block the block -> cancel the attack
 func no_support_block() -> void:
-    pass
+    # The current player is not blocking the support block
+    if party.current_player == id:
+        if state.is_attacking:
+            # The current player did not block the support, the attack is done without any effect.
+            state.attack_done()
+        else:
+            # Cancel the support
+            state.support_done()
+
+    # The opponent is not blocking the support block
+    else:
+        if opponent.state.is_attacking:
+            opponent.apply_attack() # Apply the opponent's attack
+        else:
+            opponent.apply_support() # Apply the opponent's support
 
 
 func add_to_kingdom(unit: Unit.EUnitType) -> void:
-    kingdom.add_unit(unit)
     hand.remove_unit(unit)
+    kingdom.add_unit(unit)
     end_turn()
 
 
 func prompt_end_turn() -> void:
     state.current = StateManager.EState.FINISH_TURN
-    
+
 
 func end_turn() -> void:
     state.end_turn()
@@ -182,5 +299,4 @@ func end_turn() -> void:
 
 func cancel_action() -> void:
     # Go back to the action choice depending on the current state.
-    # TODO: check the previous state
     state.current = StateManager.EState.ACTION_CHOICE

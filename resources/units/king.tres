@@ -6,7 +6,6 @@
 resource_name = "King"
 script = ExtResource("1_fs5my")
 type = 0
-name = "King"
 attack = 1
 defense = 5
 defense_engaged = 4

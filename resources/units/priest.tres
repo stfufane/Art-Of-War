@@ -1,12 +1,11 @@
 [gd_resource type="Resource" script_class="Unit" load_steps=2 format=3 uid="uid://dhy0y3dpbnstr"]
 
-[ext_resource type="Script" uid="uid://472kwxuhr1gl" path="res://scripts/resources/Unit.gd" id="1_vwydt"]
+[ext_resource type="Script" uid="uid://472kwxuhr1gl" path="res://scripts/resources/Unit.gd" id="1_jg2al"]
 
 [resource]
-resource_name = "Monk"
-script = ExtResource("1_vwydt")
+resource_name = "Priest"
+script = ExtResource("1_jg2al")
 type = 5
-name = "Priest"
 attack = 1
 defense = 2
 defense_engaged = 2

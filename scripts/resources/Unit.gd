@@ -8,11 +8,11 @@ enum EUnitType {
 	Guard,
 	Wizard,
 	Archer,
-	Monk
+	Priest,
+	None # To allow returning invalid unit type
 }
 
 @export var type: EUnitType
-@export var name: StringName
 @export var attack: int
 @export var defense: int
 @export var defense_engaged: int

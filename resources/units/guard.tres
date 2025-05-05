@@ -6,7 +6,6 @@
 resource_name = "Guard"
 script = ExtResource("1_ljmum")
 type = 2
-name = "Guardian"
 attack = 1
 defense = 3
 defense_engaged = 2
