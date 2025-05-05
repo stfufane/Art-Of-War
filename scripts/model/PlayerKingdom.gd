@@ -29,3 +29,10 @@ func add_unit(type: Unit.EUnitType) -> void:
 		return
 	units[type] += 1
 	player.party.update_kingdom_status()
+
+
+func units_total() -> int:
+	var total := 0
+	for unit_nb in units.values() as Array[int]:
+		total += unit_nb
+	return total

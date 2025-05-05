@@ -11,7 +11,8 @@ const HIDING_STATES: Array[StateManager.EState] = [
 	StateManager.EState.SUPPORT,
 	StateManager.EState.WAITING_FOR_PLAYER,
 	StateManager.EState.GAME_OVER_LOSS,
-	StateManager.EState.GAME_OVER_WIN
+	StateManager.EState.GAME_OVER_WIN,
+	StateManager.EState.GAME_OVER_DRAW
 ]
 
 # Store the state to handle the case of the cancel button.

@@ -91,6 +91,7 @@ func init_kingdom() -> void:
 
 
 func start_turn() -> void:
+    party.check_game_end()
     # Nothing to do if a player won the game.
     if party.status == Party.EStatus.GAME_WON:
         return
@@ -249,9 +250,7 @@ func handle_damaged_unit(target_tile: int, damage: int, is_archer: bool) -> void
             
             # If the king is dead or captured, it's game over
             if opponent_unit_type == Unit.EUnitType.King:
-                state.current = StateManager.EState.GAME_OVER_WIN
-                opponent.state.current = StateManager.EState.GAME_OVER_LOSS
-                party.status = Party.EStatus.GAME_WON
+                party.party_won(self)
 
 
 # Several cases here :

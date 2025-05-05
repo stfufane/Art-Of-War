@@ -124,11 +124,8 @@ func attack_done() -> void:
     # If he does not he's force to recruit 2 units. If he can't, he loses.
     if player.opponent.tiles.is_empty():
         if player.opponent.reserve.size() + player.opponent.hand.size() < 2:
-            # The opponent has no units left and can't recruit any.
-            # He loses the game.
-            player.opponent.state.current = StateManager.EState.GAME_OVER_LOSS
-            current = StateManager.EState.GAME_OVER_WIN
-            player.party.status = Party.EStatus.GAME_WON
+            # The opponent has no units left and can't recruit any. He loses the game.
+            player.party.party_won(player)
             return
         
         player.opponent.state.current = StateManager.EState.CONSCRIPTION
