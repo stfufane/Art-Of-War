@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://bv1xv58l2a42u"]
 
 [ext_resource type="Script" uid="uid://cxid7fc652e6w" path="res://scripts/scenes/units/TiltableUnit.gd" id="1_eqg6y"]
-[ext_resource type="Texture2D" uid="uid://ce1xsd23r16et" path="res://resources/sprites/Wizard.png" id="2_kxqh1"]
+[ext_resource type="Texture2D" uid="uid://0bshl2xtl2bu" path="res://resources/icons/Wizard.png" id="2_xcx58"]
 
 [sub_resource type="Animation" id="Animation_njoos"]
 length = 0.001
@@ -75,7 +75,7 @@ script = ExtResource("1_eqg6y")
 [node name="Sprite" type="Sprite2D" parent="."]
 position = Vector2(18, 18)
 scale = Vector2(2, 2)
-texture = ExtResource("2_kxqh1")
+texture = ExtResource("2_xcx58")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite"]
 libraries = {
