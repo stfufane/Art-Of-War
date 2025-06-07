@@ -136,10 +136,14 @@ func set_action_error(error: String) -> void:
 #region RPC Game actions called by the server
 
 @rpc
-func start_game(initial_units: Array) -> void:
-    units.assign(initial_units)
+func start_game() -> void:
     # The _ready method of the board will trigger game setup
     get_tree().change_scene_to_packed(BOARD_SCREEN)
+
+
+@rpc
+func init_hand_shuffle(initial_units: Array) -> void:
+    units.assign(initial_units)
 
 
 @rpc

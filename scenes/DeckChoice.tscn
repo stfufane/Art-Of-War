@@ -1,0 +1,78 @@
+[gd_scene load_steps=4 format=3 uid="uid://c4ildlnj4j35x"]
+
+[ext_resource type="StyleBox" uid="uid://e5bltd1uh6qj" path="res://resources/themes/MenuFrame.tres" id="1_le4u3"]
+[ext_resource type="Script" uid="uid://6x7qysg4y7u7" path="res://scripts/scenes/DeckChoice.gd" id="2_ndbms"]
+[ext_resource type="PackedScene" uid="uid://fem36ekx67wo" path="res://scenes/UnitChoice.tscn" id="2_yjriv"]
+
+[node name="DeckChoice" type="Panel"]
+custom_minimum_size = Vector2(600, 300)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = ExtResource("1_le4u3")
+script = ExtResource("2_ndbms")
+
+[node name="UnitChoices" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -208.0
+offset_top = 9.0
+offset_right = 208.0
+offset_bottom = 234.0
+grow_horizontal = 2
+
+[node name="UnitChoice" parent="UnitChoices" instance=ExtResource("2_yjriv")]
+layout_mode = 2
+size_flags_horizontal = 1
+
+[node name="UnitChoice2" parent="UnitChoices" instance=ExtResource("2_yjriv")]
+layout_mode = 2
+unit_type = 2
+
+[node name="UnitChoice3" parent="UnitChoices" instance=ExtResource("2_yjriv")]
+layout_mode = 2
+unit_type = 3
+
+[node name="UnitChoice4" parent="UnitChoices" instance=ExtResource("2_yjriv")]
+layout_mode = 2
+unit_type = 4
+
+[node name="UnitChoice5" parent="UnitChoices" instance=ExtResource("2_yjriv")]
+layout_mode = 2
+unit_type = 5
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -256.0
+offset_top = -47.0
+offset_right = 256.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+
+[node name="TotalLabel" type="RichTextLabel" parent="ButtonsContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "Total = [color=green]20[/color]"
+fit_content = true
+scroll_active = false
+vertical_alignment = 1
+
+[node name="StartButton" type="Button" parent="ButtonsContainer"]
+layout_mode = 2
+text = "Start"

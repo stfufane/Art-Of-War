@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://blsf8m0qs5jm4"]
+[gd_scene load_steps=15 format=3 uid="uid://blsf8m0qs5jm4"]
 
 [ext_resource type="Script" uid="uid://co84c672847hn" path="res://scripts/screens/Board.gd" id="1_ep6k2"]
 [ext_resource type="StyleBox" uid="uid://e5bltd1uh6qj" path="res://resources/themes/MenuFrame.tres" id="1_lsh28"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://cpy4lhyy1hi7k" path="res://scenes/menus/KingMenu.tscn" id="10_uj881"]
 [ext_resource type="PackedScene" uid="uid://bbeygppwy0ath" path="res://scenes/Battlefield.tscn" id="11_nw44b"]
 [ext_resource type="PackedScene" uid="uid://c65kfclvveb3r" path="res://scenes/Reserve.tscn" id="11_x1o1o"]
+[ext_resource type="PackedScene" uid="uid://c4ildlnj4j35x" path="res://scenes/DeckChoice.tscn" id="14_2gwje"]
 [ext_resource type="PackedScene" uid="uid://ddrf8nigaffcl" path="res://scenes/menus/TurnMenu.tscn" id="17_gchri"]
 [ext_resource type="PackedScene" uid="uid://chqg8i8ruxuo2" path="res://scenes/Instruction.tscn" id="18_3bhdf"]
 [ext_resource type="Script" uid="uid://15mbla02n73r" path="res://scripts/scenes/GameError.gd" id="19_mgppa"]
@@ -23,30 +24,37 @@ grow_vertical = 2
 theme_override_styles/panel = ExtResource("1_lsh28")
 script = ExtResource("1_ep6k2")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(576, 324)
+[node name="BoardParts" type="Node2D" parent="."]
+visible = false
 
-[node name="Kingdom" parent="." instance=ExtResource("3_67vue")]
+[node name="Kingdom" parent="BoardParts" instance=ExtResource("3_67vue")]
 position = Vector2(110, 164)
 scale = Vector2(1.5, 1.5)
 
-[node name="Hand" parent="." instance=ExtResource("4_yvn43")]
+[node name="Hand" parent="BoardParts" instance=ExtResource("4_yvn43")]
 position = Vector2(224, 164)
 scale = Vector2(1.5, 1.5)
 
-[node name="Reserve" parent="." instance=ExtResource("11_x1o1o")]
+[node name="Reserve" parent="BoardParts" instance=ExtResource("11_x1o1o")]
 position = Vector2(336, 164)
 scale = Vector2(1.5, 1.5)
 
-[node name="EnemyReserve" parent="." instance=ExtResource("11_x1o1o")]
+[node name="EnemyReserve" parent="BoardParts" instance=ExtResource("11_x1o1o")]
 position = Vector2(790, 164)
 scale = Vector2(1.5, 1.5)
 side = 1
 
-[node name="Battlefield" parent="." instance=ExtResource("11_nw44b")]
+[node name="Battlefield" parent="BoardParts" instance=ExtResource("11_nw44b")]
 position = Vector2(449, 164)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DeckChoice" parent="CanvasLayer" instance=ExtResource("14_2gwje")]
+visible = false
+offset_left = -300.0
+offset_top = -150.0
+offset_right = 300.0
+offset_bottom = 150.0
 
 [node name="ShuffleHand" parent="CanvasLayer" instance=ExtResource("2_nmow6")]
 visible = false
@@ -76,6 +84,7 @@ offset_bottom = 460.0
 scale = Vector2(0.8, 0.8)
 
 [node name="CancelButton" type="Button" parent="CanvasLayer"]
+visible = false
 custom_minimum_size = Vector2(100, 0)
 offset_left = 552.0
 offset_top = 469.0

@@ -8,6 +8,8 @@ const NO_CHECK: StringName = &""
 
 ## The code used client side to call the action
 enum Code {
+    BOARD_READY,
+    CHOOSE_DECK,
     RESHUFFLE_HAND,
     VALIDATE_HAND,
     INIT_BATTLEFIELD,

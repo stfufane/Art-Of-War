@@ -12,6 +12,7 @@ var label: String:
 
 
 var deck: Array[Unit.EUnitType] = []
+var initial_hand: Array[Unit.EUnitType] = []
 var reshuffle_attempts: int = 3
 
 var reserve: PlayerReserve = null
@@ -36,18 +37,31 @@ func setup() -> void:
     action_check = ActionCheck.new(self)
 
 
+func start_game() -> void:
+    state.current = StateManager.EState.DECK_CHOICE
+
+
 func init_party() -> void:
+    hand.add_unit(Unit.EUnitType.King)
+
+
+func choose_deck() -> void:
+    # TODO pass the actual units count
     for _i in range(4):
         deck.append(Unit.EUnitType.Soldier)
         deck.append(Unit.EUnitType.Archer)
         deck.append(Unit.EUnitType.Guard)
         deck.append(Unit.EUnitType.Wizard)
         deck.append(Unit.EUnitType.Priest)
-    deck.shuffle()
+    init_hand()
+    GameManager.init_hand_shuffle.rpc_id(id, initial_hand)
+    state.current = StateManager.EState.RESHUFFLE
 
+
+func init_hand() -> void:
+    deck.shuffle()
     for _i in range(3):
-        hand.add_unit(draw_from_deck())
-    hand.add_unit(Unit.EUnitType.King)
+        initial_hand.append(draw_from_deck())
 
 
 func draw_from_deck() -> Unit.EUnitType:
@@ -57,15 +71,18 @@ func draw_from_deck() -> Unit.EUnitType:
 
 func reshuffle_deck() -> void:
     reshuffle_attempts -= 1
-    deck.clear()
-    hand.clear()
-    init_party()
-    GameManager.update_hand_shuffle.rpc_id(id, hand.units, reshuffle_attempts)
+    # Put back the cards in the deck
+    deck.append_array(initial_hand)
+    initial_hand.clear()
+    # Re-shuffle the deck and take the first 3 cards
+    init_hand()
+    GameManager.update_hand_shuffle.rpc_id(id, initial_hand, reshuffle_attempts)
 
 
 func validate_hand() -> void:
+    for unit in initial_hand:
+        hand.add_unit(unit)
     state.hand_ready = true
-    hand.update_hand_ui()
 
 
 func init_battlefield(tile_id: int, unit_type: Unit.EUnitType) -> void:

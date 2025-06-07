@@ -4,23 +4,21 @@
 [ext_resource type="Script" uid="uid://buiqlm46hpl1m" path="res://scripts/scenes/ShuffleHand.gd" id="2_bxihg"]
 
 [node name="ShuffleHand" type="Panel"]
-custom_minimum_size = Vector2(384, 202)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -192.0
-offset_top = -119.0
-offset_right = 192.0
-offset_bottom = 119.0
+custom_minimum_size = Vector2(384, 238)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 384.0
+offset_top = 204.0
+offset_right = -384.0
+offset_bottom = -206.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 2
 size_flags_vertical = 2
 theme_override_styles/panel = ExtResource("1_rn1jc")
 script = ExtResource("2_bxihg")
-slide_speed = 0.6
+slide_speed = 0.5
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 0

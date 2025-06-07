@@ -28,6 +28,11 @@ func _init(p: Player) -> void:
     player = p
 
 
+func check_deck_choice() -> bool:
+    # TODO implement check with arguments
+    return true
+
+
 func check_reshuffle() -> bool:
     if player.state.current != StateManager.EState.RESHUFFLE:
         error_message = NOT_AUTHORIZED

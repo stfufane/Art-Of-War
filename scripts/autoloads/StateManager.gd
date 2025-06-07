@@ -2,6 +2,7 @@ extends Node
 
 enum EState {
 	WAITING_FOR_PLAYER,
+	DECK_CHOICE,
 	RESHUFFLE,
 	INIT_BATTLEFIELD,
 	INIT_RESERVE,
@@ -24,6 +25,7 @@ enum EState {
 ## The list of all available states with their associated texts
 var States: Dictionary[EState, State] = {
 	EState.WAITING_FOR_PLAYER: State.new("Waiting for opponent"),
+	EState.DECK_CHOICE: State.new("Choose the 20 cards that will be in your deck"),
 	EState.RESHUFFLE: State.new("Need to reshuffle your hand ?"),
 	EState.INIT_BATTLEFIELD: State.new("Add a unit on your battlefield"),
 	EState.INIT_RESERVE: State.new("Add a unit to your reserve"),

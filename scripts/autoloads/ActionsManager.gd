@@ -25,6 +25,8 @@ func run(code: Action.Code, args: Array = []) -> void:
 
 
 func register_actions() -> void:
+    register_action(Action.Code.BOARD_READY, Action.NO_CHECK, &"start_game")
+    register_action(Action.Code.CHOOSE_DECK, &"check_deck_choice", &"choose_deck")
     register_action(Action.Code.RESHUFFLE_HAND, &"check_reshuffle", &"reshuffle_deck")
     register_action(Action.Code.VALIDATE_HAND, &"check_validate_hand", &"validate_hand")
     register_action(Action.Code.INIT_BATTLEFIELD, &"check_init_battlefield", &"init_battlefield")

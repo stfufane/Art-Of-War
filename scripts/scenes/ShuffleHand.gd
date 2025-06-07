@@ -1,8 +1,5 @@
 class_name ShuffleHand extends Panel
 
-const FAR_BELOW: int = 800
-const FAR_ABOVE: int = -400
-
 @export var slide_speed: float = 0.8
 @export var slide_shift: float = 0.2
 
@@ -34,9 +31,17 @@ func animate_falling() -> void:
 	if not hand_units.get_children().is_empty():
 		for texture: TextureRect in hand_units.get_children():
 			var fall_tween := create_tween()
-			fall_tween.tween_property(texture, "position", Vector2(texture.position.x, FAR_BELOW), slide_speed).set_trans(Tween.TRANS_QUAD)
+			fall_tween.tween_property(texture, "position", Vector2(texture.position.x, Board.FAR_BELOW), slide_speed).set_trans(Tween.TRANS_QUAD)
 			fall_tween.tween_callback(texture.queue_free)
 			await get_tree().create_timer(slide_shift).timeout
+
+
+func init_hand() -> void:
+	var unit_idx: int = 0
+	for unit in GameManager.units.slice(0, 3) as Array[Unit.EUnitType]: # Exclude the king
+		add_child_unit(unit, unit_idx, 0)
+		unit_idx += 1
+	reshuffle_button.text = "Reshuffle (3)"
 
 
 func update_hand(reshuffle_attempts: int) -> void:
@@ -49,16 +54,7 @@ func update_hand(reshuffle_attempts: int) -> void:
 	
 	var unit_idx: int = 0
 	for unit in GameManager.units.slice(0, 3) as Array[Unit.EUnitType]: # Exclude the king
-		var unit_resource := GameManager.UNIT_RESOURCES[unit] as Unit
-		assert(unit_resource is Unit, "Did not retrieve a valid unit")
-		var unit_name := unit_resource.resource_name
-		var image: CompressedTexture2D = load("res://resources/icons/" + unit_name + ".png")
-		var new_texture := TextureRect.new()
-		new_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH
-		new_texture.size = Vector2(sprite_size, sprite_size)
-		new_texture.position = Vector2(unit_idx * sprite_size, FAR_ABOVE)
-		new_texture.texture = image
-		hand_units.add_child(new_texture)
+		var new_texture := add_child_unit(unit, unit_idx, Board.FAR_ABOVE)
 		unit_idx += 1
 		var tween := create_tween()
 		tween.tween_property(new_texture, "position", Vector2(new_texture.position.x, 0), slide_speed).set_trans(Tween.TRANS_QUAD)
@@ -67,6 +63,19 @@ func update_hand(reshuffle_attempts: int) -> void:
 	await get_tree().create_timer(slide_shift).timeout
 	is_animating = false
 
+
+func add_child_unit(unit_type: Unit.EUnitType, idx: int, y: int) -> TextureRect:
+	var unit_resource := GameManager.UNIT_RESOURCES[unit_type] as Unit
+	assert(unit_resource is Unit, "Did not retrieve a valid unit")
+	var unit_name := unit_resource.resource_name
+	var image: CompressedTexture2D = load("res://resources/icons/" + unit_name + ".png")
+	var new_texture := TextureRect.new()
+	new_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH
+	new_texture.size = Vector2(sprite_size, sprite_size)
+	new_texture.position = Vector2(idx * sprite_size, y)
+	new_texture.texture = image
+	hand_units.add_child(new_texture)
+	return new_texture
 
 func request_reshuffle() -> void:
 	if is_animating:
