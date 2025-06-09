@@ -31,4 +31,9 @@ func _on_unit_choice_updated() -> void:
 func _on_start_button_pressed() -> void:
     if total_units != 20:
         return
-    ActionsManager.do(Action.Code.CHOOSE_DECK) # TODO pass values
+
+    # The array index matches the enum key of the associated unit
+    var nb_units: Array[int] = [0] # The first value of the enum is the king and there is none in the deck
+    for unit_choice in unit_choices:
+        nb_units.append(unit_choice.unit_count)
+    ActionsManager.do(Action.Code.CHOOSE_DECK, [nb_units])

@@ -28,8 +28,14 @@ func _init(p: Player) -> void:
     player = p
 
 
-func check_deck_choice() -> bool:
-    # TODO implement check with arguments
+func check_deck_choice(nb_units: Array[int]) -> bool:
+    if nb_units.size() != 6:
+        error_message = "You passed the wrong number of units"
+        return false
+    var total_units: int = nb_units.reduce(func(accum: int, number: int) -> int: return accum + number, 0)
+    if total_units != 20:
+        error_message = "You must have exactly 20 units"
+        return false
     return true
 
 

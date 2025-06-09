@@ -45,14 +45,14 @@ func init_party() -> void:
     hand.add_unit(Unit.EUnitType.King)
 
 
-func choose_deck() -> void:
-    # TODO pass the actual units count
-    for _i in range(4):
-        deck.append(Unit.EUnitType.Soldier)
-        deck.append(Unit.EUnitType.Archer)
-        deck.append(Unit.EUnitType.Guard)
-        deck.append(Unit.EUnitType.Wizard)
-        deck.append(Unit.EUnitType.Priest)
+func choose_deck(nb_units: Array[int]) -> void:
+    for i in nb_units.size():
+        if nb_units[i] == 0:
+            continue
+        # Add the right number of units for each type.
+        for u in range(nb_units[i]):
+            deck.append(Unit.EUnitType.values()[i])
+
     init_hand()
     GameManager.init_hand_shuffle.rpc_id(id, initial_hand)
     state.current = StateManager.EState.RESHUFFLE
